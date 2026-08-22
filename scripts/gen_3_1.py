@@ -5,31 +5,12 @@ SCOPE RULE for this objective: 3.1 is *reading* the table (code, prefix, mask,
 next hop, AD, metric, gateway of last resort). If answering requires simulating
 a packet's path, it belongs to 3.2 (forwarding decision). Keep the line.
 """
-import json, pathlib
+import json
+import pathlib
+import sys
 
-# ---- IOS show ip route rendering helpers --------------------------------
-def top(code, rest):      # top-level entry: code in 6-wide field, prefix at col 7
-    return f"{code:<6}{rest}"
-
-def kid(code, rest):      # child of a subnetted parent: code 9-wide, prefix col 10
-    return f"{code:<9}{rest}"
-
-def parent(rest):         # the 'x.x.x.x/y is variably subnetted' banner
-    return f"      {rest}"
-
-def cont(anchor_line, rest):
-    """Continuation line for an ECMP path: align '[' under the previous '['."""
-    return " " * anchor_line.index("[") + rest
-
-LEGEND_FULL = """Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
-       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
-       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
-       E1 - OSPF external type 1, E2 - OSPF external type 2
-       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
-       ia - IS-IS inter area, * - candidate default, U - per-user static route
-       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
-       a - application route
-       + - replicated route, % - next hop override"""
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from iosfmt import top, kid, parent, cont, LEGEND as LEGEND_FULL, opts  # noqa: E402
 
 
 def route_table(prompt, legend, golr, lines):
@@ -163,10 +144,6 @@ EX_010 = route_table(
         top("O", "192.168.30.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1"),
         top("O", "192.168.40.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1"),
     ])
-
-
-def opts(*texts):
-    return [{"id": chr(65 + i), "text": t} for i, t in enumerate(texts)]
 
 
 ITEMS = [
