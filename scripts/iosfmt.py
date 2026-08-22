@@ -155,3 +155,33 @@ def ospf_intf_detail(prompt, intf, addr_mask, area, pid, rid, nettype, cost,
         f"  Neighbor Count is {nbr_count}, Adjacent neighbor count is {adj_count}",
     ]
     return "\n".join(lines)
+
+
+# --- HSRP / FHRP ----------------------------------------------------------
+# `show standby brief` column layout (IOS 15.x). The 'P' column sits at
+# column 22, which is what the legend's '|' points at.
+STANDBY_COLS = (f"{'Interface':<12}{'Grp':<5}{'Pri':<4}{'P':<2}{'State':<8}"
+                f"{'Active':<16}{'Standby':<16}Virtual IP")
+_P_COL = 12 + 5 + 4  # zero-based index of the P column
+
+
+def standby_row(intf, grp, pri, preempt, state, active, standby, vip):
+    """One `show standby brief` row. `preempt` True prints P in the P column."""
+    return (f"{intf:<12}{grp:<5}{pri:<4}{'P' if preempt else ' ':<2}"
+            f"{state:<8}{active:<16}{standby:<16}{vip}")
+
+
+def standby_brief(prompt, rows):
+    """A `show standby brief` capture, including the preempt legend."""
+    pad = " " * _P_COL
+    return "\n".join([
+        f"{prompt}# show standby brief",
+        f"{pad}P indicates configured to preempt.",
+        f"{pad}|",
+        STANDBY_COLS,
+    ] + list(rows))
+
+
+def hsrp_v1_vmac(group):
+    """HSRP version 1 virtual MAC: 0000.0C07.ACxx where xx is the group in hex."""
+    return f"0000.0c07.ac{group:02x}"

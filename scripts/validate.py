@@ -278,6 +278,12 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
         distractors = [v for k, v in lens.items() if k not in correct]
         if not distractors:
             continue
+        longest = max(lens.values())
+        at_longest = sum(1 for v in lens.values() if v == longest)
+        if at_longest == len(lens):
+            # every option the same length: "pick the longest" narrows nothing,
+            # so there is no signal to score either way
+            continue
         best_correct = max(lens[k] for k in correct if k in lens)
         if best_correct > max(distractors):
             strict_hits += 1
