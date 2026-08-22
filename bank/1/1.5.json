@@ -1,0 +1,172 @@
+{
+  "objective": "1.5",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "No port-number recall anywhere: ports appear in captures as data to read, never as the thing being tested.",
+  "items": [
+    {
+      "id": "1.5-001",
+      "objective": "1.5",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does the exchange with 10.1.1.201 begin carrying payload in its very first frame, while the exchange with 10.1.1.200 spends three frames before any data moves?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "Capture taken on the access switch uplink\nNo.  Time      Source          Destination     Protocol  Length  Info\n1    0.000000  10.1.1.50       10.1.1.200      TCP       74      49152 > 8080 [SYN] Seq=0 Win=64240 Len=0 MSS=1460\n2    0.000412  10.1.1.200      10.1.1.50       TCP       74      8080 > 49152 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0\n3    0.000488  10.1.1.50       10.1.1.200      TCP       66      49152 > 8080 [ACK] Seq=1 Ack=1 Win=64240 Len=0\n4    0.000501  10.1.1.50       10.1.1.200      HTTP      412     GET /status HTTP/1.1\n5    0.001902  10.1.1.50       10.1.1.201      UDP       118     51204 > 5060 Len=76\n6    0.002355  10.1.1.201      10.1.1.50       UDP       342     5060 > 51204 Len=300"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The 10.1.1.201 exchange had already completed its handshake before the capture began."
+        },
+        {
+          "id": "B",
+          "text": "The switch prioritised the 10.1.1.201 traffic and forwarded its handshake unrecorded."
+        },
+        {
+          "id": "C",
+          "text": "UDP is connectionless and sends payload at once, while TCP opens a session first."
+        },
+        {
+          "id": "D",
+          "text": "The 10.1.1.200 exchange is retransmitting because its first two attempts were lost."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Frames 1 to 3 are the SYN, SYN-ACK and ACK that open a TCP connection, and only frame 4 carries a request; the UDP exchange has no such setup and puts 76 bytes of payload on the wire at once, because UDP keeps no connection state. Option A invents an earlier handshake that UDP would never have performed. Option B suggests the analyser missed frames, but both directions of the UDP exchange are present. Option D reads the three-frame opening as retransmission, though each frame carries a different flag rather than repeating one.",
+      "difficulty": 2,
+      "skills": [
+        "tcp-vs-udp",
+        "three-way-handshake",
+        "connectionless",
+        "read-packet-capture"
+      ]
+    },
+    {
+      "id": "1.5-002",
+      "objective": "1.5",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Segment 8815 never appears in the voice stream, and no frame recovers it. What does the capture show about how each transport handles the loss?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "Capture taken during a period of link congestion\nNo.  Time      Source          Destination     Protocol  Length  Info\n11   1.204118  10.2.2.40       10.2.2.90       TCP       1514    40122 > 445 [ACK] Seq=14601 Ack=1 Win=64240 Len=1448\n12   1.204770  10.2.2.90       10.2.2.40       TCP       66      445 > 40122 [ACK] Seq=1 Ack=14601 Win=65535 SLE=16049 SRE=17497\n13   1.409233  10.2.2.40       10.2.2.90       TCP       1514    [TCP Retransmission] 40122 > 445 [ACK] Seq=14601 Len=1448\n14   1.610044  10.2.2.41       10.2.2.95       UDP       214     49700 > 4000 Len=172   RTP Seq=8814\n15   1.630051  10.2.2.41       10.2.2.95       UDP       214     49700 > 4000 Len=172   RTP Seq=8816\n16   1.650049  10.2.2.41       10.2.2.95       UDP       214     49700 > 4000 Len=172   RTP Seq=8817"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "TCP retransmitted its own loss, while the UDP stream carried on without it."
+        },
+        {
+          "id": "B",
+          "text": "Both transports recovered, but the UDP retransmission fell outside the captured window."
+        },
+        {
+          "id": "C",
+          "text": "Neither transport recovered; frame 13 is a duplicate the analyser has mislabelled."
+        },
+        {
+          "id": "D",
+          "text": "UDP recovered first because its smaller frames retransmit faster than TCP's."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Frame 12 acknowledges a gap and frame 13 is labelled a retransmission of the same sequence, so TCP detected the loss and resent it without the application being involved. The RTP sequence jumps from 8814 to 8816 with nothing resending 8815, because UDP offers no recovery and leaves the decision to the application, which for voice is to move on. Option B expects a UDP retransmission the protocol cannot perform. Option C dismisses a retransmission the capture states plainly. Option D reverses which transport recovers and invents a size-based advantage.",
+      "difficulty": 3,
+      "skills": [
+        "tcp-vs-udp",
+        "retransmission",
+        "reliability",
+        "read-packet-capture"
+      ]
+    },
+    {
+      "id": "1.5-003",
+      "objective": "1.5",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which service is the one best carried over UDP, and for what reason?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Three services are being moved onto a new link\n\n    Service              Requirement\n    -----------------    ----------------------------------------\n    File synchronise     Every byte must arrive, order matters,\n                         a pause of a second or two is acceptable\n    Live voice call      A lost sample is better discarded than\n                         delivered late; delay must stay minimal\n    Database replica     Missing records are unacceptable and the\n                         receiver must detect any gap"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "File synchronise, because bulk transfers benefit from the lower per-segment overhead."
+        },
+        {
+          "id": "B",
+          "text": "Live voice call, because a late sample is worthless and retransmitting one adds delay."
+        },
+        {
+          "id": "C",
+          "text": "Database replica, because the receiver detects gaps itself and needs no transport help."
+        },
+        {
+          "id": "D",
+          "text": "All three, because UDP's smaller header improves throughput on any type of traffic."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Voice is the one requirement that prefers loss to delay: a sample that arrives after its playback moment is useless, so the retransmission TCP would perform actively hurts, which is why UDP suits it. Option A picks a service whose stated requirement is that every byte arrives in order, which is exactly what TCP provides. Option C describes a service that calls missing records unacceptable, so it needs guaranteed delivery rather than gap detection alone. Option D generalises a header saving into a universal rule and ignores every stated requirement.",
+      "difficulty": 2,
+      "skills": [
+        "tcp-vs-udp",
+        "transport-selection",
+        "latency-vs-reliability",
+        "application-requirements"
+      ]
+    },
+    {
+      "id": "1.5-004",
+      "objective": "1.5",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which transport protocol carries the name lookup in frames 21 and 22?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "Capture of a workstation opening a file share\nNo.  Time      Source          Destination     Protocol  Length  Info\n21   4.100000  192.168.7.30    192.168.7.10    DNS       78      Standard query A files.example.internal\n22   4.100944  192.168.7.10    192.168.7.30    DNS       122     Standard query response A 192.168.7.60\n23   4.101550  192.168.7.30    192.168.7.60    TCP       74      52310 > 445 [SYN] Seq=0 Win=64240 Len=0 MSS=1460\n24   4.101988  192.168.7.60    192.168.7.30    TCP       74      445 > 52310 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "TCP"
+        },
+        {
+          "id": "B",
+          "text": "ICMP"
+        },
+        {
+          "id": "C",
+          "text": "ARP"
+        },
+        {
+          "id": "D",
+          "text": "UDP"
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Frames 21 and 22 are a single query and a single response with no session setup around them, which is the shape of a UDP exchange; the analyser names the application protocol in its column, and the transport underneath it is connectionless. Option A is what frames 23 and 24 use, and their SYN and SYN-ACK flags show the contrast plainly. Option B is a control protocol that carries no name lookups. Option C resolves addresses at layer 2 within a segment and appears nowhere in this capture.",
+      "difficulty": 1,
+      "skills": [
+        "tcp-vs-udp",
+        "read-packet-capture",
+        "connectionless",
+        "transport-identification"
+      ]
+    }
+  ]
+}

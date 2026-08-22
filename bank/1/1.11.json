@@ -1,0 +1,172 @@
+{
+  "objective": "1.11",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Channel overlap arithmetic is asserted in _selftest(). Encryption appears here only as it is read from a scan; the protocols themselves belong to 5.9.",
+  "items": [
+    {
+      "id": "1.11-001",
+      "objective": "1.11",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why did installing AP-D degrade performance across this floor?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Site survey of the 2.4 GHz band on one floor\n\n    AP        Channel    Neighbouring cells overlap this AP's coverage\n    ------    -------    --------------------------------------------\n    AP-A            1    AP-B, AP-D\n    AP-B            6    AP-A, AP-C, AP-D\n    AP-C           11    AP-B\n    AP-D            3    AP-A, AP-B\n\nUsers nearest AP-D report slow throughput and frequent stalls, and the\nthree other cells were stable before AP-D was installed."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "AP-D is too close to AP-C, and both are serving the edge of the same coverage area."
+        },
+        {
+          "id": "B",
+          "text": "AP-D uses a channel already carried by AP-A, so the two cells are duplicating traffic."
+        },
+        {
+          "id": "C",
+          "text": "AP-D is transmitting at a higher power than the other three access points."
+        },
+        {
+          "id": "D",
+          "text": "AP-D sits on channel 3, which overlaps both channel 1 and channel 6."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "In the 2.4 GHz band each channel is far wider than the spacing between channel numbers, so only channels five or more apart avoid overlapping, which is why 1, 6 and 11 are the standard plan. Channel 3 sits two away from 1 and three away from 6, so AP-D interferes with AP-A and AP-B at once, matching the overlap column exactly. Option A points at AP-C on channel 11, which is eight away from AP-D and does not overlap it. Option B treats channel 3 and channel 1 as the same channel. Option C invents a power difference the survey never records.",
+      "difficulty": 3,
+      "skills": [
+        "nonoverlapping-channels",
+        "rf-interference",
+        "2-4ghz-channel-plan",
+        "wireless-principles"
+      ]
+    },
+    {
+      "id": "1.11-002",
+      "objective": "1.11",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which access point should this client associate with for the most reliable connection?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Client-side survey taken from one desk\n\n    AP        Channel    Signal (RSSI)    Noise floor    SNR\n    ------    -------    -------------    -----------    ----\n    AP-1            1        -62 dBm        -92 dBm      30 dB\n    AP-2            6        -57 dBm        -61 dBm       4 dB\n    AP-3           11        -71 dBm        -94 dBm      23 dB\n\nAll three advertise the same SSID and the client may associate with any\nof them."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "AP-1, because it combines a strong signal with a quiet noise floor."
+        },
+        {
+          "id": "B",
+          "text": "AP-2, because it shows the strongest received signal of the three."
+        },
+        {
+          "id": "C",
+          "text": "AP-3, because channel 11 is furthest from the other two cells."
+        },
+        {
+          "id": "D",
+          "text": "Any of the three, because all advertise the same SSID and are equivalent."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "What matters is how far the signal rises above the noise, not its absolute strength, and AP-1's 30 dB signal-to-noise ratio is the widest margin available. Option B picks the strongest raw RSSI, but AP-2 sits in a noise floor of -61 dBm, leaving only 4 dB of usable margin, which is the trap this item is built around. Option C picks on channel separation, which affects neighbouring cells rather than this client's own link quality, and AP-3's 23 dB is still below AP-1's. Option D treats a shared SSID as meaning the radio conditions are identical.",
+      "difficulty": 2,
+      "skills": [
+        "rf",
+        "signal-to-noise-ratio",
+        "rssi",
+        "wireless-principles"
+      ]
+    },
+    {
+      "id": "1.11-003",
+      "objective": "1.11",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Three entries share the name CORP-WIFI while showing different BSSID values. What does that indicate?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Wireless scan taken by a laptop in the lobby\n\n    SSID          BSSID                Channel    Security\n    ----------    -----------------    -------    ------------\n    CORP-WIFI     00:1a:2b:3c:4d:50          1    WPA2-Enterprise\n    CORP-WIFI     00:1a:2b:3c:4d:70          6    WPA2-Enterprise\n    CORP-WIFI     00:1a:2b:3c:4d:90         11    WPA2-Enterprise\n    GUEST-WIFI    00:1a:2b:3c:4d:51          1    Open"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Three separate wireless networks have each been given the same name by mistake."
+        },
+        {
+          "id": "B",
+          "text": "One wireless network served by three access points, each with its own radio ID."
+        },
+        {
+          "id": "C",
+          "text": "One access point is advertising the same network three times to spread its load."
+        },
+        {
+          "id": "D",
+          "text": "The laptop has recorded the same access point once for each channel it scanned."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The SSID names the wireless network a user selects, while the BSSID identifies the individual radio serving it, so three BSSIDs under one SSID means three access points cooperating to cover an area, which their placement on channels 1, 6 and 11 confirms. Option A treats a shared SSID as a naming error, when sharing it is exactly what lets a client roam. Option C would require one radio to hold three BSSIDs on three channels at once. Option D assumes the scan duplicated a single AP, but a single radio reports one BSSID per network.",
+      "difficulty": 2,
+      "skills": [
+        "ssid",
+        "bssid",
+        "wireless-principles",
+        "roaming"
+      ]
+    },
+    {
+      "id": "1.11-004",
+      "objective": "1.11",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which network in this scan offers the strongest protection for traffic sent across it?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Wireless scan taken in a shared office building\n\n    SSID          Channel    Security          Signal\n    ----------    -------    --------------    --------\n    OFFICE-A            1    WPA2-Personal     -48 dBm\n    OFFICE-B            6    WPA3-Personal     -55 dBm\n    HOTSPOT-C          11    Open              -61 dBm\n    LEGACY-D            1    WEP               -67 dBm"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "OFFICE-A"
+        },
+        {
+          "id": "B",
+          "text": "LEGACY-D"
+        },
+        {
+          "id": "C",
+          "text": "OFFICE-B"
+        },
+        {
+          "id": "D",
+          "text": "HOTSPOT-C"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The Security column ranks these plainly: OFFICE-B advertises WPA3, the newest of the personal modes and the strongest shown. Option A advertises WPA2, which remains sound but has been superseded by WPA3. Option B advertises WEP, which is long broken and offers protection in name only. Option D is Open, so its traffic carries no link-layer encryption at all, and its stronger signal is irrelevant to the question of protection.",
+      "difficulty": 1,
+      "skills": [
+        "wireless-encryption",
+        "wpa3",
+        "wireless-principles",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

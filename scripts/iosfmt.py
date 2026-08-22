@@ -250,3 +250,20 @@ def mac_table(prompt, rows, criterion=None):
         f"{'Vlan':<8}{'Mac Address':<18}{'Type':<12}Ports",
         f"{'----':<8}{'-----------':<18}{'--------':<12}-----",
     ] + list(rows) + [f"Total Mac Addresses for this criterion: {n}"])
+
+
+# --- packet capture (analyser summary view, not IOS) ----------------------
+CAPTURE_HEADER = (f"{'No.':<5}{'Time':<10}{'Source':<16}{'Destination':<16}"
+                  f"{'Protocol':<10}{'Length':<8}Info")
+
+
+def capture_row(no, time, src, dst, proto, length, info):
+    """One summary row from a protocol analyser."""
+    return (f"{no:<5}{time:<10}{src:<16}{dst:<16}"
+            f"{proto:<10}{length:<8}{info}")
+
+
+def packet_capture(rows, title=None):
+    """A protocol-analyser summary listing."""
+    head = [title] if title else []
+    return "\n".join(head + [CAPTURE_HEADER] + list(rows))
