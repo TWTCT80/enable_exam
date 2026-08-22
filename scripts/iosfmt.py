@@ -94,3 +94,64 @@ def ipv6_route_table(prompt, entries, total, suffix="static", legend=IPV6_LEGEND
     head = f"{prompt}# show ipv6 route" + (f" {suffix}" if suffix else "")
     return "\n".join([head, f"IPv6 Routing Table - default - {total} entries",
                       legend] + list(entries))
+
+
+# --- OSPF -----------------------------------------------------------------
+# `show ip ospf neighbor` column layout (IOS 15.x):
+#   Neighbor ID  16 wide | Pri right-justified in 3 | 3 spaces
+#   State        16 wide | Dead Time 12 wide | Address 16 wide | Interface
+OSPF_NBR_HEADER = (f"{'Neighbor ID':<16}{'Pri':>3}   {'State':<16}"
+                   f"{'Dead Time':<12}{'Address':<16}Interface")
+
+
+def ospf_nbr(nid, pri, state, dead, addr, intf):
+    """One `show ip ospf neighbor` row.
+
+    On a point-to-point link the state has no elected role and prints as
+    'FULL/  -'; pass that literally as `state`.
+    """
+    return f"{nid:<16}{pri:>3}   {state:<16}{dead:<12}{addr:<16}{intf}"
+
+
+def ospf_neighbors(prompt, rows):
+    """A `show ip ospf neighbor` capture."""
+    return "\n".join([f"{prompt}# show ip ospf neighbor", "", OSPF_NBR_HEADER] + list(rows))
+
+
+OSPF_INTF_HEADER = (f"{'Interface':<13}{'PID':<6}{'Area':<16}"
+                    f"{'IP Address/Mask':<19}{'Cost':<6}{'State':<6}Nbrs F/C")
+
+
+def ospf_intf(intf, pid, area, addr, cost, state, nbrs):
+    """One `show ip ospf interface brief` row."""
+    return f"{intf:<13}{pid:<6}{area:<16}{addr:<19}{cost:<6}{state:<6}{nbrs}"
+
+
+def ospf_intf_brief(prompt, rows):
+    """A `show ip ospf interface brief` capture."""
+    return "\n".join([f"{prompt}# show ip ospf interface brief", OSPF_INTF_HEADER]
+                     + list(rows))
+
+
+def ospf_intf_detail(prompt, intf, addr_mask, area, pid, rid, nettype, cost,
+                     state, priority, dr_id=None, dr_addr=None, bdr=None,
+                     hello=10, dead=40, wait=40, retransmit=5, nbr_count=0,
+                     adj_count=0):
+    """A `show ip ospf interface <name>` capture."""
+    lines = [
+        f"{prompt}# show ip ospf interface {intf}",
+        f"{intf} is up, line protocol is up",
+        f"  Internet Address {addr_mask}, Area {area}, Attached via Network Statement",
+        f"  Process ID {pid}, Router ID {rid}, Network Type {nettype}, Cost: {cost}",
+        f"  Transmit Delay is 1 sec, State {state}, Priority {priority}",
+    ]
+    if dr_id:
+        lines.append(f"  Designated Router (ID) {dr_id}, Interface address {dr_addr}")
+    lines.append(f"  Backup Designated router (ID) {bdr}" if bdr
+                 else "  No backup designated router on this network")
+    lines += [
+        f"  Timer intervals configured, Hello {hello}, Dead {dead}, Wait {wait},"
+        f" Retransmit {retransmit}",
+        f"  Neighbor Count is {nbr_count}, Adjacent neighbor count is {adj_count}",
+    ]
+    return "\n".join(lines)
