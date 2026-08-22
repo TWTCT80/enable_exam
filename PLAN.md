@@ -61,7 +61,7 @@ runner has no keyboard-navigable implementation of it, and a drag interaction
 that fails on a keyboard is worse than not offering one. Matching content is
 expressed as multi-answer items instead.
 
-## Domain 2 - 60 items
+## Domain 2 - 60 items  **COMPLETE**
 
 | Objective | Verb | Planned | Done |
 |---|---|---|---|
@@ -70,7 +70,7 @@ expressed as multi-answer items instead.
 | 2.3 Layer 2 discovery protocols (C&V) | configure and verify | 5 | 5 |
 | 2.4 EtherChannel / LACP (C&V) | configure and verify | 8 | 8 |
 | 2.5 Rapid PVST+ | interpret | 10 | 10 |
-| 2.6 Cisco wireless architectures and AP modes | describe | 5 | 0 |
-| 2.7 WLAN physical infrastructure connections | describe | 4 | 0 |
-| 2.8 Network device management access | describe | 5 | 0 |
-| 2.9 Wireless LAN GUI configuration | interpret | 4 | 0 |
+| 2.6 Cisco wireless architectures and AP modes | describe | 5 | 5 |
+| 2.7 WLAN physical infrastructure connections | describe | 4 | 4 |
+| 2.8 Network device management access | describe | 5 | 5 |
+| 2.9 Wireless LAN GUI configuration | interpret | 4 | 4 |

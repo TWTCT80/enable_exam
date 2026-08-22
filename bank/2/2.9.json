@@ -1,0 +1,172 @@
+{
+  "objective": "2.9",
+  "domain": 2,
+  "blueprint_version": "v1.1",
+  "scope_note": "Exhibits transcribe the field/value pairs a candidate reads on the controller, grouped by tab, rather than drawing an invented web page in ASCII.",
+  "items": [
+    {
+      "id": "2.9-001",
+      "objective": "2.9",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why can no client see or join this WLAN?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > CORP-WIFI\n\nTab: General\n    Profile Name                  CORP-WIFI\n    SSID                          CORP-WIFI\n    Status                        Disabled\n    Radio Policy                  All\n    Interface/Interface Group     vlan10-corp\n    Broadcast SSID                Enabled\n\nTab: Security > Layer 2\n    Layer 2 Security              WPA+WPA2\n    WPA2 Policy                   Enabled\n    WPA2 Encryption               AES\n    Authentication Key Mgmt       PSK\n\nThe access points are joined and healthy, VLAN 10 is reachable, and the\npre-shared key has been distributed. No client can see or join CORP-WIFI."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Broadcast SSID is enabled, which hides the network from ordinary clients."
+        },
+        {
+          "id": "B",
+          "text": "The WLAN's Status is Disabled, so it is never advertised."
+        },
+        {
+          "id": "C",
+          "text": "The Radio Policy of All prevents the WLAN binding to any single band."
+        },
+        {
+          "id": "D",
+          "text": "WPA2 with PSK cannot be used together with an interface group."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "A WLAN is only pushed to the access points once its Status is Enabled, so with it disabled the SSID is never advertised no matter how complete the rest of the configuration is. Option A reverses the meaning of Broadcast SSID, which when enabled makes the network visible rather than hiding it. Option C misreads Radio Policy, where All means both bands carry the WLAN rather than none. Option D invents a conflict; WPA2 with a pre-shared key on a mapped interface is an ordinary combination.",
+      "difficulty": 1,
+      "skills": [
+        "wlan-gui",
+        "wlan-creation",
+        "wlan-status",
+        "troubleshoot-wlan"
+      ]
+    },
+    {
+      "id": "2.9-002",
+      "objective": "2.9",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What will a guest experience when joining this WLAN, and how is their traffic protected over the air?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > GUEST-WIFI\n\nTab: General\n    Profile Name                  GUEST-WIFI\n    SSID                          GUEST-WIFI\n    Status                        Enabled\n    Interface/Interface Group     vlan90-guest\n\nTab: Security > Layer 2\n    Layer 2 Security              None\n\nTab: Security > Layer 3\n    Layer 3 Security              Web Policy\n    Web Policy                    Authentication"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "They join without a key and are redirected to a login page; the air link is unencrypted."
+        },
+        {
+          "id": "B",
+          "text": "They are prompted for a pre-shared key, after which their traffic is encrypted with AES."
+        },
+        {
+          "id": "C",
+          "text": "They join without a key and their traffic is encrypted once web authentication succeeds."
+        },
+        {
+          "id": "D",
+          "text": "They cannot join at all, because a WLAN requires some Layer 2 security to be set."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Layer 2 Security reads None, so association needs no key and nothing encrypts the radio link; the Layer 3 Web Policy then intercepts the browser and demands credentials before granting access. Option B describes a pre-shared key the configuration does not set. Option C is the most tempting error: web authentication controls who passes traffic but never turns on link-layer encryption, so guest traffic stays readable over the air. Option D is contradicted by this being a working and common guest arrangement.",
+      "difficulty": 3,
+      "skills": [
+        "wlan-gui",
+        "security-settings",
+        "web-authentication",
+        "wireless-encryption"
+      ]
+    },
+    {
+      "id": "2.9-003",
+      "objective": "2.9",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which change on the controller addresses the reported audio problem?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > VOICE-WIFI\n\nTab: General\n    Profile Name                  VOICE-WIFI\n    SSID                          VOICE-WIFI\n    Status                        Enabled\n    Interface/Interface Group     vlan20-voice\n\nTab: QoS\n    Quality of Service (QoS)      Silver (best effort)\n    Application Visibility        Disabled\n    WMM Policy                    Allowed\n\nHandsets on this WLAN report choppy audio whenever the office data\nnetwork is busy. Wired QoS is already trusting and prioritising the\nvoice VLAN correctly end to end."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Disable the WMM Policy, so voice frames are no longer queued behind data."
+        },
+        {
+          "id": "B",
+          "text": "Enable Application Visibility so the controller can identify the voice stream."
+        },
+        {
+          "id": "C",
+          "text": "Set Quality of Service on this WLAN to Platinum, the profile intended for voice."
+        },
+        {
+          "id": "D",
+          "text": "Move the WLAN to the data interface so it shares the wired queue already trusted."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The wired path is already prioritising voice, so the gap is over the air: this WLAN sits on Silver, the best-effort profile, and voice needs Platinum, which is the profile the controller reserves for it. Option A removes the very mechanism that gives voice frames preferential radio access. Option B adds visibility and reporting without changing how frames are queued. Option D moves voice onto the data network, which would undo the separation that makes the wired prioritisation work.",
+      "difficulty": 2,
+      "skills": [
+        "wlan-gui",
+        "qos-profiles",
+        "platinum-profile",
+        "voice-over-wireless"
+      ]
+    },
+    {
+      "id": "2.9-004",
+      "objective": "2.9",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does the Maximum Allowed Clients value of 0 mean for this WLAN?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > CORP-WIFI\n\nTab: Advanced\n    Enable Session Timeout        1800 seconds\n    Client Exclusion              Enabled, 60 seconds\n    Maximum Allowed Clients       0\n    Aironet IE                    Enabled\n    P2P Blocking Action           Disabled\n    Client Load Balancing         Disabled"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "No limit is applied; clients are capped by hardware alone."
+        },
+        {
+          "id": "B",
+          "text": "The WLAN is closed to clients until an administrator raises the figure."
+        },
+        {
+          "id": "C",
+          "text": "Clients are admitted one at a time as earlier sessions time out."
+        },
+        {
+          "id": "D",
+          "text": "The value is ignored while Client Exclusion remains enabled."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "On this page zero is the value meaning unlimited rather than none, so the WLAN accepts clients up to whatever the access points and controller can carry. Option B reads zero literally, which would silently take a working WLAN out of service and is the reason the convention is worth knowing. Option C invents a queueing behaviour tied to the session timeout above it. Option D links the field to Client Exclusion, which governs how long a misbehaving client is locked out rather than how many may join.",
+      "difficulty": 2,
+      "skills": [
+        "wlan-gui",
+        "advanced-settings",
+        "client-limits",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

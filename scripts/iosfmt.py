@@ -473,3 +473,23 @@ def spanning_tree(prompt, vlan, root_pri, root_mac, bridge_pri, bridge_mac, port
         STP_RULE,
     ]
     return "\n".join(lines + list(ports))
+
+
+# --- wireless LAN controller GUI ------------------------------------------
+# Objective 2.9 is about interpreting a GUI, which has no CLI transcript behind
+# it. Rather than draw a fake web page in ASCII - which would invent a layout
+# and teach candidates to read a screen that does not exist - these render the
+# field/value pairs a candidate actually reads, grouped by the tab they sit on.
+def wlc_field(name, value, width=30):
+    """One field/value pair from a WLC configuration page."""
+    return f"    {name:<{width}}{value}"
+
+
+def wlc_page(title, tabs):
+    """A WLC configuration page: [(tab name, [(field, value), ...]), ...]."""
+    out = [title, ""]
+    for tab, fields in tabs:
+        out.append(f"Tab: {tab}")
+        out += [wlc_field(n, v) for n, v in fields]
+        out.append("")
+    return "\n".join(out).rstrip()

@@ -1,0 +1,218 @@
+{
+  "objective": "2.6",
+  "domain": 2,
+  "blueprint_version": "v1.1",
+  "scope_note": "Architectures and AP modes worked from requirements, not defined.",
+  "items": [
+    {
+      "id": "2.6-001",
+      "objective": "2.6",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which wireless architecture fits these requirements?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Requirements for a new wireless deployment\n\n    Fourteen sites, 180 access points in total\n    One wireless policy applied everywhere, changed centrally\n    Clients must roam between APs at a site without reauthenticating\n    The team will not log in to individual access points\n    Hardware is to be owned and hosted by the organisation"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Autonomous access points, each configured through its own interface."
+        },
+        {
+          "id": "B",
+          "text": "A centralised controller with lightweight access points joined to it."
+        },
+        {
+          "id": "C",
+          "text": "A cloud-managed deployment, with the controller hosted by the vendor."
+        },
+        {
+          "id": "D",
+          "text": "A mesh of bridge-mode access points relaying between the fourteen sites."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "One policy applied centrally, roaming handled between APs, no logging in to individual units and hardware owned on site all point to a controller-based split-MAC design. Option A would mean touching 180 devices for every change and offers no controller to coordinate a roam. Option C matches every requirement except the last, since a cloud deployment puts the control plane in the vendor's hands rather than the organisation's, which is the detail that separates the two. Option D describes a way of linking sites rather than an architecture for serving clients.",
+      "difficulty": 2,
+      "skills": [
+        "wireless-architectures",
+        "centralised-wlc",
+        "split-mac",
+        "design-to-requirements"
+      ]
+    },
+    {
+      "id": "2.6-002",
+      "objective": "2.6",
+      "domain": 2,
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two functions stay on the access point rather than moving to the controller? (Choose two.)",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A lightweight access point has joined its controller. The two now\ndivide the work of serving a client between them.\n\n    Function\n    -------------------------------------------------------\n    Transmitting beacons and probe responses\n    Acknowledging frames from clients at the radio\n    Encrypting and decrypting frames on the air interface\n    Deciding whether a client may associate\n    Applying the security policy configured for the WLAN\n    Managing the client's roam from one AP to the next"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Deciding whether a client may associate"
+        },
+        {
+          "id": "B",
+          "text": "Acknowledging frames from clients at the radio"
+        },
+        {
+          "id": "C",
+          "text": "Applying the security policy configured for the WLAN"
+        },
+        {
+          "id": "D",
+          "text": "Transmitting beacons and probe responses"
+        },
+        {
+          "id": "E",
+          "text": "Managing the client's roam from one AP to the next"
+        }
+      ],
+      "correct": [
+        "B",
+        "D"
+      ],
+      "explanation": "The split divides work by how time-critical it is: anything that must answer within microseconds stays on the radio, so the AP keeps beaconing, probe responses, acknowledgements and encryption, while slower decisions move upstream. Options A and C are policy decisions the controller makes once and applies everywhere. Option E is coordination between two APs, which only something seeing both of them can do. That is why an AP in local mode stops serving clients when it loses its controller.",
+      "difficulty": 3,
+      "skills": [
+        "split-mac",
+        "wireless-architectures",
+        "lightweight-ap",
+        "wlc-role"
+      ]
+    },
+    {
+      "id": "2.6-003",
+      "objective": "2.6",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which access point mode meets the branch requirement?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A branch office holds twelve access points and reaches the wireless\ncontroller across a WAN circuit at the head office.\n\nWhen that circuit fails, staff at the branch must keep using the local\nwireless network, and their traffic must stay on the branch LAN rather\nthan being carried anywhere else."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Monitor mode, so the access points keep scanning while the circuit is down."
+        },
+        {
+          "id": "B",
+          "text": "Local mode, which is the default and needs no change for this."
+        },
+        {
+          "id": "C",
+          "text": "FlexConnect mode, which puts client traffic onto the branch LAN."
+        },
+        {
+          "id": "D",
+          "text": "Bridge mode, so the APs relay to one another until the WAN returns."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "FlexConnect exists for exactly this: the AP keeps serving clients and puts their traffic straight onto the local LAN, so a WAN failure between branch and controller does not take the wireless network down with it. Option A stops client service entirely, which is the opposite of the requirement. Option B tunnels all client traffic to the controller, so the branch loses wireless the moment the circuit fails. Option D links wired segments together and does not address controller reachability.",
+      "difficulty": 2,
+      "skills": [
+        "ap-modes",
+        "flexconnect",
+        "branch-survivability",
+        "wireless-architectures"
+      ]
+    },
+    {
+      "id": "2.6-004",
+      "objective": "2.6",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which mode should be applied to that access point?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Access point mode reference\n\n    Mode           What the radio does\n    -----------    ---------------------------------------------------\n    Local          Serves clients, and scans off-channel briefly\n    FlexConnect    Serves clients, can switch traffic locally\n    Monitor        Serves no clients; listens full time\n    Sniffer        Captures frames and forwards them to an analyser\n    Bridge         Provides a wireless link between two wired segments\n\nAn access point is to be dedicated to detecting rogue devices and\nmeasuring interference across the band. It must never carry client\ntraffic."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Monitor"
+        },
+        {
+          "id": "B",
+          "text": "Bridge"
+        },
+        {
+          "id": "C",
+          "text": "Sniffer"
+        },
+        {
+          "id": "D",
+          "text": "FlexConnect"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Monitor is the mode that takes an AP out of client service and leaves its radio listening across the band full time, which is what rogue detection and interference measurement need. Option C also carries no clients, but it captures frames for an external analyser rather than reporting rogues and interference to the controller. Option B provides a wireless link between wired segments. Option D keeps serving clients, which the requirement forbids outright.",
+      "difficulty": 1,
+      "skills": [
+        "ap-modes",
+        "monitor-mode",
+        "rogue-detection",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "2.6-005",
+      "objective": "2.6",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which statement correctly identifies the two units?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Two access points recovered from a storeroom\n\n    Property                     Unit A                Unit B\n    -------------------------    ------------------    ---------------\n    Holds its own full config    yes                   no\n    Configured over              its own web page      a controller\n    Behaviour with no            keeps serving         will not serve\n    controller reachable         clients               clients\n    Typical deployment size      one or two units      dozens upward"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Unit A is autonomous and Unit B is lightweight, needing a controller."
+        },
+        {
+          "id": "B",
+          "text": "Unit B is autonomous, which is why it depends on a controller being reachable."
+        },
+        {
+          "id": "C",
+          "text": "Both are lightweight; the difference is only which controller software they run."
+        },
+        {
+          "id": "D",
+          "text": "Unit A is a mesh access point and Unit B is configured for FlexConnect."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Unit A carries its own full configuration, is administered through its own web page and keeps working with no controller, which describes an autonomous access point. Unit B holds no configuration and will not serve clients without a controller, which is the defining trait of a lightweight one. Option B reverses the two, and depending on a controller is precisely what autonomous means it does not do. Option C denies a difference the table records in four rows. Option D applies deployment modes that the table never mentions.",
+      "difficulty": 2,
+      "skills": [
+        "wireless-architectures",
+        "autonomous-ap",
+        "lightweight-ap",
+        "compare-deployment-models"
+      ]
+    }
+  ]
+}
