@@ -1,0 +1,213 @@
+{
+  "objective": "1.4",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Built around the three counter signatures that actually separate the faults: duplex mismatch (link up, late collisions one end, CRC the other), speed mismatch (link down), and cable damage (CRC both ends, no collisions).",
+  "items": [
+    {
+      "id": "1.4-001",
+      "objective": "1.4",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Users across this link report slow transfers. What do the counters on the two ends point to?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show interfaces GigabitEthernet0/1\nGigabitEthernet0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.1c01 (bia 00d0.5842.1c01)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 100Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     418271 packets input, 52194883 bytes, 0 no buffer\n     0 runts, 0 giants, 0 throttles\n     1043 input errors, 1043 CRC, 0 frame, 0 overrun, 0 ignored\n     512394 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred\n----------------------------------------------------------\nSW2# show interfaces GigabitEthernet0/1\nGigabitEthernet0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.7f22 (bia 00d0.5842.7f22)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Half-duplex, 100Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     318442 packets input, 52194883 bytes, 0 no buffer\n     0 runts, 0 giants, 0 throttles\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     444120 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 8873 collisions, 0 interface resets\n     0 babbles, 2214 late collision, 0 deferred"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A duplex mismatch between the two ends of the link."
+        },
+        {
+          "id": "B",
+          "text": "A speed mismatch that is forcing repeated renegotiation."
+        },
+        {
+          "id": "C",
+          "text": "A faulty cable introducing interference along its length."
+        },
+        {
+          "id": "D",
+          "text": "Congestion, because the link is saturated in both directions."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "SW2 is half-duplex while SW1 is full-duplex, and that pairing produces exactly this signature: the half-duplex end logs late collisions because the far end transmits whenever it likes, while the full-duplex end records CRC errors from frames SW2 truncated when it backed off. Option B is wrong because both ends agree at 100Mb/s and a speed mismatch would leave the link down rather than up. Option C would show errors on both ends without any collisions at all. Option D is ruled out because collisions and CRC errors are faults, not the queueing that congestion produces.",
+      "difficulty": 3,
+      "skills": [
+        "duplex-mismatch",
+        "late-collisions",
+        "interface-counters",
+        "troubleshoot-physical"
+      ]
+    },
+    {
+      "id": "1.4-002",
+      "objective": "1.4",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Both ends agree on speed and duplex, yet the link is dropping traffic. What do these counters indicate?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW3# show interfaces GigabitEthernet0/5\nGigabitEthernet0/5 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.9a04 (bia 00d0.5842.9a04)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     418271 packets input, 52194883 bytes, 0 no buffer\n     214 runts, 0 giants, 0 throttles\n     3391 input errors, 3391 CRC, 0 frame, 0 overrun, 0 ignored\n     512394 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred\n----------------------------------------------------------\nSW4# show interfaces GigabitEthernet0/5\nGigabitEthernet0/5 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.b117 (bia 00d0.5842.b117)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     290155 packets input, 52194883 bytes, 0 no buffer\n     198 runts, 0 giants, 0 throttles\n     2904 input errors, 2904 CRC, 0 frame, 0 overrun, 0 ignored\n     377401 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A duplex mismatch that autonegotiation has failed to resolve."
+        },
+        {
+          "id": "B",
+          "text": "One of the two switches is running an incompatible software version."
+        },
+        {
+          "id": "C",
+          "text": "The VLAN configuration differs between the two switch ports."
+        },
+        {
+          "id": "D",
+          "text": "A physical fault on the cable run, such as damage or interference."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Both ends report Full-duplex at 1000Mb/s, so negotiation succeeded, yet each is receiving runts and CRC errors while logging no collisions whatsoever. Frames arriving damaged in both directions with no collisions point at the medium itself rather than at any configuration. Option A is contradicted by both ends reading full-duplex and by the complete absence of late collisions. Option B invents a software fault that would not corrupt frames on the wire. Option C would place the ports in different VLANs, which stops traffic passing rather than corrupting it.",
+      "difficulty": 2,
+      "skills": [
+        "interface-counters",
+        "crc-errors",
+        "cable-fault",
+        "troubleshoot-physical"
+      ]
+    },
+    {
+      "id": "1.4-003",
+      "objective": "1.4",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which port currently has nothing connected to it?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW5# show interfaces status\nPort      Name               Status       Vlan       Duplex  Speed Type\nGi0/1     uplink to core     connected    1          a-full a-1000 10/100/1000BaseTX\nGi0/2     reception PC       connected    10         a-full  a-100 10/100/1000BaseTX\nGi0/3     meeting room       notconnect   10           auto   auto 10/100/1000BaseTX\nGi0/4     printer            connected    20         a-half   a-10 10/100/1000BaseTX"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/4"
+        },
+        {
+          "id": "B",
+          "text": "Gi0/3"
+        },
+        {
+          "id": "C",
+          "text": "Gi0/2"
+        },
+        {
+          "id": "D",
+          "text": "Gi0/1"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Status column reads notconnect only for Gi0/3, meaning the switch detects no link partner on that port, which is also why its Duplex and Speed still read auto rather than a negotiated value. Option A is connected and has negotiated half-duplex at 10Mb/s, which is unusual but is a working link. Options C and D both read connected with negotiated speeds, so each has a live partner at the far end.",
+      "difficulty": 1,
+      "skills": [
+        "show-interfaces-status",
+        "interface-status",
+        "cable-fault",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "1.4-004",
+      "objective": "1.4",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does this port's state tell you, given that the same patch lead works elsewhere?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW6# show interfaces GigabitEthernet0/7\nGigabitEthernet0/7 is down, line protocol is down (notconnect)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.c201 (bia 00d0.5842.c201)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Auto-duplex, Auto-speed, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     0 packets input, 52194883 bytes, 0 no buffer\n     0 runts, 0 giants, 0 throttles\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     0 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred\n\nThe port is not shut down in the running configuration, and the same\npatch lead works when moved to a neighbouring port."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "An administrator has shut the port down in the configuration."
+        },
+        {
+          "id": "B",
+          "text": "The port is negotiating and will come up once the timers expire."
+        },
+        {
+          "id": "C",
+          "text": "The port detects no link partner, so the fault is the far end or this port."
+        },
+        {
+          "id": "D",
+          "text": "The port is up but has been placed in a VLAN that carries no traffic at present."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Down with line protocol down and a notconnect qualifier means no electrical link is detected, and since the lead is known good and no shutdown is present, the problem sits in this port or in whatever should be answering at the far end. Option A would read administratively down instead, which is the wording IOS reserves for a configured shutdown. Option B invents a negotiation delay; a port awaiting negotiation still reports a partner. Option D describes a VLAN issue, which leaves the port up and passing nothing rather than down.",
+      "difficulty": 2,
+      "skills": [
+        "interface-status",
+        "cable-fault",
+        "troubleshoot-physical",
+        "admin-down-vs-down"
+      ]
+    },
+    {
+      "id": "1.4-005",
+      "objective": "1.4",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Both ports were hardcoded as shown during a maintenance window. What is the result on this link?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! Two switches joined by a single copper run\n!\nSW7  interface GigabitEthernet0/1\n      speed 100\n      duplex full\n!\nSW8  interface GigabitEthernet0/1\n      speed 1000\n      duplex full\n!\n\nBoth ports were previously left at their defaults and the link worked."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The link stays down, because the two ends cannot agree on a speed."
+        },
+        {
+          "id": "B",
+          "text": "The link comes up at 100Mb/s, since the lower of the two speeds wins."
+        },
+        {
+          "id": "C",
+          "text": "The link comes up but suffers a duplex mismatch and late collisions."
+        },
+        {
+          "id": "D",
+          "text": "The link comes up at 1000Mb/s once SW7 renegotiates to match SW8."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Speed must match for an Ethernet link to establish at all, so hardcoding 100 on one end and 1000 on the other leaves both ports down; unlike duplex, speed is not something the two ends can disagree about while still passing frames. Option B invents a lowest-common-speed rule that applies to autonegotiation, which both ports have now been taken out of. Option C describes the duplex mismatch signature, but both ends here specify full duplex and never get far enough to exchange frames. Option D expects renegotiation from a port that has been hardcoded.",
+      "difficulty": 3,
+      "skills": [
+        "speed-mismatch",
+        "duplex-mismatch",
+        "autonegotiation",
+        "troubleshoot-physical"
+      ]
+    }
+  ]
+}

@@ -211,3 +211,42 @@ def ipv6_int(intf, status, addrs):
 def ipv6_int_brief(prompt, blocks):
     """A `show ipv6 interface brief` capture."""
     return "\n".join([f"{prompt}# show ipv6 interface brief"] + list(blocks))
+
+
+# --- show interfaces status -----------------------------------------------
+# Duplex and Speed are right-justified in 6, which is why "auto" shows with
+# leading spaces and "a-full a-1000" lines up the way it does on a real switch.
+INTF_STATUS_HEADER = (f"{'Port':<10}{'Name':<19}{'Status':<13}{'Vlan':<11}"
+                      f"{'Duplex':>6} {'Speed':>6} Type")
+
+
+def intf_status(port, name, status, vlan, duplex, speed,
+                media="10/100/1000BaseTX"):
+    """One `show interfaces status` row."""
+    return (f"{port:<10}{name:<19}{status:<13}{vlan:<11}"
+            f"{duplex:>6} {speed:>6} {media}")
+
+
+def interfaces_status(prompt, rows):
+    """A `show interfaces status` capture."""
+    return "\n".join([f"{prompt}# show interfaces status", INTF_STATUS_HEADER]
+                     + list(rows))
+
+
+# --- show mac address-table -----------------------------------------------
+def mac_row(vlan, mac, kind, port):
+    """One `show mac address-table` row."""
+    return f"{vlan:>4}    {mac:<18}{kind:<12}{port}"
+
+
+def mac_table(prompt, rows, criterion=None):
+    """A `show mac address-table` capture."""
+    n = criterion if criterion is not None else len(rows)
+    return "\n".join([
+        f"{prompt}# show mac address-table",
+        "          Mac Address Table",
+        "-------------------------------------------",
+        "",
+        f"{'Vlan':<8}{'Mac Address':<18}{'Type':<12}Ports",
+        f"{'----':<8}{'-----------':<18}{'--------':<12}-----",
+    ] + list(rows) + [f"Total Mac Addresses for this criterion: {n}"])

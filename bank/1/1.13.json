@@ -1,0 +1,213 @@
+{
+  "objective": "1.13",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Each of the objective's four sub-topics is worked out of a real MAC address table rather than defined.",
+  "items": [
+    {
+      "id": "1.13-001",
+      "objective": "1.13",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does SW1 do with this frame?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0011.2233.4455    DYNAMIC     Gi0/1\n   1    00aa.bbcc.ddee    DYNAMIC     Gi0/2\n   1    0022.5566.99ab    DYNAMIC     Gi0/3\nTotal Mac Addresses for this criterion: 3\n\nA frame arrives on Gi0/1 in VLAN 1, addressed to destination MAC\n00de.ad00.beef. Ports Gi0/1 through Gi0/4 are all access ports in VLAN 1."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Discards it and returns an error to the sending station."
+        },
+        {
+          "id": "B",
+          "text": "Holds it until an ARP request resolves the destination."
+        },
+        {
+          "id": "C",
+          "text": "Sends it back out Gi0/1 toward the station that transmitted it."
+        },
+        {
+          "id": "D",
+          "text": "Floods it out every VLAN 1 port except Gi0/1."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The destination 00de.ad00.beef appears nowhere in the table, making this an unknown unicast, and a switch floods those out every port in the frame's VLAN except the one it arrived on, so Gi0/2, Gi0/3 and Gi0/4 all receive a copy. Option A describes a router returning an unreachable message, which a switch does not do. Option B confuses switching with ARP, a process the sending host runs before the frame is built. Option C would send the frame back where it came from, which flooding explicitly excludes to avoid returning traffic to its source.",
+      "difficulty": 2,
+      "skills": [
+        "frame-flooding",
+        "unknown-unicast",
+        "mac-address-table",
+        "frame-switching"
+      ]
+    },
+    {
+      "id": "1.13-002",
+      "objective": "1.13",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Out which port does SW2 forward this frame?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW2# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0011.2233.4455    DYNAMIC     Gi0/1\n   1    00cc.7788.1122    DYNAMIC     Gi0/2\n  20    00cc.7788.1122    DYNAMIC     Gi0/4\n  20    00ff.9900.3344    DYNAMIC     Gi0/5\nTotal Mac Addresses for this criterion: 4\n\nA frame arrives on Gi0/5, an access port in VLAN 20, addressed to\ndestination MAC 00cc.7788.1122."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/2"
+        },
+        {
+          "id": "B",
+          "text": "Gi0/4"
+        },
+        {
+          "id": "C",
+          "text": "Gi0/2 and Gi0/4"
+        },
+        {
+          "id": "D",
+          "text": "every VLAN 20 port except Gi0/5"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The table is looked up by VLAN as well as by address, and the frame arrived in VLAN 20, so the matching entry is the one pairing 00cc.7788.1122 with Gi0/4; the identical address in VLAN 1 belongs to a separate forwarding domain and is not a candidate. Option A picks that VLAN 1 entry and ignores the VLAN column entirely. Option C forwards to both and would leak the frame between VLANs. Option D floods, which applies only when no entry matches, and here one does.",
+      "difficulty": 2,
+      "skills": [
+        "frame-switching",
+        "mac-address-table",
+        "vlan-qualified-lookup",
+        "known-unicast"
+      ]
+    },
+    {
+      "id": "1.13-003",
+      "objective": "1.13",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does SW3 do when PC-A's first frame arrives?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW3# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    00bb.1122.3344    DYNAMIC     Gi0/2\n   1    0099.5566.7788    DYNAMIC     Gi0/3\nTotal Mac Addresses for this criterion: 2\n\nPC-A has just been plugged into Gi0/5, an access port in VLAN 1, and its\nMAC address 00ee.4433.2211 appears nowhere in the table. PC-A immediately\nsends a frame addressed to 00bb.1122.3344."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Floods the frame and learns nothing until 00bb.1122.3344 replies."
+        },
+        {
+          "id": "B",
+          "text": "Forwards the frame out Gi0/2 but records PC-A only once it replies."
+        },
+        {
+          "id": "C",
+          "text": "Records PC-A against Gi0/5 and forwards the frame out Gi0/2 only."
+        },
+        {
+          "id": "D",
+          "text": "Records PC-A against Gi0/5 and floods the frame to every VLAN 1 port."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Two independent things happen to one frame: the switch reads the source address and records 00ee.4433.2211 against the ingress port Gi0/5, then looks up the destination, finds 00bb.1122.3344 already listed on Gi0/2, and forwards there alone. Option A misses the learning, which happens on the first frame from any source rather than waiting for a reply. Option B makes learning depend on a reply, when the source address of this very frame is what teaches the switch. Option D adds a flood that is unnecessary because the destination is already known.",
+      "difficulty": 3,
+      "skills": [
+        "mac-learning",
+        "frame-switching",
+        "mac-address-table",
+        "source-address-learning"
+      ]
+    },
+    {
+      "id": "1.13-004",
+      "objective": "1.13",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why is the file server's MAC address missing from the table, and what follows from that?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW4# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0011.2233.4455    DYNAMIC     Gi0/1\n   1    0044.7788.aabb    DYNAMIC     Gi0/2\nTotal Mac Addresses for this criterion: 2\n\nA file server on Gi0/6 has been powered on and cabled throughout, with its\nport showing connected the whole time, but it has transmitted nothing for\nthe last ten minutes. The switch runs the default aging time of 300\nseconds. The server's MAC address is absent from the table above."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "It aged out because the server sent no frames, so traffic to it is flooded."
+        },
+        {
+          "id": "B",
+          "text": "It was removed when the port last changed VLAN and will not return."
+        },
+        {
+          "id": "C",
+          "text": "It is retained but hidden, because the command lists only active talkers."
+        },
+        {
+          "id": "D",
+          "text": "It was never learned at all, because a switch learns only from a device's replies."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A switch learns from the source address of frames a device transmits, so a station that only listens ages out after the aging timer elapses, and ten minutes exceeds the 300-second default. Frames addressed to it are then treated as unknown unicast and flooded until the server speaks again. Option B invents a VLAN change the exhibit never mentions. Option C suggests the command filters its output, but show mac address-table lists every entry held. Option D claims learning comes from replies, when it is the source address of any transmitted frame that teaches the switch.",
+      "difficulty": 2,
+      "skills": [
+        "mac-aging",
+        "mac-learning",
+        "frame-flooding",
+        "mac-address-table"
+      ]
+    },
+    {
+      "id": "1.13-005",
+      "objective": "1.13",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which entry in SW5's table was configured by an administrator rather than learned from traffic?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW5# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0011.2233.4455    DYNAMIC     Gi0/1\n   1    00aa.bbcc.ddee    DYNAMIC     Gi0/2\n  10    0050.7966.6800    DYNAMIC     Gi0/7\n  10    0000.0c07.ac0a    STATIC      Gi0/8\nTotal Mac Addresses for this criterion: 4"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "0050.7966.6800 on Gi0/7"
+        },
+        {
+          "id": "B",
+          "text": "0000.0c07.ac0a on Gi0/8"
+        },
+        {
+          "id": "C",
+          "text": "00aa.bbcc.ddee on Gi0/2"
+        },
+        {
+          "id": "D",
+          "text": "0011.2233.4455 on Gi0/1"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Type column separates the two: STATIC entries are placed in the table by configuration and never age out, while DYNAMIC entries are learned from the source addresses of arriving frames. Only 0000.0c07.ac0a on Gi0/8 reads STATIC. Options A, C and D are all marked DYNAMIC, so each was learned from traffic and each will age out if its device falls silent, which is precisely the distinction the Type column exists to record.",
+      "difficulty": 1,
+      "skills": [
+        "mac-address-table",
+        "static-vs-dynamic-entries",
+        "mac-learning",
+        "read-correct-row"
+      ]
+    }
+  ]
+}
