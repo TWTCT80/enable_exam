@@ -185,3 +185,18 @@ def standby_brief(prompt, rows):
 def hsrp_v1_vmac(group):
     """HSRP version 1 virtual MAC: 0000.0C07.ACxx where xx is the group in hex."""
     return f"0000.0c07.ac{group:02x}"
+
+
+# --- show ip interface brief ----------------------------------------------
+IPINT_HEADER = (f"{'Interface':<23}{'IP-Address':<16}{'OK?':<4}{'Method':<7}"
+                f"{'Status':<22}Protocol")
+
+
+def ipint(intf, addr, ok="YES", method="manual", status="up", proto="up"):
+    """One `show ip interface brief` row."""
+    return f"{intf:<23}{addr:<16}{ok:<4}{method:<7}{status:<22}{proto}"
+
+
+def ip_int_brief(prompt, rows):
+    """A `show ip interface brief` capture."""
+    return "\n".join([f"{prompt}# show ip interface brief", IPINT_HEADER] + list(rows))

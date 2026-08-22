@@ -29,7 +29,10 @@ MAX_LONGEST_CORRECT = 0.30
 MAX_NO_EXHIBIT = 0.15
 MIN_EXPLANATION_WORDS = 40
 NEAR_DUP_RATIO = 0.85
-VALID_TYPES = {"single", "multi", "draganddrop"}
+# draganddrop is deliberately NOT supported: the runner has no keyboard-
+# navigable implementation, and a drag interaction that fails on a keyboard is
+# worse than none. Matching content is expressed as multi-answer instead.
+VALID_TYPES = {"single", "multi"}
 VALID_EXHIBIT_KINDS = {"cli_output", "config", "topology", "none"}
 
 # stems that betray a bare-recall or definition-quiz item
