@@ -1,0 +1,172 @@
+{
+  "objective": "1.1",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Components are placed in situations rather than defined. The PoE budget arithmetic is asserted at generation time.",
+  "items": [
+    {
+      "id": "1.1-001",
+      "objective": "1.1",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. How many additional access points of this class can SW1 power from its remaining budget?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show power inline\nAvailable:370.0(w)  Used:76.4(w)  Remaining:293.6(w)\n\nInterface Admin  Oper       Power   Device              Class Max\n                            (Watts) \n--------- ------ ---------- ------- ------------------- ----- ----\nGi1/0/1   auto   on         30.0    AIR-AP2802I-E-K9    4     30.0\nGi1/0/2   auto   on         15.4    IP Phone 8841       3     30.0\nGi1/0/3   auto   on         15.4    IP Phone 8841       3     30.0\nGi1/0/4   auto   on         15.6    IP Phone 8851       3     30.0\nGi1/0/5   auto   off        0.0     n/a                 n/a   30.0\n\nMore access points of the same model are to be added. Each draws the\nfull 30.0 W of its class."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "12"
+        },
+        {
+          "id": "B",
+          "text": "19"
+        },
+        {
+          "id": "C",
+          "text": "9"
+        },
+        {
+          "id": "D",
+          "text": "8"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The summary line reports 293.6 W remaining, and each additional access point draws the full 30.0 W of its class, so nine fit with 23.6 W left over and a tenth would exceed the budget. Option A divides the total 370 W by 30 and ignores the 76.4 W already committed to the devices listed. Option B divides the remaining budget by 15.4 W, the draw of a phone rather than an access point. Option D subtracts one unnecessarily, as though a reserve had to be held back, which the output does not indicate.",
+      "difficulty": 2,
+      "skills": [
+        "poe",
+        "power-budget",
+        "access-points",
+        "network-components"
+      ]
+    },
+    {
+      "id": "1.1-002",
+      "objective": "1.1",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which component must be added before PC-A and PC-B can communicate?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "              +--------------------+\n              |     SW-ACCESS      |   Layer 2 switch\n              +--+--------------+--+\n                 |              |\n             VLAN 10         VLAN 20\n       192.168.10.0/24    192.168.20.0/24\n             PC-A              PC-B\n\nBoth hosts are addressed correctly for their own VLAN and both switch\nports show connected. Neither host can reach the other. Nothing else is\nattached to SW-ACCESS."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A device that routes between the VLANs, such as a router or Layer 3 switch."
+        },
+        {
+          "id": "B",
+          "text": "A second Layer 2 switch, so that each VLAN has a dedicated switch of its own."
+        },
+        {
+          "id": "C",
+          "text": "A wireless LAN controller to coordinate the two segments centrally."
+        },
+        {
+          "id": "D",
+          "text": "A next-generation firewall to permit the traffic between the two VLANs."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A Layer 2 switch forwards only within a VLAN, and the two hosts sit in different VLANs and different subnets, so something operating at Layer 3 has to move traffic between them. Option B adds switching capacity, which was never the shortage, and would leave both VLANs just as isolated. Option C names a device that manages access points and plays no part in routing between wired segments. Option D would filter traffic that no device is currently routing at all, so permitting it changes nothing.",
+      "difficulty": 2,
+      "skills": [
+        "network-components",
+        "layer-2-vs-layer-3-switch",
+        "inter-vlan-routing",
+        "router-role"
+      ]
+    },
+    {
+      "id": "1.1-003",
+      "objective": "1.1",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which addition satisfies the stated requirement?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "      internet\n          |\n    +-----+-----+\n    |  ISP-RTR  |\n    +-----+-----+\n          |\n    +-----+-----+        +------------------+\n    |  EDGE-FW  |--------|  DMZ web server  |\n    +-----+-----+        +------------------+\n          |\n    internal LAN\n\nRequirement: traffic reaching the DMZ web server must be examined against\nknown exploit signatures, and any matching packet must be dropped before it\nreaches the server rather than reported afterwards."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A Layer 3 switch placed in front of the server, filtering traffic with access lists."
+        },
+        {
+          "id": "B",
+          "text": "A router access list applied inbound on the internet-facing interface of ISP-RTR."
+        },
+        {
+          "id": "C",
+          "text": "An endpoint antivirus agent installed on the DMZ web server itself."
+        },
+        {
+          "id": "D",
+          "text": "An IPS inspecting the traffic inline, so it can drop matching packets."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The requirement has two halves: match known exploit signatures, and drop the traffic before it arrives. Only an intrusion prevention system placed inline does both, since a sensor deployed out of band could detect but not stop. Option A filters on addresses and ports, which carries no signature knowledge. Option B has the same limitation and sits at the wrong point besides. Option C protects the host after the packet has already arrived, which the requirement explicitly rules out.",
+      "difficulty": 3,
+      "skills": [
+        "network-components",
+        "ips",
+        "next-generation-firewall",
+        "inline-inspection"
+      ]
+    },
+    {
+      "id": "1.1-004",
+      "objective": "1.1",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which device holds the wireless configuration on behalf of the access points at this site?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Site equipment inventory\n\n    Device       Role recorded by the installer\n    ---------    ------------------------------------------------\n    RTR-01       Forwards between the site and the WAN circuit\n    SW-01        Forwards frames within the site, no routing\n    WLC-01       Holds the wireless configuration and pushes it to\n                 every access point that joins it\n    AP-001       Radio unit serving clients; holds no configuration\n                 of its own once it has joined\n    SRV-01       Hosts the file and print services"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "AP-001"
+        },
+        {
+          "id": "B",
+          "text": "WLC-01"
+        },
+        {
+          "id": "C",
+          "text": "SRV-01"
+        },
+        {
+          "id": "D",
+          "text": "RTR-01"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The inventory records WLC-01 as holding the wireless configuration and pushing it to every access point that joins, which is the controller's defining role in a centralised wireless deployment. Option A is the access point itself, and the inventory states plainly that it keeps no configuration of its own once joined. Option C hosts file and print services and has no wireless role. Option D forwards between the site and the WAN circuit, which is routing rather than wireless management.",
+      "difficulty": 1,
+      "skills": [
+        "network-components",
+        "wireless-controller",
+        "access-points",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

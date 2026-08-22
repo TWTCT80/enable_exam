@@ -267,3 +267,40 @@ def packet_capture(rows, title=None):
     """A protocol-analyser summary listing."""
     head = [title] if title else []
     return "\n".join(head + [CAPTURE_HEADER] + list(rows))
+
+
+# --- show power inline ----------------------------------------------------
+POE_HEADER = (f"{'Interface':<10}{'Admin':<7}{'Oper':<11}{'Power':<8}"
+              f"{'Device':<20}{'Class':<6}Max")
+POE_UNITS = f"{'':<10}{'':<7}{'':<11}{'(Watts)':<8}"
+POE_RULE = "--------- ------ ---------- ------- ------------------- ----- ----"
+
+
+def poe_row(intf, admin, oper, power, device, cls, mx):
+    """One `show power inline` row."""
+    return f"{intf:<10}{admin:<7}{oper:<11}{power:<8}{device:<20}{cls:<6}{mx}"
+
+
+def power_inline(prompt, available, used, rows):
+    """A `show power inline` capture, with the budget summary line."""
+    remaining = round(available - used, 1)
+    return "\n".join([
+        f"{prompt}# show power inline",
+        f"Available:{available}(w)  Used:{used}(w)  Remaining:{remaining}(w)",
+        "",
+        POE_HEADER, POE_UNITS, POE_RULE,
+    ] + list(rows))
+
+
+# --- show vrf -------------------------------------------------------------
+VRF_HEADER = f"  {'Name':<33}{'Default RD':<22}{'Protocols':<12}Interfaces"
+
+
+def vrf_row(name, rd, protocols, interfaces):
+    """One `show vrf` row."""
+    return f"  {name:<33}{rd:<22}{protocols:<12}{interfaces}"
+
+
+def show_vrf(prompt, rows):
+    """A `show vrf` capture."""
+    return "\n".join([f"{prompt}# show vrf", VRF_HEADER] + list(rows))

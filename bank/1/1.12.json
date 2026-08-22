@@ -1,0 +1,131 @@
+{
+  "objective": "1.12",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "VRFs carry the harder items because they have real device output behind them. The container item withholds the words 'container' and 'hypervisor' from the exhibit so the candidate classifies on properties rather than labels.",
+  "items": [
+    {
+      "id": "1.12-001",
+      "objective": "1.12",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Both tables on this one router hold 192.168.10.0/24 pointing at different interfaces. What makes that possible?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R1# show ip route vrf CUSTOMER-A\n\nRouting Table: CUSTOMER-A\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nC        192.168.10.0/24 is directly connected, GigabitEthernet0/1\nL        192.168.10.1/32 is directly connected, GigabitEthernet0/1\n----------------------------------------------------------\nR1# show ip route vrf CUSTOMER-B\n\nRouting Table: CUSTOMER-B\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nC        192.168.10.0/24 is directly connected, GigabitEthernet0/2\nL        192.168.10.1/32 is directly connected, GigabitEthernet0/2"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Each VRF has its own routing table, so the same prefix can exist once in each."
+        },
+        {
+          "id": "B",
+          "text": "The router load-balances the prefix across both interfaces as equal-cost paths."
+        },
+        {
+          "id": "C",
+          "text": "The second entry overrides the first, and only CUSTOMER-B can reach the subnet."
+        },
+        {
+          "id": "D",
+          "text": "The prefixes differ in mask, so longest prefix match separates the two entries."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A VRF gives the router a separate routing and forwarding instance, so R1 maintains one table per customer and each may carry the same address space without conflict, which is what lets a provider serve two customers who both chose 192.168.10.0/24. Option B describes equal-cost paths, which apply within one table rather than across two. Option C assumes one entry wins, but both tables are shown populated and both are live. Option D looks for a mask difference, and the two prefixes are identical.",
+      "difficulty": 3,
+      "skills": [
+        "virtualization",
+        "vrf",
+        "overlapping-address-space",
+        "separate-routing-tables"
+      ]
+    },
+    {
+      "id": "1.12-002",
+      "objective": "1.12",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which model packages its workloads as containers, and what follows from the measurements?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Two ways of packaging the same set of applications onto one physical\nserver were trialled and measured.\n\n    Property                     Model X            Model Y\n    -------------------------    ---------------    ---------------\n    Operating system per         one each           none; all share\n    workload                                        the host's kernel\n    Typical image size           several GB         tens of MB\n    Time from start to serving   tens of seconds    under a second\n    Isolation boundary           virtual hardware   kernel features"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Model X, and its workloads start faster because no separate kernel has to boot."
+        },
+        {
+          "id": "B",
+          "text": "Model X, because sharing virtual hardware is what defines a container runtime."
+        },
+        {
+          "id": "C",
+          "text": "Model Y, and its workloads start faster because no guest OS has to boot."
+        },
+        {
+          "id": "D",
+          "text": "Model Y, and each of its workloads carries a full operating system of its own."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Model Y runs no operating system per workload and shares the host kernel, which is exactly what a container does, and that is why its images are tens of megabytes and it serves in under a second: there is no guest system to start. Option A attaches the fast start to Model X, whose own row records tens of seconds. Option B calls virtual hardware a container property, when the exhibit lists it as Model X's isolation boundary. Option D contradicts Model Y's own row, which records no operating system per workload.",
+      "difficulty": 2,
+      "skills": [
+        "virtualization",
+        "containers",
+        "server-virtualization",
+        "compare-deployment-models"
+      ]
+    },
+    {
+      "id": "1.12-003",
+      "objective": "1.12",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interfaces has R3 placed in the CUSTOMER-A instance?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R3# show vrf\n  Name                             Default RD            Protocols   Interfaces\n  MGMT                             <not set>             ipv4        Gi0/0\n  CUSTOMER-A                       65000:100             ipv4        Gi0/1,Gi0/3\n  CUSTOMER-B                       65000:200             ipv4        Gi0/2"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/0 and Gi0/1"
+        },
+        {
+          "id": "B",
+          "text": "Gi0/1 and Gi0/3"
+        },
+        {
+          "id": "C",
+          "text": "Gi0/2 only"
+        },
+        {
+          "id": "D",
+          "text": "Gi0/1 and Gi0/2"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Interfaces column lists what each instance owns, and the CUSTOMER-A row names Gi0/1 and Gi0/3, so traffic arriving on either is looked up in that instance's own table. Option A pairs a CUSTOMER-A interface with Gi0/0, which belongs to the separate MGMT instance. Option C is the single interface held by CUSTOMER-B. Option D pairs one CUSTOMER-A interface with one from CUSTOMER-B, which would defeat the separation the instances exist to provide.",
+      "difficulty": 1,
+      "skills": [
+        "virtualization",
+        "vrf",
+        "show-vrf",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

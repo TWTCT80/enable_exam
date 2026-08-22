@@ -1,0 +1,172 @@
+{
+  "objective": "1.2",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Architectures are read off drawn topologies or matched to stated requirements, never named from a definition.",
+  "items": [
+    {
+      "id": "1.2-001",
+      "objective": "1.2",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Compared with a classic three-tier campus design, which layer is absent here?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                +-----------+     +-----------+\n                | DIST-SW-1 |=====| DIST-SW-2 |\n                +--+-----+--+     +--+-----+--+\n                   |     \\___________/     |\n                   |      ___________      |\n                   |     /           \\     |\n              +----+----+         +----+----+\n              | ACC-SW-1|         | ACC-SW-2|\n              +----+----+         +----+----+\n                   |                   |\n               user ports          user ports\n\nDIST-SW-1 and DIST-SW-2 also terminate the site's WAN circuits and\nperform all routing between VLANs. There is no further switching layer\nabove them."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The access layer, since the user ports attach straight to distribution."
+        },
+        {
+          "id": "B",
+          "text": "The distribution layer, since routing happens on the same pair as the WAN."
+        },
+        {
+          "id": "C",
+          "text": "A dedicated core layer, whose work the distribution pair absorbs instead."
+        },
+        {
+          "id": "D",
+          "text": "None of them; access, distribution and core are all present in the drawing."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Two access switches feed a distribution pair that also routes between VLANs and terminates the WAN, with nothing above it, which is the collapsed-core or two-tier arrangement: the core's aggregation work has been folded into the distribution layer. Option A is contradicted by ACC-SW-1 and ACC-SW-2 carrying the user ports. Option B mistakes the distribution pair for something else, when it is the layer doing the routing. Option D counts three layers where the drawing shows two.",
+      "difficulty": 2,
+      "skills": [
+        "topology-architectures",
+        "two-tier",
+        "collapsed-core",
+        "three-tier"
+      ]
+    },
+    {
+      "id": "1.2-002",
+      "objective": "1.2",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What is consistent about the path between servers attached to any two different leaves?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "        +---------+                 +---------+\n        | SPINE-1 |                 | SPINE-2 |\n        +--+---+--+                 +--+---+--+\n           |   |  \\_______________     |   |\n           |   \\_________________ \\____|   |\n           |                     \\ \\       |\n        +--+-----+          +-----+-+-+   +-------+\n        | LEAF-1 |          | LEAF-2  |   | LEAF-3|\n        +--------+          +---------+   +-------+\n           |                     |            |\n        servers               servers      servers\n\nEvery leaf connects to every spine. No leaf connects to another leaf,\nand no spine connects to another spine."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Path length varies with the leaf pair, since some leaves sit closer together."
+        },
+        {
+          "id": "B",
+          "text": "Every such path crosses one spine, so all leaf-to-leaf paths match in length."
+        },
+        {
+          "id": "C",
+          "text": "Traffic passes directly from leaf to leaf whenever both sit in the same row."
+        },
+        {
+          "id": "D",
+          "text": "Paths grow longer as leaves are added, because each new leaf extends the chain."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "With every leaf attached to every spine and no leaf-to-leaf links, traffic between two leaves always goes up to a spine and back down, so the hop count is identical for every pair and latency becomes predictable no matter which servers are talking. Option A imagines physical proximity affecting the path, which the uniform wiring removes. Option C describes a direct leaf-to-leaf link the design deliberately omits. Option D expects a chain, but adding a leaf attaches it to the existing spines without lengthening any path.",
+      "difficulty": 3,
+      "skills": [
+        "topology-architectures",
+        "spine-leaf",
+        "east-west-traffic",
+        "predictable-latency"
+      ]
+    },
+    {
+      "id": "1.2-003",
+      "objective": "1.2",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which design fits these requirements?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A new eight-person office is being fitted out above a shop.\n\n    Requirement\n    ---------------------------------------------------------\n    One internet circuit, no second site\n    Wired ports for eight desks and a printer\n    Wireless coverage for the same eight people\n    No on-site IT staff; minimum equipment to administer\n    Budget covers one device, not a rack"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A SOHO design on one integrated router, switch and wireless device."
+        },
+        {
+          "id": "B",
+          "text": "A three-tier campus design with separate core, distribution and access layers."
+        },
+        {
+          "id": "C",
+          "text": "A spine-leaf fabric with two spines, sized down for the eight users."
+        },
+        {
+          "id": "D",
+          "text": "A dedicated WAN aggregation layer sitting between the users and the internet."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Eight users, one circuit, no second site and a single device of budget describe a small office or home office, where one appliance combining routing, switching and wireless covers everything and leaves almost nothing to administer. Option B builds three layers for eight desks, which the budget and the absence of on-site staff both rule out. Option C applies a data centre fabric to a workload that has no east-west traffic to speak of. Option D adds an aggregation layer for a single circuit that needs none.",
+      "difficulty": 2,
+      "skills": [
+        "topology-architectures",
+        "soho",
+        "design-to-requirements",
+        "right-sizing"
+      ]
+    },
+    {
+      "id": "1.2-004",
+      "objective": "1.2",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which part of this drawing is the WAN?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                       +------------+\n   branch office -------|  BR-RTR-1  |\n      LAN switch        +-----+------+\n                              |\n                     leased circuit from\n                     the service provider\n                              |\n                        +-----+------+\n                        |  HQ-RTR-1  |------- head office LAN\n                        +------------+\n\nThe circuit between the two routers is billed monthly by the provider\nand crosses roughly 40 km of the provider's own infrastructure."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The branch office LAN switch and the ports it serves."
+        },
+        {
+          "id": "B",
+          "text": "BR-RTR-1 and HQ-RTR-1 taken together as a routed pair."
+        },
+        {
+          "id": "C",
+          "text": "The head office LAN reached through HQ-RTR-1."
+        },
+        {
+          "id": "D",
+          "text": "The leased circuit between the two routers."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "A WAN is the span between sites that an organisation rents rather than owns, and here that is the leased circuit crossing 40 km of the provider's infrastructure and billed monthly. Option A is a local network inside one building, which is a LAN by definition. Option C is the same on the other side. Option B names the two routers, which are the devices attaching to the WAN rather than the WAN itself; the boundary sits on the circuit between them.",
+      "difficulty": 1,
+      "skills": [
+        "topology-architectures",
+        "wan",
+        "lan-vs-wan",
+        "service-provider-circuit"
+      ]
+    }
+  ]
+}

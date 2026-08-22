@@ -36,12 +36,12 @@ mix, per spec. Marked (C&V) below.
   packet. 3.1-007 (recursive next-hop resolution) stays in 3.1 as a
   deliberate boundary case. Confirmed by the user.
 
-## Domain 1 - 60 items
+## Domain 1 - 60 items  **COMPLETE**
 
 | Objective | Verb | Planned | Done |
 |---|---|---|---|
-| 1.1 Role and function of network components | explain | 4 | 0 |
-| 1.2 Network topology architectures | describe | 4 | 0 |
+| 1.1 Role and function of network components | explain | 4 | 4 |
+| 1.2 Network topology architectures | describe | 4 | 4 |
 | 1.3 Physical interface and cabling types | compare | 4 | 4 |
 | 1.4 Interface and cable issues | identify | 5 | 5 |
 | 1.5 TCP compared to UDP | compare | 4 | 4 |
@@ -51,7 +51,7 @@ mix, per spec. Marked (C&V) below.
 | 1.9 IPv6 address types | describe | 4 | 4 |
 | 1.10 Verify IP parameters for client OS | verify | 4 | 4 |
 | 1.11 Wireless principles | describe | 4 | 4 |
-| 1.12 Virtualization fundamentals | explain | 3 | 0 |
+| 1.12 Virtualization fundamentals | explain | 3 | 3 |
 | 1.13 Switching concepts | describe | 5 | 5 |
 
 ## Item types
