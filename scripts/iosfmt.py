@@ -72,3 +72,25 @@ def route_entry(prompt, query, prefix, known_via, distance, metric, extra_type,
 def opts(*texts):
     """Options A, B, C ... in the given order."""
     return [{"id": chr(65 + i), "text": t} for i, t in enumerate(texts)]
+
+
+IPV6_LEGEND = """Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, la - LISP alt, lr - LISP site-registrations
+       ld - LISP dyn-eid, lA - LISP away, a - Application"""
+
+
+def v6(code, prefix, ad_metric, via):
+    """One IPv6 route: code at col 1, prefix at col 5, 'via' on the next line."""
+    return f"{code:<4}{prefix} [{ad_metric}]\n     via {via}"
+
+
+def ipv6_route_table(prompt, entries, total, suffix="static", legend=IPV6_LEGEND):
+    """A `show ipv6 route [static]` capture."""
+    head = f"{prompt}# show ipv6 route" + (f" {suffix}" if suffix else "")
+    return "\n".join([head, f"IPv6 Routing Table - default - {total} entries",
+                      legend] + list(entries))

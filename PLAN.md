@@ -20,11 +20,12 @@ mix, per spec. Marked (C&V) below.
 |---|---|---|---|
 | 3.1 Interpret routing table components | interpret | 13 | 10 |
 | 3.2 Forwarding decision by default | determine | 15 | 15 |
-| 3.3 IPv4/IPv6 static routing (C&V) | configure and verify | 18 | 0 |
+| 3.3 IPv4/IPv6 static routing (C&V) | configure and verify | 18 | 12 |
 | 3.4 Single-area OSPFv2 (C&V) | configure and verify | 20 | 0 |
 | 3.5 First hop redundancy protocols | describe | 9 | 0 |
 
-3.1 needs a 3-item top-up batch before the full-bank quota check will pass.
+Outstanding top-ups before the full-bank quota check can pass:
+3.1 needs 3 more items, 3.3 needs 6 more.
 
 ## Open decisions (resolved)
 

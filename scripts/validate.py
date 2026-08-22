@@ -107,8 +107,14 @@ def check_route_exhibit(tag: str, content: str) -> None:
     import ipaddress
 
     lines = content.splitlines()
-    if not any("show ip route" in l for l in lines):
+    cmd = [l for l in lines if "show ip route" in l]
+    if not cmd:
         return
+    # A filtered view (`show ip route static`, `| include ...`) still prints the
+    # parent banner counted over the WHOLE table while listing only the matching
+    # children, so the subnet/mask counts legitimately exceed what is shown.
+    # Containment is still checked; the counts are not.
+    filtered = not re.match(r"^\S+#\s*show ip route\s*$", cmd[0].strip())
 
     groups: list[tuple[int, re.Match, list[str]]] = []
     for n, line in enumerate(lines):
@@ -136,6 +142,8 @@ def check_route_exhibit(tag: str, content: str) -> None:
             if not (kn.subnet_of(net) if kn.version == net.version else False):
                 err(f"{tag}: parent '{m.group('net')}' does not contain child '{k}' "
                     f"- IOS groups children under the classful parent")
+        if filtered:
+            continue
         if len(kids) != declared_subnets:
             err(f"{tag}: parent '{m.group('net')}' declares {declared_subnets} subnets "
                 f"but {len(kids)} child routes are printed")
@@ -254,21 +262,37 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
                 f"({count}/{total_keys}), limit {MAX_LETTER_SHARE:.0%}")
 
     # --- longest-option tell ------------------------------------------------
-    longest_hits = 0
+    # A *strictly* longest correct answer is the real tell: a length-picker has a
+    # unique option to point at. An exact tie with a distractor gives that
+    # heuristic nothing to choose between, so it is tracked but not failed.
+    strict_hits = 0
+    joint_hits = 0
     considered = 0
     for _, it in items:
         opts = it.get("options", [])
-        if len(opts) < 2:
+        correct = it.get("correct", [])
+        if len(opts) < 2 or not correct:
             continue
         considered += 1
-        longest = max(len(o["text"]) for o in opts)
-        if any(len(o["text"]) == longest for o in opts if o["id"] in it.get("correct", [])):
-            longest_hits += 1
+        lens = {o["id"]: len(o["text"]) for o in opts}
+        distractors = [v for k, v in lens.items() if k not in correct]
+        if not distractors:
+            continue
+        best_correct = max(lens[k] for k in correct if k in lens)
+        if best_correct > max(distractors):
+            strict_hits += 1
+        elif best_correct == max(distractors):
+            joint_hits += 1
     if considered:
-        share = longest_hits / considered
+        share = strict_hits / considered
         if share > MAX_LONGEST_CORRECT:
-            err(f"length tell: correct answer is the longest option in {share:.1%} "
-                f"of items ({longest_hits}/{considered}), limit {MAX_LONGEST_CORRECT:.0%}")
+            err(f"length tell: correct answer is strictly the longest option in "
+                f"{share:.1%} of items ({strict_hits}/{considered}), "
+                f"limit {MAX_LONGEST_CORRECT:.0%}")
+        joint_share = (strict_hits + joint_hits) / considered
+        if joint_share > 0.50:
+            warn(f"length: correct answer is longest or joint-longest in "
+                 f"{joint_share:.0%} of items ({strict_hits + joint_hits}/{considered})")
 
     # --- exhibitless share --------------------------------------------------
     none_ct = sum(1 for _, it in items if it.get("exhibit", {}).get("kind") == "none")
