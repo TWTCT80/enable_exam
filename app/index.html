@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCNA 200-301 v1.1 — Practice Exam</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="bar" id="bar">
+  <div class="bar-in">
+    <div class="ident">
+      <span class="ident-exam">CCNA 200-301</span>
+      <span class="ident-ver" id="bar-ver">v1.1</span>
+    </div>
+    <div class="bar-right">
+      <span class="progress" id="progress" hidden></span>
+      <span class="timer" id="timer" hidden>
+        <span class="timer-label">remaining</span>
+        <span class="timer-val" id="timer-val">--:--</span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ───────────────────────── start ───────────────────────── -->
+<section id="screen-start" class="screen">
+  <div class="wrap">
+    <h1>Practice exam</h1>
+    <p class="lede">
+      Written against Cisco's published 200-301 v1.1 exam topics. Every item is
+      original and requires reading an exhibit or performing a calculation.
+    </p>
+
+    <div id="load-status" class="notice">Loading item bank…</div>
+
+    <div id="start-body" hidden>
+      <table class="bank-table">
+        <caption>Bank coverage</caption>
+        <thead>
+          <tr><th scope="col">Domain</th><th scope="col">Weight</th>
+              <th scope="col" class="num">Items</th><th scope="col" class="num">Per 100</th></tr>
+        </thead>
+        <tbody id="bank-rows"></tbody>
+      </table>
+
+      <div id="partial-note" class="notice notice-warn" hidden></div>
+
+      <div class="setup">
+        <label for="length">Attempt length</label>
+        <select id="length"></select>
+        <p class="setup-hint" id="setup-hint"></p>
+      </div>
+
+      <div class="rules">
+        <h2>How this runs</h2>
+        <ul>
+          <li><strong>Answers are final.</strong> Once you confirm, the item is
+              scored and you move on. There is no back, no skip, no flagging.</li>
+          <li><strong>The clock does not pause.</strong> When it reaches zero the
+              attempt is submitted as it stands.</li>
+          <li>You will not see your score until the attempt ends.</li>
+          <li>Keyboard: <kbd>1</kbd>–<kbd>5</kbd> or <kbd>A</kbd>–<kbd>E</kbd> to
+              select, <kbd>Enter</kbd> to confirm.</li>
+        </ul>
+      </div>
+
+      <button id="begin" class="btn btn-primary btn-lg">Begin attempt</button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────── exam ───────────────────────── -->
+<section id="screen-exam" class="screen" hidden>
+  <div class="wrap">
+    <p class="objective-tag" id="q-objective"></p>
+    <h2 class="stem" id="q-stem"></h2>
+
+    <figure class="exhibit" id="q-exhibit" hidden>
+      <figcaption id="q-exhibit-kind"></figcaption>
+      <pre id="q-exhibit-body"></pre>
+    </figure>
+
+    <form id="q-form">
+      <fieldset>
+        <legend id="q-legend" class="sr-only">Answer</legend>
+        <div id="q-options" class="options"></div>
+      </fieldset>
+      <div class="confirm-row">
+        <button type="submit" id="confirm" class="btn btn-primary" disabled>
+          Confirm answer
+        </button>
+        <span class="confirm-hint" id="confirm-hint">This cannot be undone.</span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ───────────────────────── results ───────────────────────── -->
+<section id="screen-results" class="screen" hidden>
+  <div class="wrap">
+    <h1>Attempt complete</h1>
+
+    <div class="score-card">
+      <div class="score-main">
+        <span class="score-pct" id="r-pct">—</span>
+        <span class="score-frac" id="r-frac"></span>
+      </div>
+      <dl class="score-meta">
+        <div><dt>Elapsed</dt><dd id="r-elapsed">—</dd></div>
+        <div><dt>Finished</dt><dd id="r-finished">—</dd></div>
+      </dl>
+    </div>
+
+    <div class="actions">
+      <button id="dl-json" class="btn">Download JSON</button>
+      <button id="cp-md" class="btn">Copy Markdown summary</button>
+      <button id="restart" class="btn">New attempt</button>
+      <span class="copied" id="copied" hidden>Copied</span>
+    </div>
+
+    <h2>By domain</h2>
+    <table class="result-table">
+      <thead>
+        <tr><th scope="col">Domain</th><th scope="col" class="num">Asked</th>
+            <th scope="col" class="num">Quota</th><th scope="col" class="num">Correct</th>
+            <th scope="col">Rate</th></tr>
+      </thead>
+      <tbody id="r-domains"></tbody>
+    </table>
+
+    <h2>By objective</h2>
+    <table class="result-table">
+      <thead>
+        <tr><th scope="col">Objective</th><th scope="col" class="num">Asked</th>
+            <th scope="col" class="num">Correct</th><th scope="col">Rate</th></tr>
+      </thead>
+      <tbody id="r-objectives"></tbody>
+    </table>
+
+    <h2 id="r-missed-head">Missed items</h2>
+    <div id="r-missed"></div>
+  </div>
+</section>
+
+</main>
+<script src="app.js"></script>
+</body>
+</html>

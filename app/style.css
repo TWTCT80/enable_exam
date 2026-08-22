@@ -1,0 +1,415 @@
+/* CCNA 200-301 v1.1 practice runner
+   Direction: operations console. Quiet paper ground, technical type, and the
+   exhibit rendered as a recessed terminal slab that stays dark in both themes
+   so CLI output is always the centre of gravity. The timer is deliberately
+   understated: tabular, muted, and it does not raise its voice until the last
+   two minutes. */
+
+:root {
+  --bg:        #f6f5f2;
+  --surface:   #ffffff;
+  --ink:       #16181d;
+  --ink-2:     #4a5058;
+  --ink-3:     #767d87;
+  --line:      #dfddd7;
+  --line-2:    #ebe9e4;
+  --accent:    #0f6e6e;
+  --accent-bg: #e6f1f0;
+  --on-accent: #ffffff;
+  --ok:        #1d6b3f;
+  --bad:       #a52a1f;
+  --warn:      #8a5a00;
+
+  /* the slab is intentionally theme-independent */
+  --slab-bg:    #14181f;
+  --slab-ink:   #d8dfe8;
+  --slab-line:  #2a323d;
+  --slab-cap:   #7d8794;
+
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+
+  --wrap: 62rem;
+  --radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #101319;
+    --surface:   #171b22;
+    --ink:       #e6e9ee;
+    --ink-2:     #aab2bc;
+    --ink-3:     #7b838e;
+    --line:      #272d37;
+    --line-2:    #1f242c;
+    --accent:    #4fd1c5;
+    --accent-bg: #16302f;
+    --on-accent: #0b1416;
+    --ok:        #6bbf8a;
+    --bad:       #ef8073;
+    --warn:      #d9a34e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 1.5rem; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── top bar ───────────────────────────────────────────────────────── */
+
+.bar {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.bar-in {
+  max-width: var(--wrap); margin: 0 auto; padding: 0.7rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+
+.ident { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+
+.ident-exam {
+  font-weight: 620; letter-spacing: 0.01em; font-size: 0.95rem;
+}
+
+.ident-ver {
+  font-family: var(--mono); font-size: 0.75rem; color: var(--ink-3);
+  border: 1px solid var(--line); border-radius: 3px; padding: 0.05rem 0.35rem;
+}
+
+.bar-right { display: flex; align-items: center; gap: 1.25rem; }
+
+.progress {
+  font-size: 0.85rem; color: var(--ink-2); font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Understated by design: the options are the thing to look at, not this. */
+.timer { display: flex; align-items: baseline; gap: 0.45rem; white-space: nowrap; }
+
+.timer-label {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.timer-val {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 1rem; color: var(--ink-2); transition: color 0.4s ease;
+}
+
+.timer.is-low .timer-val { color: var(--warn); }
+
+.timer.is-crit .timer-val {
+  color: var(--bad); font-weight: 600;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .timer.is-crit .timer-val { animation: none; }
+}
+
+/* ── screens ───────────────────────────────────────────────────────── */
+
+.screen { padding: 2.5rem 0 5rem; }
+[hidden] { display: none !important; }
+
+h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 0.75rem; letter-spacing: -0.005em; }
+
+.lede { color: var(--ink-2); margin: 0 0 2rem; max-width: 46rem; }
+
+.notice {
+  border: 1px solid var(--line); border-left: 3px solid var(--ink-3);
+  background: var(--surface); padding: 0.8rem 1rem; border-radius: var(--radius);
+  color: var(--ink-2); font-size: 0.9rem; margin: 0 0 1.5rem;
+}
+
+.notice-warn { border-left-color: var(--warn); }
+.notice code { font-family: var(--mono); font-size: 0.85em; }
+
+/* ── tables ────────────────────────────────────────────────────────── */
+
+.bank-table, .result-table {
+  width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 1.5rem;
+}
+
+.bank-table caption {
+  text-align: left; font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--ink-3); padding-bottom: 0.5rem;
+}
+
+.bank-table th, .result-table th {
+  text-align: left; font-weight: 600; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--ink-3);
+  border-bottom: 1px solid var(--line); padding: 0.4rem 0.7rem 0.4rem 0;
+}
+
+.bank-table td, .result-table td {
+  padding: 0.45rem 0.7rem 0.45rem 0;
+  border-bottom: 1px solid var(--line-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.num { text-align: right; padding-right: 0 !important; }
+td.num, th.num { text-align: right; }
+
+.dim { color: var(--ink-3); }
+
+.meter {
+  display: inline-block; vertical-align: middle;
+  width: 5rem; height: 5px; border-radius: 3px;
+  background: var(--line); overflow: hidden; margin-right: 0.6rem;
+}
+.meter > span { display: block; height: 100%; background: var(--accent); }
+
+/* ── start screen ──────────────────────────────────────────────────── */
+
+.setup {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem;
+}
+
+.setup label {
+  display: block; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--ink-3); margin-bottom: 0.4rem;
+}
+
+select {
+  font: inherit; font-size: 0.95rem; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 4px; padding: 0.4rem 0.6rem; min-width: 16rem;
+}
+
+.setup-hint { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--ink-2); }
+
+.rules { margin-bottom: 2rem; }
+.rules h2 { margin-top: 0; }
+.rules ul { margin: 0; padding-left: 1.1rem; color: var(--ink-2); font-size: 0.92rem; }
+.rules li { margin-bottom: 0.4rem; }
+.rules strong { color: var(--ink); }
+
+kbd {
+  font-family: var(--mono); font-size: 0.78em; border: 1px solid var(--line);
+  border-bottom-width: 2px; border-radius: 3px; padding: 0.05em 0.35em;
+  background: var(--surface); color: var(--ink-2);
+}
+
+/* ── buttons ───────────────────────────────────────────────────────── */
+
+.btn {
+  font: inherit; font-size: 0.92rem; font-weight: 500;
+  color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0.5rem 1rem; cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--ink-3); }
+
+.btn-primary {
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+  font-weight: 560;
+}
+.btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+
+.btn-lg { padding: 0.65rem 1.5rem; font-size: 1rem; }
+
+.btn:disabled { opacity: 0.42; cursor: not-allowed; }
+
+:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
+}
+
+/* ── question ──────────────────────────────────────────────────────── */
+
+.objective-tag {
+  font-family: var(--mono); font-size: 0.75rem; color: var(--ink-3);
+  margin: 0 0 0.6rem; letter-spacing: 0.02em;
+}
+
+.stem {
+  font-size: 1.16rem; font-weight: 500; line-height: 1.5;
+  margin: 0 0 1.5rem; max-width: 52rem; letter-spacing: -0.003em;
+}
+
+/* The slab. Fixed dark ground in both themes; horizontal scroll lives here so
+   the page body never scrolls sideways, and whitespace is never collapsed or
+   wrapped, because wrapped CLI output teaches the wrong shape. */
+.exhibit {
+  margin: 0 0 1.75rem;
+  background: var(--slab-bg);
+  border: 1px solid var(--slab-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.exhibit figcaption {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--slab-cap); padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--slab-line);
+}
+
+.exhibit pre {
+  margin: 0; padding: 1rem 1.15rem;
+  overflow-x: auto;
+  white-space: pre;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--slab-ink);
+  tab-size: 4;
+}
+
+.exhibit pre::-webkit-scrollbar { height: 10px; }
+.exhibit pre::-webkit-scrollbar-thumb {
+  background: var(--slab-line); border-radius: 5px;
+}
+
+/* ── options ───────────────────────────────────────────────────────── */
+
+fieldset { border: 0; margin: 0; padding: 0; }
+
+.options { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.75rem; }
+
+.opt { display: block; cursor: pointer; }
+
+.opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.opt-face {
+  display: flex; gap: 0.85rem; align-items: baseline;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 0.8rem 1rem;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.opt:hover .opt-face { border-color: var(--ink-3); }
+
+.opt input:checked + .opt-face {
+  border-color: var(--accent); background: var(--accent-bg);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.opt input:focus-visible + .opt-face {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+.opt-key {
+  font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+  color: var(--ink-3); flex: 0 0 auto; min-width: 1.1rem;
+}
+
+.opt input:checked + .opt-face .opt-key { color: var(--accent); }
+
+.opt-text { flex: 1; }
+
+/* Option text is often a command; keep those monospaced without forcing it on
+   prose options. */
+.opt-text.is-cmd { font-family: var(--mono); font-size: 0.88rem; }
+
+.confirm-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.confirm-hint { font-size: 0.83rem; color: var(--ink-3); }
+
+/* ── results ───────────────────────────────────────────────────────── */
+
+.score-card {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0;
+}
+
+.score-main { display: flex; align-items: baseline; gap: 0.75rem; }
+
+.score-pct {
+  font-size: 3rem; font-weight: 600; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+
+.score-frac { font-size: 1rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+.score-meta { display: flex; gap: 2rem; margin: 0; }
+.score-meta div { margin: 0; }
+.score-meta dt {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3); margin-bottom: 0.2rem;
+}
+.score-meta dd {
+  margin: 0; font-family: var(--mono); font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+
+.copied { font-size: 0.85rem; color: var(--ok); }
+
+/* missed items */
+
+.missed {
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 3px solid var(--bad);
+  border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
+}
+
+.missed-head {
+  display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 0.75rem; color: var(--ink-3);
+  margin-bottom: 0.6rem;
+}
+
+.missed .stem { font-size: 1rem; margin-bottom: 1rem; }
+
+.missed .exhibit { margin-bottom: 1.25rem; }
+
+.answer-list { list-style: none; margin: 0 0 1rem; padding: 0; font-size: 0.92rem; }
+
+.answer-list li {
+  display: flex; gap: 0.6rem; padding: 0.35rem 0.6rem; border-radius: 4px;
+  align-items: baseline;
+}
+
+.answer-list li.is-correct { background: var(--accent-bg); }
+.answer-list li.is-chosen-wrong { background: color-mix(in srgb, var(--bad) 12%, transparent); }
+
+.answer-list .mark {
+  font-family: var(--mono); font-size: 0.78rem; flex: 0 0 auto; min-width: 4.5rem;
+}
+.answer-list li.is-correct .mark { color: var(--ok); font-weight: 600; }
+.answer-list li.is-chosen-wrong .mark { color: var(--bad); font-weight: 600; }
+
+.explanation {
+  font-size: 0.92rem; color: var(--ink-2); line-height: 1.6;
+  border-top: 1px solid var(--line-2); padding-top: 0.9rem; margin: 0;
+}
+
+.all-correct { color: var(--ok); font-size: 0.95rem; }
+
+@media (max-width: 640px) {
+  .wrap { padding: 0 1rem; }
+  .bar-in { padding: 0.6rem 1rem; }
+  .timer-label { display: none; }
+  .score-pct { font-size: 2.25rem; }
+  .exhibit pre { font-size: 12.5px; }
+}
