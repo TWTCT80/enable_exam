@@ -270,6 +270,7 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
     # heuristic nothing to choose between, so it is tracked but not failed.
     strict_hits = 0
     joint_hits = 0
+    weighted = 0.0
     considered = 0
     for _, it in items:
         opts = it.get("options", [])
@@ -282,21 +283,30 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
         if not distractors:
             continue
         longest = max(lens.values())
-        at_longest = sum(1 for v in lens.values() if v == longest)
-        if at_longest == len(lens):
-            # every option the same length: "pick the longest" narrows nothing,
-            # so there is no signal to score either way
+        n_opts = len(lens)          # NOT n: that is the bank-wide item count
+        k = sum(1 for v in lens.values() if v == longest)
+        if k == n_opts:
+            # every option the same length: "pick the longest" narrows nothing
             continue
-        best_correct = max(lens[k] for k in correct if k in lens)
-        if best_correct > max(distractors):
+        best_correct = max(lens[c] for c in correct if c in lens)
+        if best_correct < longest:
+            continue
+        # Weight by how much the tie actually narrows the guess. Picking among
+        # k longest gives 1/k against a 1/n baseline, so the advantage scales
+        # as (n/k - 1)/(n - 1): 1.0 when the key is uniquely longest, ~0 when
+        # nearly every option ties. A flat half-hit over-penalised 3-way ties
+        # between same-length addresses and under-penalised 2-way ties.
+        w = (n_opts / k - 1) / (n_opts - 1)
+        if k == 1:
             strict_hits += 1
-        elif best_correct == max(distractors):
+        else:
             joint_hits += 1
+        weighted += w
     if considered:
         # A strictly-longest key is a full hit. An exact tie with a distractor
         # still narrows a length-picker's guess (2 of n rather than 1 of n), so
         # it counts half rather than nothing.
-        score = (strict_hits + 0.5 * joint_hits) / considered
+        score = weighted / considered
         if score > MAX_LONGEST_CORRECT:
             err(f"length tell: weighted longest-answer score {score:.1%} exceeds "
                 f"{MAX_LONGEST_CORRECT:.0%} "

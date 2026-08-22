@@ -47,8 +47,8 @@ mix, per spec. Marked (C&V) below.
 | 1.5 TCP compared to UDP | compare | 4 | 0 |
 | 1.6 IPv4 addressing and subnetting (C&V) | configure and verify | 9 | 9 |
 | 1.7 Private IPv4 addressing | describe | 3 | 3 |
-| 1.8 IPv6 addressing and prefix (C&V) | configure and verify | 7 | 0 |
-| 1.9 IPv6 address types | describe | 4 | 0 |
+| 1.8 IPv6 addressing and prefix (C&V) | configure and verify | 7 | 7 |
+| 1.9 IPv6 address types | describe | 4 | 4 |
 | 1.10 Verify IP parameters for client OS | verify | 4 | 0 |
 | 1.11 Wireless principles | describe | 4 | 0 |
 | 1.12 Virtualization fundamentals | explain | 3 | 0 |

@@ -1,0 +1,299 @@
+{
+  "objective": "1.8",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Configure and verify. EUI-64 derivation, compression and prefix containment are all computed with the ipaddress module in _selftest() before this file is written.",
+  "items": [
+    {
+      "id": "1.8-001",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which entry is the shortest valid form of the recorded address?",
+      "exhibit": {
+        "kind": "config",
+        "content": "An address has been recorded in full, unabbreviated form:\n\n    2001:0DB8:0000:0000:0000:0AB0:0000:00CD\n\nIt must be entered into the documentation in its shortest valid form."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "2001:DB8::AB0::CD"
+        },
+        {
+          "id": "B",
+          "text": "2001:DB8::AB0:0:CD"
+        },
+        {
+          "id": "C",
+          "text": "2001:DB8::AB:0:CD"
+        },
+        {
+          "id": "D",
+          "text": "2001:DB8:0:0:0:AB0:0:CD"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Leading zeros in a group are dropped and the single longest run of all-zero groups is replaced by a double colon, which here is the three groups before 0AB0, giving 2001:DB8::AB0:0:CD. Option A uses two double colons, which is invalid because the expansion would then be ambiguous. Option C loses a digit from 0AB0, turning it into AB and producing a different address entirely. Option D drops leading zeros correctly but never applies the double colon, so it is valid yet not the shortest form.",
+      "difficulty": 2,
+      "skills": [
+        "ipv6-addressing",
+        "address-compression",
+        "leading-zero-rules",
+        "double-colon-rule"
+      ]
+    },
+    {
+      "id": "1.8-002",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which global unicast address does GigabitEthernet0/0 build for itself?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R2 - relevant configuration\n!\ninterface GigabitEthernet0/0\n ipv6 address 2001:DB8:ACAD:1::/64 eui-64\n no shutdown\n!\n\nThe burned-in address of GigabitEthernet0/0 is 001a.2b3c.4d5e."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "2001:DB8:ACAD:1:1A:2BFF:FE3C:4D5E"
+        },
+        {
+          "id": "B",
+          "text": "2001:DB8:ACAD:1:21A:2BFE:FF3C:4D5E"
+        },
+        {
+          "id": "C",
+          "text": "2001:DB8:ACAD:1:21A:2BFF:FE3C:4D5E"
+        },
+        {
+          "id": "D",
+          "text": "2001:DB8:ACAD:1:21A:2BFF:FE4D:5E3C"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Modified EUI-64 splits the MAC in half, inserts FFFE between the two halves, and inverts the seventh bit of the first byte, turning 00 into 02; 001A2B and 3C4D5E therefore become 021A:2BFF:FE3C:4D5E under the configured prefix. Option A skips the bit inversion and leaves the first byte as 00, which is the single commonest omission. Option B writes the inserted value as FEFF rather than FFFE. Option D transposes the final two groups of the interface identifier.",
+      "difficulty": 3,
+      "skills": [
+        "ipv6-addressing",
+        "modified-eui-64",
+        "interface-identifier",
+        "ul-bit-inversion"
+      ]
+    },
+    {
+      "id": "1.8-003",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which entry correctly expresses the /64 segment for VLAN 30?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "The organisation has been allocated 2001:DB8:ACAD::/48 and subnets it\ninto /64 segments, one per VLAN.\n\n    VLAN 10   segment 1\n    VLAN 20   segment 2\n    VLAN 30   segment 7   <- being configured now"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "2001:DB8:ACAD:7::/64"
+        },
+        {
+          "id": "B",
+          "text": "2001:DB8:ACAE:7::/64"
+        },
+        {
+          "id": "C",
+          "text": "2001:DB8:ACAD:7::/48"
+        },
+        {
+          "id": "D",
+          "text": "2001:DB8:ACAD::7/64"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A /48 allocation fixes the first three groups and leaves the fourth free as a subnet identifier, so segment 7 is written 2001:DB8:ACAD:7::/64. Option B alters the third group from ACAD to ACAE, which falls outside the allocation altogether. Option C keeps the right address but labels it /48, the length of the whole allocation rather than one segment. Option D places the 7 in the interface identifier instead of the subnet field, describing a host address rather than a subnet.",
+      "difficulty": 2,
+      "skills": [
+        "ipv6-addressing",
+        "ipv6-prefix",
+        "subnet-identifier",
+        "prefix-length"
+      ]
+    },
+    {
+      "id": "1.8-004",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interface is up but has no address that can be routed off the local link?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R4# show ipv6 interface brief\nGigabitEthernet0/0     [up/up]\n    FE80::21A:2BFF:FE3C:4D5E\nGigabitEthernet0/1     [up/up]\n    FE80::21A:2BFF:FE3C:4D5F\n    2001:DB8:ACAD:9::1\nGigabitEthernet0/2     [administratively down/down]\n    unassigned"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "GigabitEthernet0/1"
+        },
+        {
+          "id": "B",
+          "text": "Loopback0"
+        },
+        {
+          "id": "C",
+          "text": "GigabitEthernet0/2"
+        },
+        {
+          "id": "D",
+          "text": "GigabitEthernet0/0"
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "GigabitEthernet0/0 shows up/up but lists only an FE80 address, and link-local addresses are confined to the link they sit on, so nothing can be routed to it from elsewhere. Option A carries a 2001 global address in addition to its link-local and is fully reachable. Option C is administratively down and unassigned, so it fails the up part of the question rather than the addressing part. Option B names an interface that does not appear in this output at all.",
+      "difficulty": 2,
+      "skills": [
+        "verify-ipv6-addressing",
+        "show-ipv6-interface-brief",
+        "link-local-scope",
+        "global-unicast"
+      ]
+    },
+    {
+      "id": "1.8-005",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why do the link-local pings succeed while the global ones fail?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R1 and R2 are cabled directly to one another\n!\nR1  interface GigabitEthernet0/0\n     ipv6 address 2001:DB8:ACAD:1::1/64\n!\nR2  interface GigabitEthernet0/0\n     ipv6 address 2001:DB8:ACAD:2::1/64\n!\n\nEach router can ping the other's link-local address, but a ping to the\nother's global address fails."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Link-local addresses are always reachable, but global addresses require DHCPv6."
+        },
+        {
+          "id": "B",
+          "text": "The two global addresses sit in different /64 prefixes, so they need routing."
+        },
+        {
+          "id": "C",
+          "text": "The global addresses lack an EUI-64 interface identifier and cannot be pinged."
+        },
+        {
+          "id": "D",
+          "text": "Global addresses require ipv6 unicast-routing on both routers before any ping."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The fourth group differs, making the prefixes 2001:DB8:ACAD:1::/64 and 2001:DB8:ACAD:2::/64, so the two globals are on separate subnets and would need a router between them. Link-local pings still work because FE80 addresses are scoped to the shared link and do not depend on the prefixes at all, which is exactly what makes the fault look intermittent. Option A invents a DHCPv6 dependency for statically configured addresses. Option C treats EUI-64 as mandatory, but a manually written identifier is fine. Option D would prevent transit routing, not a directly connected ping.",
+      "difficulty": 3,
+      "skills": [
+        "ipv6-addressing",
+        "ipv6-prefix",
+        "same-subnet-requirement",
+        "link-local-scope"
+      ]
+    },
+    {
+      "id": "1.8-006",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interface command meets the requirement?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R6 - relevant configuration\n!\ninterface GigabitEthernet0/0\n no shutdown\n!\n\nGigabitEthernet0/0 must take its prefix from the router advertisements\nalready being sent on the segment and build its own interface identifier,\nwithout any DHCPv6 server involved."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "ipv6 address autoconfig"
+        },
+        {
+          "id": "B",
+          "text": "ipv6 address dhcp"
+        },
+        {
+          "id": "C",
+          "text": "ipv6 address 2001:DB8:ACAD:1::1/64"
+        },
+        {
+          "id": "D",
+          "text": "ipv6 enable"
+        },
+        {
+          "id": "E",
+          "text": "ipv6 unicast-routing"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Stateless address autoconfiguration takes the prefix from a router advertisement and appends an interface identifier the device generates itself, which is precisely what the requirement describes. Option B requests an address from a DHCPv6 server, which the requirement rules out explicitly. Option C hardcodes the prefix instead of learning it, so the address would not follow a renumbering. Option D brings IPv6 up but yields a link-local address only, leaving no global address. Option E is a global command enabling forwarding for the whole router and cannot be entered against an interface.",
+      "difficulty": 2,
+      "skills": [
+        "ipv6-addressing",
+        "slaac",
+        "configure-ipv6-interface",
+        "config-mode"
+      ]
+    },
+    {
+      "id": "1.8-007",
+      "objective": "1.8",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which global unicast address has been configured on GigabitEthernet0/1?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R7# show ipv6 interface brief\nGigabitEthernet0/0     [up/up]\n    FE80::2D0:58FF:FE12:3401\n    2001:DB8:CAFE:10::1\nGigabitEthernet0/1     [up/up]\n    FE80::2D0:58FF:FE12:3402\n    2001:DB8:CAFE:20::1\nLoopback0              [up/up]\n    FE80::2D0:58FF:FE12:3400\n    2001:DB8:CAFE:FF::1"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "2001:DB8:CAFE:10::1"
+        },
+        {
+          "id": "B",
+          "text": "FE80::2D0:58FF:FE12:3402"
+        },
+        {
+          "id": "C",
+          "text": "2001:DB8:CAFE:20::1"
+        },
+        {
+          "id": "D",
+          "text": "2001:DB8:CAFE:FF::1"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Each block lists its interface first and its addresses beneath, and the second entry under GigabitEthernet0/1 is the global address 2001:DB8:CAFE:20::1. Option A belongs to GigabitEthernet0/0, the block directly above, which is the classic error of reading the right field from the neighbouring block. Option B is the correct block's link-local rather than its global address. Option D is the loopback's global address, taken from the block below.",
+      "difficulty": 1,
+      "skills": [
+        "verify-ipv6-addressing",
+        "show-ipv6-interface-brief",
+        "global-unicast",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

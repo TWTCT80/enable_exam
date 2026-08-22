@@ -200,3 +200,14 @@ def ipint(intf, addr, ok="YES", method="manual", status="up", proto="up"):
 def ip_int_brief(prompt, rows):
     """A `show ip interface brief` capture."""
     return "\n".join([f"{prompt}# show ip interface brief", IPINT_HEADER] + list(rows))
+
+
+# --- show ipv6 interface brief --------------------------------------------
+def ipv6_int(intf, status, addrs):
+    """One `show ipv6 interface brief` block: name, [status], indented addresses."""
+    return "\n".join([f"{intf:<23}[{status}]"] + [f"    {a}" for a in addrs])
+
+
+def ipv6_int_brief(prompt, blocks):
+    """A `show ipv6 interface brief` capture."""
+    return "\n".join([f"{prompt}# show ipv6 interface brief"] + list(blocks))

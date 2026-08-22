@@ -1,0 +1,172 @@
+{
+  "objective": "1.9",
+  "domain": 1,
+  "blueprint_version": "v1.1",
+  "scope_note": "Address-type ranges and the EUI-64 derivation are asserted with the ipaddress module in _selftest() rather than recalled.",
+  "items": [
+    {
+      "id": "1.9-001",
+      "objective": "1.9",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which address is a unique local address, routable inside the organisation but never across the internet?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Addresses observed on one segment during a survey\n\n    Host        Address\n    --------    ---------------------------\n    SRV-A       2001:DB8:ACAD:1::10\n    SRV-B       FD3A:9C21:4E7B:1::10\n    SW-MGMT     FE80::20C:29FF:FEAB:CDEF\n    (group)     FF02::1"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "2001:DB8:ACAD:1::10"
+        },
+        {
+          "id": "B",
+          "text": "FE80::20C:29FF:FEAB:CDEF"
+        },
+        {
+          "id": "C",
+          "text": "FF02::1"
+        },
+        {
+          "id": "D",
+          "text": "FD3A:9C21:4E7B:1::10"
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Unique local addresses come from FC00::/7 and are written in practice beginning FD, so FD3A:9C21:4E7B:1::10 is the one that routes within the organisation while being filtered at its edge. Option A begins with 2001 and falls in 2000::/3, the global unicast space that is routable across the internet. Option B begins FE80 and is link-local, which cannot be routed off its own link at all. Option C begins FF and is a multicast group address rather than a unicast address for any single host.",
+      "difficulty": 2,
+      "skills": [
+        "ipv6-address-types",
+        "unique-local-address",
+        "global-unicast",
+        "address-range-boundary"
+      ]
+    },
+    {
+      "id": "1.9-002",
+      "objective": "1.9",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which of the joined groups did this interface join specifically because the device is acting as a router?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R2# show ipv6 interface GigabitEthernet0/0\nGigabitEthernet0/0 is up, line protocol is up\n  IPv6 is enabled, link-local address is FE80::21A:2BFF:FE3C:4D5E\n  Global unicast address(es):\n    2001:DB8:ACAD:1::1, subnet is 2001:DB8:ACAD:1::/64\n  Joined group address(es):\n    FF02::1\n    FF02::2\n    FF02::1:FF00:1\n  MTU is 1500 bytes"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "FF02::1"
+        },
+        {
+          "id": "B",
+          "text": "FF02::2"
+        },
+        {
+          "id": "C",
+          "text": "FF02::1:FF00:1"
+        },
+        {
+          "id": "D",
+          "text": "FE80::21A:2BFF:FE3C:4D5E"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "FF02::2 is the all-routers group on the local link, and only a device forwarding IPv6 joins it, so its presence marks this interface as a router's. Option A is the all-nodes group, which every IPv6 interface joins regardless of role. Option C is the solicited-node group derived from the low-order bits of the interface's own unicast address and is used for neighbour discovery by hosts and routers alike. Option D is the link-local unicast address, not a group at all.",
+      "difficulty": 2,
+      "skills": [
+        "ipv6-address-types",
+        "multicast",
+        "all-routers-group",
+        "solicited-node-multicast"
+      ]
+    },
+    {
+      "id": "1.9-003",
+      "objective": "1.9",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which link-local address does this interface form for itself?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! Host NIC details\n!\n    Burned-in address . . . : 000c.29ab.cdef\n    IPv6 routing  . . . . . : enabled on the segment\n\nThe interface has just been brought up and has not yet received a router\nadvertisement, so it has formed only its link-local address."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "FE80::20C:29FF:FEAB:CDEF"
+        },
+        {
+          "id": "B",
+          "text": "FE80::C:29FF:FEAB:CDEF"
+        },
+        {
+          "id": "C",
+          "text": "FE80::20C:29FE:FFAB:CDEF"
+        },
+        {
+          "id": "D",
+          "text": "FE80::20C:29FF:FECD:EFAB"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A link-local address is FE80 followed by an interface identifier built by modified EUI-64: the MAC splits into 000C29 and ABCDEF, FFFE goes between them, and the seventh bit of the first byte inverts so 00 becomes 02. Option B leaves the first byte uninverted and then drops its leading digit, losing the 02 entirely. Option C writes the inserted value as FEFF instead of FFFE. Option D rotates the final three octets of the MAC rather than keeping their order.",
+      "difficulty": 3,
+      "skills": [
+        "ipv6-address-types",
+        "modified-eui-64",
+        "link-local-address",
+        "ul-bit-inversion"
+      ]
+    },
+    {
+      "id": "1.9-004",
+      "objective": "1.9",
+      "domain": 1,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which address would this host use as the source when contacting a server elsewhere on the internet?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "PC1> ipconfig\n\nEthernet adapter Ethernet:\n\n   IPv6 Address. . . . . . . . . . . : 2001:DB8:ACAD:1:2C4A:9B11:78D3:5E02\n   Temporary IPv6 Address. . . . . . : 2001:DB8:ACAD:1:9017:E3B2:44AC:1F65\n   Link-local IPv6 Address . . . . . : FE80::2C4A:9B11:78D3:5E02\n   Default Gateway . . . . . . . . . : FE80::1"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "FE80::2C4A:9B11:78D3:5E02"
+        },
+        {
+          "id": "B",
+          "text": "FE80::1"
+        },
+        {
+          "id": "C",
+          "text": "2001:DB8:ACAD:1:9017:E3B2:44AC:1F65"
+        },
+        {
+          "id": "D",
+          "text": "2001:DB8:ACAD:1:2C4A:9B11:78D3:5E02"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "A host with both a stable and a temporary global address prefers the temporary one as the source for connections it starts outward, which is what the privacy extension exists to do, so the 9017 address is used. Option D is the stable global address and serves inbound connections rather than outbound ones. Option A is link-local and cannot leave the segment. Option B is link-local too and belongs to the router, appearing here only as the default gateway.",
+      "difficulty": 1,
+      "skills": [
+        "ipv6-address-types",
+        "global-unicast",
+        "temporary-address",
+        "verify-ip-parameters"
+      ]
+    }
+  ]
+}
