@@ -66,9 +66,9 @@ expressed as multi-answer items instead.
 | Objective | Verb | Planned | Done |
 |---|---|---|---|
 | 2.1 VLANs spanning multiple switches (C&V) | configure and verify | 10 | 10 |
-| 2.2 Interswitch connectivity (C&V) | configure and verify | 9 | 0 |
+| 2.2 Interswitch connectivity (C&V) | configure and verify | 9 | 9 |
 | 2.3 Layer 2 discovery protocols (C&V) | configure and verify | 5 | 5 |
-| 2.4 EtherChannel / LACP (C&V) | configure and verify | 8 | 0 |
+| 2.4 EtherChannel / LACP (C&V) | configure and verify | 8 | 8 |
 | 2.5 Rapid PVST+ | interpret | 10 | 0 |
 | 2.6 Cisco wireless architectures and AP modes | describe | 5 | 0 |
 | 2.7 WLAN physical infrastructure connections | describe | 4 | 0 |

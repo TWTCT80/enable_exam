@@ -350,3 +350,75 @@ def lldp_neighbors(prompt, rows):
     """A `show lldp neighbors` capture."""
     return "\n".join([f"{prompt}# show lldp neighbors", LLDP_CAPS, "", LLDP_HEADER]
                      + list(rows) + ["", f"Total entries displayed: {len(rows)}"])
+
+
+# --- show interfaces trunk ------------------------------------------------
+# Four sections, each repeating the port column at width 12.
+TRUNK_HEADER = (f"{'Port':<12}{'Mode':<17}{'Encapsulation':<15}{'Status':<14}"
+                f"Native vlan")
+
+
+def trunk_port(port, mode, encap, status, native):
+    """One row of the first `show interfaces trunk` section."""
+    return f"{port:<12}{mode:<17}{encap:<15}{status:<14}{native}"
+
+
+def _trunk_section(title, pairs):
+    return "\n".join([f"{'Port':<12}{title}"]
+                     + [f"{p:<12}{v}" for p, v in pairs])
+
+
+def interfaces_trunk(prompt, rows, allowed, active, forwarding):
+    """A full `show interfaces trunk` capture.
+
+    rows       list of trunk_port() strings
+    allowed    [(port, "1-4094"), ...]
+    active     [(port, "1,10,20"), ...]     allowed and active in the domain
+    forwarding [(port, "1,10"), ...]        in spanning tree forwarding state
+    """
+    return "\n".join([
+        f"{prompt}# show interfaces trunk", "", TRUNK_HEADER, *rows, "",
+        _trunk_section("Vlans allowed on trunk", allowed), "",
+        _trunk_section("Vlans allowed and active in management domain", active), "",
+        _trunk_section("Vlans in spanning tree forwarding state and not pruned",
+                       forwarding),
+    ])
+
+
+# --- show etherchannel summary --------------------------------------------
+ETHERCHANNEL_FLAGS = """Flags:  D - down        P - bundled in port-channel
+        I - stand-alone s - suspended
+        H - Hot-standby (LACP only)
+        R - Layer3      S - Layer2
+        U - in use      f - failed to allocate aggregator
+
+        M - not in use, minimum links not met
+        u - unsuitable for bundling
+        w - waiting to be aggregated
+        d - default port
+
+        A - formed by Auto LAG
+"""
+
+ETHERCHANNEL_RULE = ("------+-------------+-----------+"
+                     "-----------------------------------------------")
+
+
+def po_row(group, portchannel, protocol, ports):
+    """One `show etherchannel summary` row; ports sit in 12-wide columns."""
+    cols = "".join(f"{p:<12}" for p in ports).rstrip()
+    return f"{group:<7}{portchannel:<16}{protocol:<10}{cols}"
+
+
+def etherchannel_summary(prompt, rows, groups=1, aggregators=1):
+    """A `show etherchannel summary` capture."""
+    return "\n".join([
+        f"{prompt}# show etherchannel summary",
+        ETHERCHANNEL_FLAGS,
+        "",
+        f"Number of channel-groups in use: {groups}",
+        f"Number of aggregators:           {aggregators}",
+        "",
+        "Group  Port-channel  Protocol    Ports",
+        ETHERCHANNEL_RULE,
+    ] + list(rows))
