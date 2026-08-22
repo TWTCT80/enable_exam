@@ -90,6 +90,67 @@ def load_items(paths: list[pathlib.Path]) -> list[tuple[pathlib.Path, dict]]:
     return out
 
 
+# --- show ip route exhibit consistency ------------------------------------
+PARENT_RE = re.compile(
+    r"^ {6}(?P<net>\d+\.\d+\.\d+\.\d+/\d+) is (?P<var>variably )?subnetted,"
+    r" (?P<subnets>\d+) subnets(?:, (?P<masks>\d+) masks)?\s*$")
+CHILD_RE = re.compile(r"^(?P<code>\S(?:.{0,7}\S)?) {2,}(?P<pfx>\d+\.\d+\.\d+\.\d+/\d+)\b")
+
+
+def check_route_exhibit(tag: str, content: str) -> None:
+    """Assert IOS parent/child grouping in a 'show ip route' exhibit.
+
+    IOS groups subnets under their *classful* parent; every child must fall
+    inside the parent, the declared subnet/mask counts must match what is
+    printed, and 'variably' appears only when more than one mask is present.
+    """
+    import ipaddress
+
+    lines = content.splitlines()
+    if not any("show ip route" in l for l in lines):
+        return
+
+    groups: list[tuple[int, re.Match, list[str]]] = []
+    for n, line in enumerate(lines):
+        m = PARENT_RE.match(line)
+        if m:
+            groups.append((n, m, []))
+            continue
+        if groups and line.startswith(" " * 9) is False and CHILD_RE.match(line):
+            # child rows put the prefix at column 10 (index 9)
+            cm = CHILD_RE.match(line)
+            if cm.start("pfx") == 9:
+                groups[-1][2].append(cm.group("pfx"))
+
+    for n, m, kids in groups:
+        net = ipaddress.ip_network(m.group("net"), strict=False)
+        declared_subnets = int(m.group("subnets"))
+        declared_masks = int(m.group("masks")) if m.group("masks") else 1
+        variably = bool(m.group("var"))
+
+        if not kids:
+            err(f"{tag}: parent '{m.group('net')}' (line {n+1}) has no child routes")
+            continue
+        for k in kids:
+            kn = ipaddress.ip_network(k, strict=False)
+            if not (kn.subnet_of(net) if kn.version == net.version else False):
+                err(f"{tag}: parent '{m.group('net')}' does not contain child '{k}' "
+                    f"- IOS groups children under the classful parent")
+        if len(kids) != declared_subnets:
+            err(f"{tag}: parent '{m.group('net')}' declares {declared_subnets} subnets "
+                f"but {len(kids)} child routes are printed")
+        actual_masks = len({int(k.split('/')[1]) for k in kids})
+        if actual_masks != declared_masks:
+            err(f"{tag}: parent '{m.group('net')}' declares {declared_masks} mask(s) "
+                f"but the children use {actual_masks}")
+        if variably and actual_masks < 2:
+            err(f"{tag}: parent '{m.group('net')}' says 'variably subnetted' with only "
+                f"one mask - IOS prints 'is subnetted, N subnets' in that case")
+        if not variably and actual_masks > 1:
+            err(f"{tag}: parent '{m.group('net')}' omits 'variably' but children use "
+                f"{actual_masks} masks")
+
+
 def check_item(path: pathlib.Path, it: dict, objectives: dict) -> None:
     iid = it.get("id", "<no id>")
     tag = f"{path.name}:{iid}"
@@ -151,6 +212,8 @@ def check_item(path: pathlib.Path, it: dict, objectives: dict) -> None:
             err(f"{tag}: exhibit.kind '{kind}' but content is empty")
         if not re.search(r"refer to the exhibit", it["stem"], re.I):
             warn(f"{tag}: has an exhibit but the stem never points to it")
+        if kind == "cli_output":
+            check_route_exhibit(tag, ex.get("content", ""))
 
     expl = it["explanation"]
     wc = word_count(expl)

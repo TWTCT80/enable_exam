@@ -10,10 +10,10 @@
       "domain": 3,
       "type": "single",
       "select_count": 1,
-      "stem": "Refer to the exhibit. According to the output, what administrative distance is associated with R1's route to 172.16.20.0/24?",
+      "stem": "Refer to the exhibit. According to the output, what administrative distance is associated with R1's route to 192.168.20.0/24?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nC        10.1.2.0/30 is directly connected, GigabitEthernet0/1\nL        10.1.2.1/32 is directly connected, GigabitEthernet0/1\n      172.16.0.0/16 is variably subnetted, 2 subnets, 1 masks\nD        172.16.10.0/24 [90/2172416] via 10.1.1.2, 00:04:11, GigabitEthernet0/0\nO        172.16.20.0/24 [110/65] via 10.1.2.2, 00:09:53, GigabitEthernet0/1"
+        "content": "R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nC        10.1.2.0/30 is directly connected, GigabitEthernet0/1\nL        10.1.2.1/32 is directly connected, GigabitEthernet0/1\nD     192.168.10.0/24 [90/2172416] via 10.1.1.2, 00:04:11, GigabitEthernet0/0\nO     192.168.20.0/24 [110/65] via 10.1.2.2, 00:09:53, GigabitEthernet0/1"
       },
       "options": [
         {
@@ -36,7 +36,7 @@
       "correct": [
         "C"
       ],
-      "explanation": "In show ip route the bracketed pair is always [administrative distance/metric], so the OSPF entry [110/65] carries an administrative distance of 110. Option A takes 65, which is the OSPF cost, and reverses the two bracket fields. Option B quotes 2172416, the composite metric belonging to the EIGRP row for 172.16.10.0/24, so it reads the correct field from the wrong row. Option D quotes 90, the administrative distance shown on that same EIGRP row, another wrong-row read.",
+      "explanation": "In show ip route the bracketed pair is always [administrative distance/metric], so the OSPF entry [110/65] carries an administrative distance of 110. Option A takes 65, which is the OSPF cost, and reverses the two bracket fields. Option B quotes 2172416, the composite metric belonging to the EIGRP row for 192.168.10.0/24, so it reads the correct field from the wrong row. Option D quotes 90, the administrative distance shown on that same EIGRP row, another wrong-row read.",
       "difficulty": 1,
       "skills": [
         "routing-table-components",
@@ -53,7 +53,7 @@
       "stem": "Refer to the exhibit. A technician reports that R2 chose the OSPF entry for 192.168.40.0/24 because \"110 is the cost of that route.\" Which statement identifies the error in the technician's reading of the output?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R2# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.7.7.0/30 is directly connected, GigabitEthernet0/0\nL        10.7.7.2/32 is directly connected, GigabitEthernet0/0\nR     192.168.20.0/24 [120/3] via 10.7.7.1, 00:00:12, GigabitEthernet0/0\nO     192.168.40.0/24 [110/74] via 10.7.7.1, 02:41:55, GigabitEthernet0/0"
+        "content": "R2# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.7.7.0/30 is directly connected, GigabitEthernet0/0\nL        10.7.7.2/32 is directly connected, GigabitEthernet0/0\nR     192.168.20.0/24 [120/3] via 10.7.7.1, 00:00:12, GigabitEthernet0/0\nO     192.168.40.0/24 [110/74] via 10.7.7.1, 02:41:55, GigabitEthernet0/0"
       },
       "options": [
         {
@@ -94,7 +94,7 @@
       "stem": "Refer to the exhibit. What does the asterisk on the S* 0.0.0.0/0 entry indicate about that route?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "BR1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 203.0.113.1\n      192.168.0.0/24 is variably subnetted, 2 subnets, 2 masks\nC        192.168.1.0/24 is directly connected, GigabitEthernet0/1\nL        192.168.1.1/32 is directly connected, GigabitEthernet0/1\n      203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks\nC        203.0.113.0/30 is directly connected, GigabitEthernet0/0\nL        203.0.113.2/32 is directly connected, GigabitEthernet0/0"
+        "content": "BR1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 203.0.113.1\n      192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks\nC        192.168.1.0/24 is directly connected, GigabitEthernet0/1\nL        192.168.1.1/32 is directly connected, GigabitEthernet0/1\n      203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks\nC        203.0.113.0/30 is directly connected, GigabitEthernet0/0\nL        203.0.113.2/32 is directly connected, GigabitEthernet0/0"
       },
       "options": [
         {
@@ -135,7 +135,7 @@
       "stem": "Refer to the exhibit. What does the line \"10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks\" state about the entries listed beneath it?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R4# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks\nC        10.0.0.0/30 is directly connected, GigabitEthernet0/0\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/0\nO        10.10.0.0/24 [110/65] via 10.0.0.2, 00:18:02, GigabitEthernet0/0\nO        10.10.1.0/24 [110/65] via 10.0.0.2, 00:18:02, GigabitEthernet0/0\nO        10.20.0.0/30 [110/128] via 10.0.0.2, 00:17:58, GigabitEthernet0/0\nO        10.30.9.9/32 [110/129] via 10.0.0.2, 00:17:58, GigabitEthernet0/0"
+        "content": "R4# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks\nC        10.0.0.0/30 is directly connected, GigabitEthernet0/0\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/0\nO        10.10.0.0/24 [110/65] via 10.0.0.2, 00:18:02, GigabitEthernet0/0\nO        10.10.1.0/24 [110/65] via 10.0.0.2, 00:18:02, GigabitEthernet0/0\nO        10.20.0.0/30 [110/128] via 10.0.0.2, 00:17:58, GigabitEthernet0/0\nO        10.30.9.9/32 [110/129] via 10.0.0.2, 00:17:58, GigabitEthernet0/0"
       },
       "options": [
         {
@@ -176,7 +176,7 @@
       "stem": "Refer to the exhibit. Two entries in the output reference GigabitEthernet0/1. Which statement describes the entry coded L?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "SW3# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.20.30.0/24 is variably subnetted, 2 subnets, 2 masks\nC        10.20.30.0/24 is directly connected, GigabitEthernet0/1\nL        10.20.30.1/32 is directly connected, GigabitEthernet0/1\n      10.40.50.0/24 is variably subnetted, 2 subnets, 2 masks\nC        10.40.50.0/24 is directly connected, GigabitEthernet0/2\nL        10.40.50.1/32 is directly connected, GigabitEthernet0/2"
+        "content": "SW3# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.20.30.0/24 is directly connected, GigabitEthernet0/1\nL        10.20.30.1/32 is directly connected, GigabitEthernet0/1\nC        10.40.50.0/24 is directly connected, GigabitEthernet0/2\nL        10.40.50.1/32 is directly connected, GigabitEthernet0/2"
       },
       "options": [
         {
@@ -217,16 +217,16 @@
       "stem": "Refer to the exhibit. Which prefix in R6's routing table originated outside the OSPF routing domain and was redistributed into it?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R6# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/30 is subnetted, 1 subnets\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\n      172.16.0.0/24 is subnetted, 1 subnets\nO IA     172.16.5.0/24 [110/66] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO     209.165.200.224/27 [110/2] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO E2  198.51.100.0/24 [110/20] via 10.1.1.2, 00:12:19, GigabitEthernet0/0"
+        "content": "R6# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nO     209.165.201.0/24 [110/2] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO IA  192.168.5.0/24 [110/66] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO E2  198.51.100.0/24 [110/20] via 10.1.1.2, 00:12:19, GigabitEthernet0/0"
       },
       "options": [
         {
           "id": "A",
-          "text": "209.165.200.224/27"
+          "text": "209.165.201.0/24"
         },
         {
           "id": "B",
-          "text": "172.16.5.0/24"
+          "text": "192.168.5.0/24"
         },
         {
           "id": "C",
@@ -258,7 +258,7 @@
       "stem": "Refer to the exhibit. The static route to 192.168.50.0/24 specifies a next-hop address but no exit interface. Which entry in the table must R7 resolve in order to determine an outgoing interface for that static route?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R7# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nO        10.1.1.4/30 [110/128] via 10.1.1.2, 00:22:07, GigabitEthernet0/0\nS     192.168.50.0/24 [1/0] via 10.1.1.6"
+        "content": "R7# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nO        10.1.1.4/30 [110/128] via 10.1.1.2, 00:22:07, GigabitEthernet0/0\nS     192.168.50.0/24 [1/0] via 10.1.1.6"
       },
       "options": [
         {
@@ -296,10 +296,10 @@
       "domain": 3,
       "type": "single",
       "select_count": 1,
-      "stem": "Refer to the exhibit. R8 lists two paths for 172.20.8.0/24 with identical bracketed values. What does the presence of both paths in the table indicate?",
+      "stem": "Refer to the exhibit. R8 lists two paths for 192.168.8.0/24 with identical bracketed values. What does the presence of both paths in the table indicate?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R8# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.4.4.0/30 is directly connected, GigabitEthernet0/1\nL        10.4.4.1/32 is directly connected, GigabitEthernet0/1\nC        10.5.5.0/30 is directly connected, GigabitEthernet0/2\nL        10.5.5.1/32 is directly connected, GigabitEthernet0/2\n      172.20.0.0/24 is subnetted, 1 subnets\nO        172.20.8.0/24 [110/74] via 10.4.4.2, 00:31:16, GigabitEthernet0/1\n                       [110/74] via 10.5.5.2, 00:31:16, GigabitEthernet0/2"
+        "content": "R8# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.4.4.0/30 is directly connected, GigabitEthernet0/1\nL        10.4.4.1/32 is directly connected, GigabitEthernet0/1\nC        10.5.5.0/30 is directly connected, GigabitEthernet0/2\nL        10.5.5.1/32 is directly connected, GigabitEthernet0/2\nO     192.168.8.0/24 [110/74] via 10.4.4.2, 00:31:16, GigabitEthernet0/1\n                     [110/74] via 10.5.5.2, 00:31:16, GigabitEthernet0/2"
       },
       "options": [
         {
@@ -340,7 +340,7 @@
       "stem": "Refer to the exhibit. Both prefixes were learned from the same neighbour, 10.9.9.2. Which conclusion does the administrative distance shown for 192.168.80.0/24 support?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R9# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/30 is subnetted, 1 subnets\nC        10.9.9.0/30 is directly connected, GigabitEthernet0/0\nD     192.168.70.0/24 [90/3072] via 10.9.9.2, 01:12:33, GigabitEthernet0/0\nD EX  192.168.80.0/24 [170/2681856] via 10.9.9.2, 00:41:02, GigabitEthernet0/0"
+        "content": "R9# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.9.9.0/30 is directly connected, GigabitEthernet0/0\nL        10.9.9.1/32 is directly connected, GigabitEthernet0/0\nD     192.168.70.0/24 [90/3072] via 10.9.9.2, 01:12:33, GigabitEthernet0/0\nD EX  192.168.80.0/24 [170/2681856] via 10.9.9.2, 00:41:02, GigabitEthernet0/0"
       },
       "options": [
         {
@@ -381,7 +381,7 @@
       "stem": "Refer to the exhibit. According to the output, which next-hop address does R10 list for the 192.168.30.0/24 prefix?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R10# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       * - candidate default\n       <output omitted>\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nC        10.1.1.4/30 is directly connected, GigabitEthernet0/1\nL        10.1.1.5/32 is directly connected, GigabitEthernet0/1\nO     192.168.20.0/24 [110/65] via 10.1.1.2, 00:33:20, GigabitEthernet0/0\nO     192.168.30.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1\nO     192.168.40.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1"
+        "content": "R10# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nC        10.1.1.4/30 is directly connected, GigabitEthernet0/1\nL        10.1.1.5/32 is directly connected, GigabitEthernet0/1\nO     192.168.20.0/24 [110/65] via 10.1.1.2, 00:33:20, GigabitEthernet0/0\nO     192.168.30.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1\nO     192.168.40.0/24 [110/74] via 10.1.1.6, 00:33:18, GigabitEthernet0/1"
       },
       "options": [
         {
