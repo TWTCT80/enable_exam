@@ -304,3 +304,49 @@ def vrf_row(name, rd, protocols, interfaces):
 def show_vrf(prompt, rows):
     """A `show vrf` capture."""
     return "\n".join([f"{prompt}# show vrf", VRF_HEADER] + list(rows))
+
+
+# --- show vlan brief ------------------------------------------------------
+VLAN_HEADER = f"{'VLAN':<5}{'Name':<33}{'Status':<10}Ports"
+VLAN_RULE = ("---- -------------------------------- --------- "
+             "-------------------------------")
+
+RESERVED_VLANS = [
+    (1002, "fddi-default", "act/unsup", ""),
+    (1003, "token-ring-default", "act/unsup", ""),
+    (1004, "fddinet-default", "act/unsup", ""),
+    (1005, "trnet-default", "act/unsup", ""),
+]
+
+
+def vlan_row(vlan, name, status, ports=""):
+    """One `show vlan brief` row."""
+    return f"{vlan:<5}{name:<33}{status:<10}{ports}".rstrip()
+
+
+def vlan_brief(prompt, rows, reserved=True):
+    """A `show vlan brief` capture."""
+    body = list(rows)
+    if reserved:
+        body += [vlan_row(v, n, s, p) for v, n, s, p in RESERVED_VLANS]
+    return "\n".join([f"{prompt}# show vlan brief", "", VLAN_HEADER, VLAN_RULE] + body)
+
+
+# --- show lldp neighbors --------------------------------------------------
+LLDP_CAPS = """Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other"""
+
+LLDP_HEADER = (f"{'Device ID':<20}{'Local Intf':<15}{'Hold-time':<11}"
+               f"{'Capability':<16}Port ID")
+
+
+def lldp_row(device, local, hold, cap, port):
+    """One `show lldp neighbors` row."""
+    return f"{device:<20}{local:<15}{hold:<11}{cap:<16}{port}"
+
+
+def lldp_neighbors(prompt, rows):
+    """A `show lldp neighbors` capture."""
+    return "\n".join([f"{prompt}# show lldp neighbors", LLDP_CAPS, "", LLDP_HEADER]
+                     + list(rows) + ["", f"Total entries displayed: {len(rows)}"])

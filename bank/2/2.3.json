@@ -1,0 +1,213 @@
+{
+  "objective": "2.3",
+  "domain": 2,
+  "blueprint_version": "v1.1",
+  "scope_note": "The summary form of show cdp neighbors is avoided: its Capability column spacing could not be confirmed, so the detail view is used rather than an invented layout.",
+  "items": [
+    {
+      "id": "2.3-001",
+      "objective": "2.3",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interface on the neighbouring device is this link plugged into?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show cdp neighbors detail\n-------------------------\nDevice ID: R1.example.internal\nEntry address(es):\n  IP address: 10.1.1.1\nPlatform: Cisco ISR4331,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet0/1,  Port ID (outgoing port): GigabitEthernet0/0/0\nHoldtime : 158 sec\n\nVersion :\nCisco IOS Software, ISR Software (X86_64_LINUX_IOSD-UNIVERSALK9-M),\nVersion 16.9.4, RELEASE SOFTWARE (fc2)\n\nadvertisement version: 2\nDuplex: full"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "GigabitEthernet0/1"
+        },
+        {
+          "id": "B",
+          "text": "GigabitEthernet1/0/1"
+        },
+        {
+          "id": "C",
+          "text": "GigabitEthernet0/0/0"
+        },
+        {
+          "id": "D",
+          "text": "GigabitEthernet1/0/13"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The Interface field names the local port and the Port ID field names the far end, so the cable leaves SW1's Gi0/1 and lands on R1's GigabitEthernet0/0/0. Option A is the local interface, which is the commonest misreading of this output because both values sit on the same line. Options B and D are interface names that appear nowhere in the capture, and the three-part numbering of the real answer reflects the router's module layout.",
+      "difficulty": 2,
+      "skills": [
+        "cdp",
+        "show-cdp-neighbors-detail",
+        "verify-discovery-protocol",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "2.3-002",
+      "objective": "2.3",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does SW2 report no neighbours when its own neighbours can see it?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW2# show cdp neighbors detail\nSW2#\nSW2# show cdp\n% CDP is not enabled\n\nSW2 is cabled to two Cisco switches that both report SW2 as a CDP\nneighbour on their own side."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "CDP has been switched off globally on SW2 with no cdp run."
+        },
+        {
+          "id": "B",
+          "text": "SW2's neighbours are advertising CDPv2, which SW2 cannot interpret."
+        },
+        {
+          "id": "C",
+          "text": "The links to SW2 are trunks, and CDP is exchanged only on access ports."
+        },
+        {
+          "id": "D",
+          "text": "SW2 needs an IP address on a management interface before CDP will operate."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "The message CDP is not enabled means the global process is off, so SW2 neither sends nor accepts advertisements; its neighbours still list it because they hold entries learned before it stopped, or because the direction is simply one-way. Option B invents a version incompatibility that CDPv2 does not create. Option C is wrong because CDP runs on trunks and access ports alike. Option D adds an addressing requirement CDP does not have, since it works at Layer 2.",
+      "difficulty": 2,
+      "skills": [
+        "cdp",
+        "cdp-run",
+        "verify-discovery-protocol",
+        "troubleshoot-discovery"
+      ]
+    },
+    {
+      "id": "2.3-003",
+      "objective": "2.3",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What should be enabled so that SW3 can discover the device on Gi0/5?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW3# show cdp neighbors detail\n-------------------------\nDevice ID: SW4\nEntry address(es):\n  IP address: 10.1.1.4\nPlatform: cisco WS-C2960-24TT-L,  Capabilities: Switch IGMP\nInterface: GigabitEthernet0/2,  Port ID (outgoing port): GigabitEthernet0/1\nHoldtime : 142 sec\n\n----------------------------------------------------------\n\nGigabitEthernet0/5 connects to a third-party switch from another\nvendor. It is up and passing traffic, but no neighbour is ever\nreported on that interface. CDP is running globally on SW3 and is\nenabled on Gi0/5."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "cdp enable on Gi0/5, which must have been switched off for that interface."
+        },
+        {
+          "id": "B",
+          "text": "cdp timer 30, so advertisements are sent often enough to be seen."
+        },
+        {
+          "id": "C",
+          "text": "A second CDP process, because one instance serves only Cisco-built neighbours."
+        },
+        {
+          "id": "D",
+          "text": "LLDP, which is vendor-neutral, using lldp run and lldp transmit and receive."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "CDP is Cisco proprietary, so a switch from another vendor neither sends nor understands it, and the fix is the open standard LLDP: enable it globally with lldp run and allow it on the interface. Option A repeats what the exhibit already rules out, since CDP is stated to be enabled on Gi0/5. Option B changes how often advertisements go out, which cannot help a neighbour that does not speak the protocol. Option C invents a second process; CDP has only one and its limitation is the protocol, not capacity.",
+      "difficulty": 3,
+      "skills": [
+        "lldp",
+        "cdp",
+        "vendor-neutral-discovery",
+        "configure-discovery-protocol"
+      ]
+    },
+    {
+      "id": "2.3-004",
+      "objective": "2.3",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which neighbour has advertised itself as both a bridge and a wireless access point?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW4# show lldp neighbors\nCapability codes:\n    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device\n    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other\n\nDevice ID           Local Intf     Hold-time  Capability      Port ID\nR2                  Gi0/1          120        R               Gi0/0/0\nSW5                 Gi0/2          120        B               Gi0/24\nAP-014              Gi0/9          120        B,W             GigabitEthernet0\n\nTotal entries displayed: 3"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "SW5"
+        },
+        {
+          "id": "B",
+          "text": "AP-014"
+        },
+        {
+          "id": "C",
+          "text": "R2"
+        },
+        {
+          "id": "D",
+          "text": "None of them advertise two capabilities"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The capability codes at the top of the output map B to Bridge and W to WLAN Access Point, and only the AP-014 row carries both letters. Option A shows B alone, which is an ordinary switch. Option C shows R for Router. Option D is contradicted by the AP-014 row, and its longer Port ID reflects the access point naming its single uplink in full rather than abbreviating it.",
+      "difficulty": 2,
+      "skills": [
+        "lldp",
+        "show-lldp-neighbors",
+        "capability-codes",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "2.3-005",
+      "objective": "2.3",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which management address has the neighbour advertised to SW6?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW6# show cdp neighbors detail\n-------------------------\nDevice ID: DIST-SW-1\nEntry address(es):\n  IP address: 10.9.9.2\nPlatform: cisco WS-C3850-24T,  Capabilities: Switch IGMP\nInterface: GigabitEthernet0/24,  Port ID (outgoing port): GigabitEthernet1/0/13\nHoldtime : 171 sec\n\nVersion :\nCisco IOS Software, IOS-XE Software, Catalyst L3 Switch Software\n\nadvertisement version: 2\nDuplex: full"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "10.1.1.4"
+        },
+        {
+          "id": "B",
+          "text": "10.9.9.1"
+        },
+        {
+          "id": "C",
+          "text": "10.9.9.2"
+        },
+        {
+          "id": "D",
+          "text": "None; CDP carries no addressing"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The Entry address section carries whatever address the neighbour advertises for management, and here it reads 10.9.9.2. Option A is an address from a different capture and appears nowhere in this one. Option B assumes the neighbour holds the first address in the subnet, which the output never states. Option D denies that CDP carries addressing at all, yet the Entry address field exists precisely to convey it, which is why CDP is useful for mapping an undocumented network.",
+      "difficulty": 1,
+      "skills": [
+        "cdp",
+        "show-cdp-neighbors-detail",
+        "management-address",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

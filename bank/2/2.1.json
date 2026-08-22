@@ -1,0 +1,423 @@
+{
+  "objective": "2.1",
+  "domain": 2,
+  "blueprint_version": "v1.1",
+  "scope_note": "Configure and verify. Normal-range VLANs only. Trunk mechanics belong to 2.2; this objective covers access ports, the default VLAN, and inter-VLAN connectivity.",
+  "items": [
+    {
+      "id": "2.1-001",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which VLAN has GigabitEthernet0/3 been assigned to?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/5, Gi0/6, Gi0/7, Gi0/8\n10   SALES                            active    Gi0/1, Gi0/2\n20   VOICE                            active    Gi0/1, Gi0/2\n30   SERVERS                          active    Gi0/3\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "1"
+        },
+        {
+          "id": "B",
+          "text": "30"
+        },
+        {
+          "id": "C",
+          "text": "10"
+        },
+        {
+          "id": "D",
+          "text": "20"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Ports column lists which interfaces belong to each VLAN, and Gi0/3 appears on the row for VLAN 30, named SERVERS. Option A is the default VLAN, whose row carries Gi0/5 through Gi0/8 instead. Option C is the SALES VLAN, listing Gi0/1 and Gi0/2. Option D is the VOICE VLAN, which lists the same two ports because they also carry voice traffic, and neither row mentions Gi0/3 at all.",
+      "difficulty": 1,
+      "skills": [
+        "vlan-configuration",
+        "show-vlan-brief",
+        "access-ports",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "2.1-002",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which ports have never been moved out of the default VLAN?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/5, Gi0/6, Gi0/7, Gi0/8\n10   SALES                            active    Gi0/1, Gi0/2\n20   VOICE                            active    Gi0/1, Gi0/2\n30   SERVERS                          active    Gi0/3\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/1 and Gi0/2"
+        },
+        {
+          "id": "B",
+          "text": "Gi0/3 only"
+        },
+        {
+          "id": "C",
+          "text": "None; every port has been assigned"
+        },
+        {
+          "id": "D",
+          "text": "Gi0/5, Gi0/6, Gi0/7 and Gi0/8"
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "VLAN 1 is the default, and any port not explicitly assigned elsewhere stays in it, so the four ports listed on that row are the untouched ones. Option A names ports that appear on the SALES and VOICE rows, so both have been configured. Option B names the single port belonging to SERVERS. Option C contradicts the output, which lists four ports still sitting on the VLAN 1 row.",
+      "difficulty": 2,
+      "skills": [
+        "vlan-configuration",
+        "default-vlan",
+        "show-vlan-brief",
+        "access-ports"
+      ]
+    },
+    {
+      "id": "2.1-003",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which pair of interface commands meets the requirement for Gi0/4?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! SW1 - GigabitEthernet0/4 as it stands today\n!\ninterface GigabitEthernet0/4\n description spare port, to be handed to the server team\n no shutdown\n!\n\nVLAN 30 already exists on SW1. Gi0/4 must carry untagged traffic for a\nsingle server in VLAN 30 and must never negotiate a trunk."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "switchport mode access, then switchport access vlan 30"
+        },
+        {
+          "id": "B",
+          "text": "switchport access vlan 30, then switchport mode trunk"
+        },
+        {
+          "id": "C",
+          "text": "switchport mode access, then switchport voice vlan 30"
+        },
+        {
+          "id": "D",
+          "text": "switchport mode dynamic auto, then switchport access vlan 30"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Setting the mode to access fixes the port so it never negotiates a trunk, and the access vlan command places its untagged traffic in VLAN 30, which is exactly what a single server needs. Option B assigns the VLAN and then makes the port a trunk, which would tag traffic the server cannot read. Option C configures a voice VLAN, meant for the tagged traffic of an IP phone rather than a server. Option D leaves the port willing to negotiate, which the requirement forbids.",
+      "difficulty": 2,
+      "skills": [
+        "vlan-configuration",
+        "access-ports",
+        "switchport-mode",
+        "configure-access-vlan"
+      ]
+    },
+    {
+      "id": "2.1-004",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. How does SW1 handle the traffic arriving from the two devices on Gi0/1?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! SW1 - relevant configuration\n!\ninterface GigabitEthernet0/1\n switchport mode access\n switchport access vlan 10\n switchport voice vlan 20\n!\n\nAn IP phone is cabled to Gi0/1, and a PC is cabled into the switch port\non the back of that phone."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Both devices send tagged frames, the PC in VLAN 10 and the phone in VLAN 20."
+        },
+        {
+          "id": "B",
+          "text": "Both devices send untagged frames, and the switch places all of it in VLAN 10."
+        },
+        {
+          "id": "C",
+          "text": "The PC sends untagged frames into VLAN 10; the phone tags its own for VLAN 20."
+        },
+        {
+          "id": "D",
+          "text": "The port turns into a trunk and carries VLANs 10 and 20 tagged in both directions."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "A port with both an access VLAN and a voice VLAN carries two kinds of traffic at once: whatever arrives untagged lands in the access VLAN, while the phone is told through CDP to tag its own traffic for the voice VLAN. Option A would require the PC to tag, which an ordinary host does not do. Option B ignores the voice VLAN entirely. Option D describes a trunk, and the configuration reads switchport mode access, which the voice VLAN does not change.",
+      "difficulty": 3,
+      "skills": [
+        "vlan-configuration",
+        "voice-vlan",
+        "access-ports",
+        "tagged-vs-untagged"
+      ]
+    },
+    {
+      "id": "2.1-005",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why can VLAN 20 hosts not reach their gateway while VLAN 10 hosts can?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R1 - router on a stick\n!\ninterface GigabitEthernet0/0.10\n encapsulation dot1Q 10\n ip address 192.168.10.1 255.255.255.0\n!\ninterface GigabitEthernet0/0.20\n encapsulation dot1Q 30\n ip address 192.168.20.1 255.255.255.0\n!\n----------------------------------------------------------\nSW1 carries VLANs 10 and 20 across the trunk to R1. Hosts in VLAN 10\nreach 192.168.10.1 without trouble. Hosts in VLAN 20 cannot reach\n192.168.20.1 at all."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A subinterface number must match the VLAN ID before encapsulation takes effect."
+        },
+        {
+          "id": "B",
+          "text": "The trunk to R1 needs switchport nonegotiate before subinterfaces will pass traffic."
+        },
+        {
+          "id": "C",
+          "text": "Each subinterface needs its own no shutdown command before it will forward."
+        },
+        {
+          "id": "D",
+          "text": "The second subinterface tags for VLAN 30, which the trunk does not carry."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The VLAN a subinterface serves is set by the encapsulation dot1Q value, not by the subinterface number, and the second one reads 30 while the trunk carries only VLANs 10 and 20, so nothing tagged for VLAN 20 ever reaches a matching subinterface. Option A inverts that relationship: the number is a label and is conventionally matched for readability alone. Option B names a command affecting trunk negotiation rather than tagging. Option C is wrong because subinterfaces follow the state of the physical interface, which is already up.",
+      "difficulty": 3,
+      "skills": [
+        "inter-vlan-connectivity",
+        "router-on-a-stick",
+        "dot1q-encapsulation",
+        "troubleshoot-vlan"
+      ]
+    },
+    {
+      "id": "2.1-006",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which approach gives the two VLANs reachability to each other on SW-CORE?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                     +----------------+\n                     |  SW-CORE (L3)  |\n                     +---+--------+---+\n                         |        |\n                     VLAN 10   VLAN 20\n                 192.168.10.0/24  192.168.20.0/24\n\nSW-CORE is a Layer 3 switch. Both VLANs exist in its VLAN database and\nboth have active access ports. No router is attached, and hosts in the\ntwo VLANs must be able to reach each other."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Create interface vlan 10 and interface vlan 20, then apply switchport mode access to each."
+        },
+        {
+          "id": "B",
+          "text": "Enable ip routing, then give interface vlan 10 and interface vlan 20 an address."
+        },
+        {
+          "id": "C",
+          "text": "Create a subinterface per VLAN with encapsulation dot1Q and an address on each."
+        },
+        {
+          "id": "D",
+          "text": "Convert one physical port per VLAN into a routed port and address each of them."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "A Layer 3 switch routes between VLANs using switched virtual interfaces, one per VLAN, but only once ip routing is enabled globally; without it the SVIs act as management interfaces and forward nothing. Option A applies a switchport command to a virtual interface, which has no physical port to switch. Option C describes router-on-a-stick, which belongs on a router across a trunk rather than on the switch itself. Option D consumes two physical ports and still leaves the VLANs unrouted.",
+      "difficulty": 2,
+      "skills": [
+        "inter-vlan-connectivity",
+        "svi",
+        "layer-3-switch",
+        "ip-routing"
+      ]
+    },
+    {
+      "id": "2.1-007",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does the Vlan30 interface stay down while Vlan10 is up?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW2# show ip interface brief\nInterface              IP-Address      OK? Method Status                Protocol\nVlan1                  unassigned      YES unset  administratively down down\nVlan10                 192.168.10.1    YES manual up                    up\nVlan30                 192.168.30.1    YES manual down                  down\n\n----------------------------------------------------------\nSW2# show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/6, Gi0/7, Gi0/8\n10   SALES                            active    Gi0/1, Gi0/2\n30   SERVERS                          active\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup\n\nip routing is enabled, and neither SVI carries a shutdown command."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "No access port in VLAN 30 is up, so nothing brings the SVI into service."
+        },
+        {
+          "id": "B",
+          "text": "The Vlan30 interface is missing a no shutdown command in the configuration."
+        },
+        {
+          "id": "C",
+          "text": "VLAN 30 has not been created in the switch's VLAN database."
+        },
+        {
+          "id": "D",
+          "text": "ip routing has not been enabled, so only one SVI may be active at a time."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "An SVI follows its VLAN, coming up only while at least one access port in that VLAN is up or a trunk carries it; the VLAN 30 row lists no ports at all, while VLAN 10 lists two, which is the whole difference between the two interfaces. Option B is ruled out by the note that neither SVI carries a shutdown. Option C is contradicted by VLAN 30 appearing in the VLAN table as active. Option D invents a one-SVI limit, and the exhibit states ip routing is already on.",
+      "difficulty": 3,
+      "skills": [
+        "inter-vlan-connectivity",
+        "svi",
+        "svi-state",
+        "troubleshoot-vlan"
+      ]
+    },
+    {
+      "id": "2.1-008",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why can the two hosts not reach each other across the trunk?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/5, Gi0/6\n40   PROJECT                          active    Gi0/1\n\n----------------------------------------------------------\nSW2# show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/5, Gi0/6\n10   SALES                            active    Gi0/2\n\nGi0/1 on SW1 and Gi0/1 on SW2 are both configured with\nswitchport access vlan 40. The trunk joining the two switches is up\nand allows every VLAN. A host on each of those two ports cannot\nreach the other."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Spanning tree has placed VLAN 40 into a blocking state on the trunk link."
+        },
+        {
+          "id": "B",
+          "text": "The two switches disagree about the native VLAN configured on the trunk."
+        },
+        {
+          "id": "C",
+          "text": "VLAN 40 does not exist on SW2, so its port cannot become active in it."
+        },
+        {
+          "id": "D",
+          "text": "The two hosts sit in different subnets and require a router between them."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "A VLAN has to exist in a switch's own database before a port can join it, and SW2's table lists only VLANs 1 and 10; assigning its Gi0/1 to VLAN 40 therefore leaves that port inactive no matter what the trunk allows. Option A blames spanning tree, but a blocked VLAN would still appear in SW2's table. Option B describes a native VLAN mismatch, which affects untagged traffic rather than a VLAN missing entirely. Option D assumes different subnets, when both hosts are meant to share VLAN 40.",
+      "difficulty": 2,
+      "skills": [
+        "vlan-configuration",
+        "vlans-across-switches",
+        "vlan-database",
+        "troubleshoot-vlan"
+      ]
+    },
+    {
+      "id": "2.1-009",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. An IP phone on this port tags the traffic it originates. Which VLAN does that tagged traffic belong to?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show interfaces GigabitEthernet0/2 switchport\nName: Gi0/2\nSwitchport: Enabled\nAdministrative Mode: static access\nOperational Mode: static access\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: native\nNegotiation of Trunking: Off\nAccess Mode VLAN: 10 (SALES)\nTrunking Native Mode VLAN: 1 (default)\nVoice VLAN: 20 (VOICE)"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "1 (default)"
+        },
+        {
+          "id": "B",
+          "text": "20 (VOICE)"
+        },
+        {
+          "id": "C",
+          "text": "10 (SALES)"
+        },
+        {
+          "id": "D",
+          "text": "No VLAN; tagged frames are dropped"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Voice VLAN line records 20, and that is the VLAN the switch instructs the attached phone to tag its own traffic for. Option C is the Access Mode VLAN, which carries whatever arrives untagged, meaning the PC behind the phone rather than the phone itself. Option A is the Trunking Native Mode VLAN, which is irrelevant on a port operating in static access mode. Option D is contradicted by the voice VLAN being configured precisely so tagged frames are accepted.",
+      "difficulty": 2,
+      "skills": [
+        "voice-vlan",
+        "verify-vlan-configuration",
+        "show-interfaces-switchport",
+        "tagged-vs-untagged"
+      ]
+    },
+    {
+      "id": "2.1-010",
+      "objective": "2.1",
+      "domain": 2,
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two commands complete the configuration of Gi0/2? (Choose two.)",
+      "exhibit": {
+        "kind": "config",
+        "content": "! SW3 - GigabitEthernet0/2 as it stands today\n!\ninterface GigabitEthernet0/2\n switchport mode access\n!\n\nVLANs 10 and 20 both exist on SW3. A PC must reach the network untagged\nthrough VLAN 10, while the IP phone it sits behind must tag its own\ntraffic for VLAN 20."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "switchport access vlan 10"
+        },
+        {
+          "id": "B",
+          "text": "switchport trunk allowed vlan 10,20"
+        },
+        {
+          "id": "C",
+          "text": "switchport mode trunk"
+        },
+        {
+          "id": "D",
+          "text": "switchport voice vlan 20"
+        },
+        {
+          "id": "E",
+          "text": "switchport trunk native vlan 10"
+        }
+      ],
+      "correct": [
+        "A",
+        "D"
+      ],
+      "explanation": "The access VLAN takes the untagged traffic from the PC and the voice VLAN tells the phone which tag to apply, so those two commands together serve both devices on one access port. Option B allows VLANs on a trunk, and this port is not one. Option C would convert the port to a trunk, which the attached PC could not use. Option E sets the untagged VLAN of a trunk, which again applies only to a port operating in trunk mode.",
+      "difficulty": 2,
+      "skills": [
+        "vlan-configuration",
+        "voice-vlan",
+        "access-ports",
+        "configure-access-vlan"
+      ]
+    }
+  ]
+}
