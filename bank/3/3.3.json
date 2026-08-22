@@ -216,7 +216,7 @@
       "stem": "Refer to the exhibit. R6 rejects the static route with the message shown. Which explanation accounts for the rejection?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "! R6 - relevant configuration\n!\nipv6 unicast-routing\n!\ninterface GigabitEthernet0/0\n ipv6 address 2001:DB8:ACAD:12::1/64\n no shutdown\n!\n\nR6(config)# ipv6 route 2001:DB8:ACAD:3::/64 FE80::2\n% Interface has to be specified for a link-local nexthop\nR6(config)#"
+        "content": "R6# show running-config | include unicast-routing|ipv6 address\nipv6 unicast-routing\n ipv6 address 2001:DB8:ACAD:12::1/64\nR6#\nR6# configure terminal\nEnter configuration commands, one per line.  End with CNTL/Z.\nR6(config)# ipv6 route 2001:DB8:ACAD:3::/64 FE80::2\n% Interface has to be specified for a link-local nexthop\nR6(config)#"
       },
       "options": [
         {
@@ -254,10 +254,10 @@
       "domain": 3,
       "type": "single",
       "select_count": 1,
-      "stem": "Refer to the exhibit. Four static routes are configured on R7, but the verification output lists only three. Which explanation accounts for the missing entry?",
+      "stem": "Refer to the exhibit. Four static routes are configured on R7, but only three of them reach the routing table. Which explanation accounts for the missing entry?",
       "exhibit": {
         "kind": "cli_output",
-        "content": "R7# show running-config | include ^ip route\nip route 10.30.0.0 255.255.0.0 10.1.1.2\nip route 10.30.7.7 255.255.255.255 10.1.2.2\nip route 192.168.9.0 255.255.255.0 10.99.99.2\nip route 0.0.0.0 0.0.0.0 203.0.113.1\nR7#\nR7# show ip route static\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 203.0.113.1\n      10.0.0.0/8 is variably subnetted, 6 subnets, 4 masks\nS        10.30.0.0/16 [1/0] via 10.1.1.2\nS        10.30.7.7/32 [1/0] via 10.1.2.2"
+        "content": "R7# show running-config | include ^ip route\nip route 10.30.0.0 255.255.0.0 10.1.1.2\nip route 10.30.7.7 255.255.255.255 10.1.2.2\nip route 192.168.9.0 255.255.255.0 10.99.99.2\nip route 0.0.0.0 0.0.0.0 203.0.113.1\nR7#\nR7# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 203.0.113.1\n      10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nC        10.1.2.0/30 is directly connected, GigabitEthernet0/1\nL        10.1.2.1/32 is directly connected, GigabitEthernet0/1\nS        10.30.0.0/16 [1/0] via 10.1.1.2\nS        10.30.7.7/32 [1/0] via 10.1.2.2\n      203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks\nC        203.0.113.0/30 is directly connected, GigabitEthernet0/2\nL        203.0.113.2/32 is directly connected, GigabitEthernet0/2"
       },
       "options": [
         {
@@ -266,7 +266,7 @@
         },
         {
           "id": "B",
-          "text": "The 192.168.9.0/24 route is present but suppressed, as this command hides /24 entries."
+          "text": "The 192.168.9.0/24 route is installed but hidden, as the table lists only summaries."
         },
         {
           "id": "C",
@@ -280,7 +280,7 @@
       "correct": [
         "C"
       ],
-      "explanation": "A static route configured with a next-hop address installs only once the router can resolve that address through an existing entry. No route covers 10.99.99.2 here, so the static stays in the configuration but never reaches the table. Option A is wrong because 255.255.255.0 is perfectly valid. Option B invents filtering behaviour; the command hides non-static routes, not particular mask lengths. Option D misapplies longest prefix match, since a /24 is more specific than the default and would never be displaced by it.",
+      "explanation": "A static route configured with a next-hop address installs only once the router can resolve that address through an existing entry. No route covers 10.99.99.2 here, so the static stays in the configuration but never reaches the table. Option A is wrong because 255.255.255.0 is perfectly valid. Option B invents a display filter; the table lists every installed route, summarised or not. Option D misapplies longest prefix match, since a /24 is more specific than the default and would never be displaced by it.",
       "difficulty": 2,
       "skills": [
         "verify-static-routes",

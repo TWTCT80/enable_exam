@@ -284,15 +284,15 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
         elif best_correct == max(distractors):
             joint_hits += 1
     if considered:
-        share = strict_hits / considered
-        if share > MAX_LONGEST_CORRECT:
-            err(f"length tell: correct answer is strictly the longest option in "
-                f"{share:.1%} of items ({strict_hits}/{considered}), "
-                f"limit {MAX_LONGEST_CORRECT:.0%}")
-        joint_share = (strict_hits + joint_hits) / considered
-        if joint_share > 0.50:
-            warn(f"length: correct answer is longest or joint-longest in "
-                 f"{joint_share:.0%} of items ({strict_hits + joint_hits}/{considered})")
+        # A strictly-longest key is a full hit. An exact tie with a distractor
+        # still narrows a length-picker's guess (2 of n rather than 1 of n), so
+        # it counts half rather than nothing.
+        score = (strict_hits + 0.5 * joint_hits) / considered
+        if score > MAX_LONGEST_CORRECT:
+            err(f"length tell: weighted longest-answer score {score:.1%} exceeds "
+                f"{MAX_LONGEST_CORRECT:.0%} "
+                f"({strict_hits} strictly longest, {joint_hits} tied, "
+                f"of {considered} items)")
 
     # --- exhibitless share --------------------------------------------------
     none_ct = sum(1 for _, it in items if it.get("exhibit", {}).get("kind") == "none")

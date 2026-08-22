@@ -77,15 +77,12 @@ EX_005 = """    +------------+                          +------------+
 Only 10.9.9.9 may be reached through R2. Every other host in
 10.9.9.0/24 must remain unreachable from R5."""
 
-EX_006 = """! R6 - relevant configuration
-!
+EX_006 = """R6# show running-config | include unicast-routing|ipv6 address
 ipv6 unicast-routing
-!
-interface GigabitEthernet0/0
  ipv6 address 2001:DB8:ACAD:12::1/64
- no shutdown
-!
-
+R6#
+R6# configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
 R6(config)# ipv6 route 2001:DB8:ACAD:3::/64 FE80::2
 % Interface has to be specified for a link-local nexthop
 R6(config)#"""
@@ -99,10 +96,17 @@ EX_007 = "\n".join([
     "R7#",
     route_table("R7", "Gateway of last resort is 203.0.113.1 to network 0.0.0.0", [
         top("S*", "0.0.0.0/0 [1/0] via 203.0.113.1"),
-        parent("10.0.0.0/8 is variably subnetted, 6 subnets, 4 masks"),
+        parent("10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks"),
+        kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+        kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+        kid("C", "10.1.2.0/30 is directly connected, GigabitEthernet0/1"),
+        kid("L", "10.1.2.1/32 is directly connected, GigabitEthernet0/1"),
         kid("S", "10.30.0.0/16 [1/0] via 10.1.1.2"),
         kid("S", "10.30.7.7/32 [1/0] via 10.1.2.2"),
-    ]).replace("R7# show ip route", "R7# show ip route static"),
+        parent("203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks"),
+        kid("C", "203.0.113.0/30 is directly connected, GigabitEthernet0/2"),
+        kid("L", "203.0.113.2/32 is directly connected, GigabitEthernet0/2"),
+    ]),
 ])
 
 EX_008 = """    +------------+                              +--------------+
@@ -244,15 +248,15 @@ ITEMS = [
 },
 {
   "id": "3.3-007", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
-  "stem": "Refer to the exhibit. Four static routes are configured on R7, but the verification output lists only three. Which explanation accounts for the missing entry?",
+  "stem": "Refer to the exhibit. Four static routes are configured on R7, but only three of them reach the routing table. Which explanation accounts for the missing entry?",
   "exhibit": {"kind": "cli_output", "content": EX_007},
   "options": opts(
     "The 192.168.9.0/24 route was refused because its subnet mask is invalid.",
-    "The 192.168.9.0/24 route is present but suppressed, as this command hides /24 entries.",
+    "The 192.168.9.0/24 route is installed but hidden, as the table lists only summaries.",
     "R7 has no route to the next hop 10.99.99.2, so the static route cannot be installed.",
     "The 192.168.9.0/24 route was displaced by the default route already in the table."),
   "correct": ["C"],
-  "explanation": "A static route configured with a next-hop address installs only once the router can resolve that address through an existing entry. No route covers 10.99.99.2 here, so the static stays in the configuration but never reaches the table. Option A is wrong because 255.255.255.0 is perfectly valid. Option B invents filtering behaviour; the command hides non-static routes, not particular mask lengths. Option D misapplies longest prefix match, since a /24 is more specific than the default and would never be displaced by it.",
+  "explanation": "A static route configured with a next-hop address installs only once the router can resolve that address through an existing entry. No route covers 10.99.99.2 here, so the static stays in the configuration but never reaches the table. Option A is wrong because 255.255.255.0 is perfectly valid. Option B invents a display filter; the table lists every installed route, summarised or not. Option D misapplies longest prefix match, since a /24 is more specific than the default and would never be displaced by it.",
   "difficulty": 2,
   "skills": ["verify-static-routes", "recursive-lookup", "next-hop-reachability", "show-ip-route-static"],
 },
