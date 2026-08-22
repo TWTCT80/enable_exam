@@ -297,7 +297,7 @@ ITEMS = [
     "ipv6 unicast-routing",
     "ipv6 route 2001:DB8:ACAD:5::/64 2001:DB8:ACAD:12::2",
     "ipv6 route 2001:DB8:ACAD:5::/64 FE80::2",
-    "ipv6 address autoconfig on GigabitEthernet0/0"),
+    "ipv6 address autoconfig on the GigabitEthernet0/0 interface instead"),
   "correct": ["B", "C"],
   "explanation": "R10 needs IPv6 forwarding turned on globally and a static route toward the neighbour's global address, so B and C together satisfy the requirement. Option A enables IPv4 routing, which is on by default and has no effect on IPv6 traffic. Option D points at a link-local next hop without the exit interface, which IOS rejects as ambiguous. Option E would replace the manually configured address with an autoconfigured one, changing the interface rather than establishing the route.",
   "difficulty": 2,
@@ -330,6 +330,136 @@ ITEMS = [
   "explanation": "In show ipv6 route output the next hop appears on the indented via line beneath its prefix, and the one under 2001:DB8:ACAD:9::/64 reads 2001:DB8:ACAD:34::2. Option A takes the via line belonging to the 2001:DB8:ACAD:7::/64 entry above it, the classic error of reading the right field from the neighbouring block. Option B belongs to the ::/0 default entry below. Option D assumes the next hop is the first address inside the destination prefix, which the output never states.",
   "difficulty": 1,
   "skills": ["verify-static-routes", "ipv6-static-route", "next-hop", "read-correct-row"],
+},
+{
+  "id": "3.3-013", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. R13 must reach 2001:DB8:ACAD:9::/64 through the neighbour whose link-local address is FE80::2, reached over GigabitEthernet0/0. Which command is accepted and produces that route?",
+  "exhibit": {"kind": "topology", "content": """    +-------------+                                 +-------------+
+    |     R13     |      2001:DB8:ACAD:12::/64      |     R14     |
+    |             |---------------------------------|             |
+    |       Gi0/0 | ::1                         ::2 | Gi0/0       |
+    +-------------+                                 +------+------+
+                     R14 link-local is FE80::2             |
+                                                           |
+                                                 2001:DB8:ACAD:9::/64
+
+The link between R13 and R14 is Ethernet, and ipv6 unicast-routing is
+already enabled on both routers."""},
+  "options": opts(
+    "ipv6 route 2001:DB8:ACAD:9::/64 GigabitEthernet0/0 FE80::2",
+    "ipv6 route 2001:DB8:ACAD:9::/64 FE80::2 GigabitEthernet0/0",
+    "ipv6 route 2001:DB8:ACAD:9::/64 FE80::2",
+    "ipv6 route 2001:DB8:ACAD:9::/64 GigabitEthernet0/0"),
+  "correct": ["A"],
+  "explanation": "When the next hop is link-local the exit interface must come first, then the address, because FE80::2 alone does not say which link it sits on. Option B carries exactly the right keywords in the wrong order, which IOS will not parse. Option C omits the interface altogether and is rejected outright for that reason. Option D names only the interface, which IOS accepts but leaves R13 relying on neighbour discovery for every destination across a multi-access link rather than pointing at R14.",
+  "difficulty": 2,
+  "skills": ["ipv6-static-route", "link-local-next-hop", "exit-interface", "command-syntax-order"],
+},
+{
+  "id": "3.3-014", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. R14 must reach all four branch subnets through 10.1.1.2 using a single static route that covers those four and nothing beyond them. Which command does that?",
+  "exhibit": {"kind": "topology", "content": """    +-------------+                          +-------------+
+    |     R14     |      10.1.1.0/30         |   BRANCH    |
+    |             |--------------------------|             |
+    |       Gi0/0 | .1                    .2 |             |
+    +-------------+                          +------+------+
+                                                    |
+                                    +---------------+---------------+
+                                    | 172.16.20.0/24                |
+                                    | 172.16.21.0/24                |
+                                    | 172.16.22.0/24                |
+                                    | 172.16.23.0/24                |
+                                    +-------------------------------+"""},
+  "options": opts(
+    "ip route 172.16.20.0 255.255.254.0 10.1.1.2",
+    "ip route 172.16.20.0 255.255.252.0 10.1.1.2",
+    "ip route 172.16.16.0 255.255.252.0 10.1.1.2",
+    "ip route 172.16.16.0 255.255.248.0 10.1.1.2"),
+  "correct": ["B"],
+  "explanation": "Four consecutive /24s starting at a multiple of four summarise to a /22, and 255.255.252.0 anchored at 172.16.20.0 spans 172.16.20.0 through 172.16.23.255 exactly. Option A is a /23 and reaches only the first two subnets. Option C uses the right mask but the wrong base, covering 172.16.16.0 through 172.16.19.255, none of which are branch subnets. Option D is a /21 spanning 172.16.16.0 through 172.16.23.255, which does include all four but drags in four subnets that were not meant to be covered.",
+  "difficulty": 3,
+  "skills": ["static-route-configuration", "route-summarisation", "subnet-mask", "block-size"],
+},
+{
+  "id": "3.3-015", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. The 192.168.77.0/24 block is unassigned, and traffic addressed to it should be dropped by R15 instead of being handed to the ISP. Which command achieves that?",
+  "exhibit": {"kind": "cli_output", "content": route_table("R15", "Gateway of last resort is 203.0.113.1 to network 0.0.0.0", [
+      top("S*", "0.0.0.0/0 [1/0] via 203.0.113.1"),
+      parent("192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks"),
+      kid("C", "192.168.1.0/24 is directly connected, GigabitEthernet0/1"),
+      kid("L", "192.168.1.1/32 is directly connected, GigabitEthernet0/1"),
+      parent("203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks"),
+      kid("C", "203.0.113.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "203.0.113.2/32 is directly connected, GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "ip route 192.168.77.0 255.255.255.0 0.0.0.0",
+    "ip route 192.168.77.0 255.255.255.0 blackhole",
+    "no ip route 192.168.77.0 255.255.255.0",
+    "ip route 192.168.77.0 255.255.255.0 Null0"),
+  "correct": ["D"],
+  "explanation": "Null0 is a virtual interface that discards everything sent to it, so a static route pointing there gives the block a longer match than the default and drops the traffic locally. Option A names 0.0.0.0 as a next hop, which does not identify the discard interface. Option B borrows the blackhole keyword used by other vendors; IOS does not accept it. Option C removes a route that was never configured, leaving the default to keep carrying the traffic to the ISP, which is the behaviour being eliminated.",
+  "difficulty": 2,
+  "skills": ["static-route-configuration", "null0-discard-route", "longest-prefix-match"],
+},
+{
+  "id": "3.3-016", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. The route was meant to cover only 192.168.16.0/24, but the mask was mistyped. What is the effect of the command as entered?",
+  "exhibit": {"kind": "config", "content": """! R16 - relevant configuration
+!
+ip route 192.168.16.0 255.255.240.0 10.1.1.2
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+!
+
+Traffic for every 192.168.x.x destination other than 192.168.16.0/24 is
+expected to leave by the default route."""},
+  "options": opts(
+    "It covers only 192.168.16.0 through 192.168.16.255, exactly as intended.",
+    "It also captures 192.168.17.0 through 192.168.31.255, bypassing the default.",
+    "It is rejected at entry, because the address and mask are inconsistent.",
+    "It covers the whole of 192.168.0.0 through 192.168.255.255, capturing every private prefix."),
+  "correct": ["B"],
+  "explanation": "255.255.240.0 is a /20, and a /20 anchored at 192.168.16.0 spans sixteen values in the third octet, 16 through 31. Traffic to any of those now follows 10.1.1.2 rather than the default. Option A describes the /24 that was intended but not the mask that was typed. Option C expects a rejection, but 16 is a valid multiple of 16 so the pair is consistent and IOS accepts it silently, which is what makes the error hard to spot. Option D describes a /16, two steps broader than the mask shown.",
+  "difficulty": 3,
+  "skills": ["static-route-configuration", "subnet-mask", "block-size", "troubleshoot-static-route"],
+},
+{
+  "id": "3.3-017", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": ("Refer to the exhibit. The default entry reads 'is directly connected' "
+           "rather than naming a next hop. What does that tell you about how it "
+           "was configured?"),
+  "exhibit": {"kind": "cli_output", "content": route_table("R17", "Gateway of last resort is 0.0.0.0 to network 0.0.0.0", [
+      top("S*", "0.0.0.0/0 is directly connected, Serial0/0/0"),
+      parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "The default route was learned dynamically from the service provider.",
+    "The default route carries an administrative distance of 0, as connected routes do.",
+    "R17 must ARP for every remote destination reached across that link.",
+    "The default route was configured with an exit interface instead of a next hop."),
+  "correct": ["D"],
+  "explanation": "A static route configured with only an exit interface is displayed as directly connected, which is why the entry names Serial0/0/0 and no via address. Option A is ruled out by the S code, which marks a static route rather than a learned one. Option B repeats the frequent belief that this display form implies distance 0; the route still carries the static default of 1. Option C describes what happens on a multi-access link, but a point-to-point serial interface has one possible receiver and uses no ARP.",
+  "difficulty": 2,
+  "skills": ["verify-static-routes", "exit-interface-vs-next-hop", "default-route", "point-to-point-link"],
+},
+{
+  "id": "3.3-018", "objective": "3.3", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. Which entry in R18's table is a statically configured host route?",
+  "exhibit": {"kind": "cli_output", "content": route_table("R18", "Gateway of last resort is not set", [
+      parent("10.0.0.0/8 is variably subnetted, 5 subnets, 4 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+      kid("S", "10.60.0.0/16 [1/0] via 10.1.1.2"),
+      kid("S", "10.60.5.7/32 [1/0] via 10.1.1.2"),
+      kid("S", "10.70.0.0/20 [1/0] via 10.1.1.2"),
+  ])},
+  "options": opts("10.60.5.7/32", "10.60.0.0/16", "10.1.1.1/32", "10.70.0.0/20"),
+  "correct": ["A"],
+  "explanation": "A host route carries the all-ones mask, and the only entry that is both coded S and written /32 is 10.60.5.7/32. Option B is a static route but a /16 network route covering 65,534 addresses. Option C is the trap: it is a /32, but its code is L, meaning IOS created it automatically for the router's own interface address rather than an administrator configuring it. Option D is a static /20 network route, broader still than option B.",
+  "difficulty": 1,
+  "skills": ["verify-static-routes", "host-route", "route-codes", "local-vs-connected"],
 },
 ]
 

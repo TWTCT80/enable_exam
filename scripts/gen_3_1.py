@@ -10,20 +10,12 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from iosfmt import top, kid, parent, cont, LEGEND as LEGEND_FULL, opts  # noqa: E402
-
-
-def route_table(prompt, legend, golr, lines):
-    parts = [f"{prompt}# show ip route", legend, "", golr, ""]
-    parts.extend(lines)
-    return "\n".join(parts)
+from iosfmt import top, kid, parent, cont, route_table, opts  # noqa: E402
 
 
 # ---- exhibits ------------------------------------------------------------
 
-EX_001 = route_table(
-    "R1", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_001 = route_table("R1", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks"),
         kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
@@ -34,9 +26,7 @@ EX_001 = route_table(
         top("O", "192.168.20.0/24 [110/65] via 10.1.2.2, 00:09:53, GigabitEthernet0/1"),
     ])
 
-EX_002 = route_table(
-    "R2", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_002 = route_table("R2", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
         kid("C", "10.7.7.0/30 is directly connected, GigabitEthernet0/0"),
@@ -46,9 +36,7 @@ EX_002 = route_table(
     ])
 
 _S_DEFAULT = top("S*", "0.0.0.0/0 [1/0] via 203.0.113.1")
-EX_003 = route_table(
-    "BR1", LEGEND_FULL,
-    "Gateway of last resort is 203.0.113.1 to network 0.0.0.0",
+EX_003 = route_table("BR1", "Gateway of last resort is 203.0.113.1 to network 0.0.0.0",
     [
         _S_DEFAULT,
         parent("192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks"),
@@ -59,9 +47,7 @@ EX_003 = route_table(
         kid("L", "203.0.113.2/32 is directly connected, GigabitEthernet0/0"),
     ])
 
-EX_004 = route_table(
-    "R4", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_004 = route_table("R4", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks"),
         kid("C", "10.0.0.0/30 is directly connected, GigabitEthernet0/0"),
@@ -72,9 +58,7 @@ EX_004 = route_table(
         kid("O", "10.30.9.9/32 [110/129] via 10.0.0.2, 00:17:58, GigabitEthernet0/0"),
     ])
 
-EX_005 = route_table(
-    "SW3", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_005 = route_table("SW3", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks"),
         kid("C", "10.20.30.0/24 is directly connected, GigabitEthernet0/1"),
@@ -83,9 +67,7 @@ EX_005 = route_table(
         kid("L", "10.40.50.1/32 is directly connected, GigabitEthernet0/2"),
     ])
 
-EX_006 = route_table(
-    "R6", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_006 = route_table("R6", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
         kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
@@ -95,9 +77,7 @@ EX_006 = route_table(
         top("O E2", "198.51.100.0/24 [110/20] via 10.1.1.2, 00:12:19, GigabitEthernet0/0"),
     ])
 
-EX_007 = route_table(
-    "R7", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_007 = route_table("R7", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks"),
         kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
@@ -107,9 +87,7 @@ EX_007 = route_table(
     ])
 
 _ECMP = top("O", "192.168.8.0/24 [110/74] via 10.4.4.2, 00:31:16, GigabitEthernet0/1")
-EX_008 = route_table(
-    "R8", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_008 = route_table("R8", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks"),
         kid("C", "10.4.4.0/30 is directly connected, GigabitEthernet0/1"),
@@ -120,9 +98,7 @@ EX_008 = route_table(
         cont(_ECMP, "[110/74] via 10.5.5.2, 00:31:16, GigabitEthernet0/2"),
     ])
 
-EX_009 = route_table(
-    "R9", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_009 = route_table("R9", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
         kid("C", "10.9.9.0/30 is directly connected, GigabitEthernet0/0"),
@@ -131,9 +107,7 @@ EX_009 = route_table(
         top("D EX", "192.168.80.0/24 [170/2681856] via 10.9.9.2, 00:41:02, GigabitEthernet0/0"),
     ])
 
-EX_010 = route_table(
-    "R10", LEGEND_FULL,
-    "Gateway of last resort is not set",
+EX_010 = route_table("R10", "Gateway of last resort is not set",
     [
         parent("10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks"),
         kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
@@ -281,6 +255,64 @@ ITEMS = [
   "explanation": "The 192.168.30.0/24 row reads via 10.1.1.6, GigabitEthernet0/1, so 10.1.1.6 is the listed next hop. Option A is 10.1.1.2, the next hop printed on the 192.168.20.0/24 row directly above, the classic error of reading the correct field from the adjacent row. Option B assumes the next hop is the first address inside the destination prefix, which the table never states. Option D is 10.1.1.1, R10's own local interface address shown by the L entry, not a next hop.",
   "difficulty": 1,
   "skills": ["routing-table-components", "next-hop", "read-correct-row"],
+},
+{
+  "id": "3.1-011", "objective": "3.1", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. Setting aside the connected and local entries, which of R11's routed entries carries the longest prefix?",
+  "exhibit": {"kind": "cli_output", "content": route_table("R11", "Gateway of last resort is not set", [
+      parent("10.0.0.0/8 is variably subnetted, 6 subnets, 6 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+      kid("S", "10.40.0.0/13 [1/0] via 10.1.1.2"),
+      kid("O", "10.20.0.0/16 [110/65] via 10.1.1.2, 00:14:03, GigabitEthernet0/0"),
+      kid("O", "10.20.30.0/24 [110/74] via 10.1.1.2, 00:14:03, GigabitEthernet0/0"),
+      kid("D", "10.60.5.0/26 [90/3072] via 10.1.1.2, 00:09:41, GigabitEthernet0/0"),
+  ])},
+  "options": opts("10.20.0.0/16", "10.40.0.0/13", "10.20.30.0/24", "10.60.5.0/26"),
+  "correct": ["D"],
+  "explanation": "Prefix length counts the leading bits fixed by the mask, so the larger the number after the slash the more specific the entry; /26 is the longest among the routed entries. Option A at /16 leaves sixteen host bits free and is far broader. Option B at /13 is the broadest entry in the whole table, and picking it treats a smaller number as more specific, inverting the comparison. Option C at /24 is the closest rival and is the answer only if the /26 line is overlooked.",
+  "difficulty": 1,
+  "skills": ["routing-table-components", "network-mask", "prefix-length", "read-correct-row"],
+},
+{
+  "id": "3.1-012", "objective": "3.1", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. The three learned entries show second bracket values of 3, 2172416 and 65. What accounts for the difference in magnitude between them?",
+  "exhibit": {"kind": "cli_output", "content": route_table("R12", "Gateway of last resort is not set", [
+      parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+      top("R", "192.168.20.0/24 [120/3] via 10.1.1.2, 00:00:14, GigabitEthernet0/0"),
+      top("D", "192.168.40.0/24 [90/2172416] via 10.1.1.2, 00:31:02, GigabitEthernet0/0"),
+      top("O", "192.168.60.0/24 [110/65] via 10.1.1.2, 00:44:19, GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "The three destinations sit at different hop counts, which the values count.",
+    "Each protocol computes its metric differently, so the values share no scale.",
+    "A larger value means the destination lies further from R12 in router hops.",
+    "The values are administrative distances scaled by each protocol's weighting."),
+  "correct": ["B"],
+  "explanation": "The second bracket field is the metric of whichever protocol installed the entry, and the three protocols measure entirely different things: RIP counts hops, EIGRP composes bandwidth and delay, OSPF sums interface cost. Comparing 3 against 2172416 is therefore meaningless. Options A and C both read every value as a hop count, which holds only for the RIP entry. Option D confuses the two bracket fields, since the administrative distances are the first values, 120, 90 and 110.",
+  "difficulty": 2,
+  "skills": ["routing-table-components", "metric", "protocol-metric-types", "metric-not-comparable"],
+},
+{
+  "id": "3.1-013", "objective": "3.1", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. What does the code on R13's 0.0.0.0/0 entry reveal about how that gateway of last resort was obtained?",
+  "exhibit": {"kind": "cli_output", "content": route_table("R13", "Gateway of last resort is 10.1.1.2 to network 0.0.0.0", [
+      top("O*E2", "0.0.0.0/0 [110/1] via 10.1.1.2, 00:22:15, GigabitEthernet0/0"),
+      parent("10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.1/32 is directly connected, GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "It was configured statically on R13 and flagged as a candidate default.",
+    "It was learned from a neighbour inside R13's own area as an intra-area route.",
+    "It was learned from another OSPF area and then marked as a candidate default.",
+    "It was injected into OSPF from outside the domain and flagged as a candidate default."),
+  "correct": ["D"],
+  "explanation": "The code combines three facts: O means OSPF learned it, E2 means it is an external type 2 route injected from outside the OSPF domain, and the asterisk marks it as the candidate default. Option A would require the code S, since a locally configured default appears as a static route. Option B ignores the E2, which is precisely what rules out an intra-area origin. Option C describes an inter-area route, which would carry the code IA rather than E2.",
+  "difficulty": 3,
+  "skills": ["routing-table-components", "route-codes", "gateway-of-last-resort", "ospf-external-routes"],
 },
 ]
 

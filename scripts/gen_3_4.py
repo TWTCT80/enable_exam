@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from iosfmt import (ospf_neighbors, ospf_nbr, ospf_intf_brief, ospf_intf,  # noqa: E402
-                    ospf_intf_detail, opts)
+                    ospf_intf_detail, route_table, top, kid, parent, opts)
 
 SEP = "-" * 58
 
@@ -364,6 +364,154 @@ ITEMS = [
   "explanation": "An adjacency that halts at EXSTART or EXCHANGE points at the database exchange itself, and the two interfaces report 1500 and 9000 bytes, so the routers cannot agree on a payload size and the exchange never completes. Option B is wrong because an expired dead interval drops the neighbour out of the table rather than freezing it in EXSTART. Option C describes a condition that resolves through election rather than stalling the exchange. Option D would prevent the neighbour from being listed at all rather than holding it mid-exchange.",
   "difficulty": 2,
   "skills": ["ospf-adjacency", "mtu-mismatch", "neighbor-states", "troubleshoot-adjacency"],
+},
+{
+  "id": "3.4-014", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. The OSPF process on R14 carries no network statements, and the design calls for enabling OSPF directly on the interface instead. Which command does that?",
+  "exhibit": {"kind": "config", "content": """! R14 - relevant configuration
+!
+interface GigabitEthernet0/0
+ ip address 10.1.1.1 255.255.255.252
+ no shutdown
+!
+router ospf 1
+ router-id 14.14.14.14
+!"""},
+  "options": opts(
+    "R14(config-router)# network GigabitEthernet0/0 area 0",
+    "R14(config-if)# ip ospf 1 area 0",
+    "R14(config-if)# ospf 1 area 0",
+    "R14(config-router)# interface GigabitEthernet0/0 area 0"),
+  "correct": ["B"],
+  "explanation": "The interface-level form is ip ospf followed by the process ID and the area, entered under the interface, and it enables OSPF on that interface without any network statement. Option A keeps the network keyword, which expects an address and wildcard rather than an interface name. Option C drops the leading ip, so IOS does not recognise the command. Option D tries to nest an interface command inside router configuration mode, mixing the two modes that the interface-level form exists to separate.",
+  "difficulty": 2,
+  "skills": ["enable-ospf-on-interface", "ip-ospf-area-command", "config-mode", "single-area"],
+},
+{
+  "id": "3.4-015", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. What OSPF cost does R15 assign to Serial0/0/0?",
+  "exhibit": {"kind": "cli_output", "content": """R15# show interfaces Serial0/0/0 | include BW
+  MTU 1500 bytes, BW 1544 Kbit/sec, DLY 20000 usec,
+R15#
+R15# show ip ospf | include Reference bandwidth
+ Reference bandwidth unit is 100 mbps"""},
+  "options": opts("1", "100", "65", "64"),
+  "correct": ["D"],
+  "explanation": "Cost is the reference bandwidth divided by interface bandwidth, so 100,000,000 divided by 1,544,000 gives 64.77, and OSPF discards the remainder to leave 64. Option C rounds the quotient up to 65 instead of truncating, which is the single commonest arithmetic slip on this calculation. Option A is the cost a link at or above the reference bandwidth receives, since the formula floors at 1. Option B quotes the reference bandwidth itself rather than the result of the division.",
+  "difficulty": 3,
+  "skills": ["ospf-cost", "reference-bandwidth", "routing-protocol-metric", "cost-calculation"],
+},
+{
+  "id": "3.4-016", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. From which neighbour has R16 most recently received OSPF routing information?",
+  "exhibit": {"kind": "cli_output", "content": """R16# show ip protocols
+*** IP Routing is NSF aware ***
+
+Routing Protocol is "ospf 1"
+  Outgoing update filter list for all interfaces is not set
+  Incoming update filter list for all interfaces is not set
+  Router ID 16.16.16.16
+  Number of areas in this router is 1. 1 normal 0 stub 0 nssa
+  Maximum path: 4
+  Routing for Networks:
+    10.1.1.0 0.0.0.3 area 0
+    10.1.2.0 0.0.0.3 area 0
+  Routing Information Sources:
+    Gateway         Distance      Last Update
+    2.2.2.2              110      00:00:19
+    3.3.3.3              110      00:14:52
+  Distance: (default is 110)"""},
+  "options": opts("2.2.2.2", "3.3.3.3", "16.16.16.16", "10.1.1.0"),
+  "correct": ["A"],
+  "explanation": "The Last Update column counts elapsed time since the update arrived, so the smaller figure is the more recent one, and 2.2.2.2 at nineteen seconds beats 3.3.3.3 at almost fifteen minutes. Option B reads the larger elapsed time as the more recent, inverting the column's meaning. Option C quotes R16's own router ID, which identifies the local router rather than a source. Option D takes a value from the Routing for Networks list, which records what R16 advertises, not who it hears from.",
+  "difficulty": 2,
+  "skills": ["verify-ospf", "show-ip-protocols", "routing-information-sources", "read-correct-column"],
+},
+{
+  "id": "3.4-017", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. The neighbour has been sitting in the state shown for several minutes. What does that state indicate?",
+  "exhibit": {"kind": "cli_output", "content": ospf_neighbors("R17", [
+      ospf_nbr("2.2.2.2", 1, "INIT/DROTHER", "00:00:31", "10.1.1.2", "GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "The neighbour finished exchanging databases but has not installed the routes.",
+    "R17 has seen the neighbour's hello, but the neighbour has not yet seen R17's.",
+    "The two routers disagree over which of them is the designated router.",
+    "The dead interval has expired and the neighbour is being removed from the table."),
+  "correct": ["B"],
+  "explanation": "INIT means hellos are arriving in one direction only: R17 has heard the neighbour, but has not yet seen its own router ID listed in the neighbour's hello, so the relationship cannot advance to two-way. It usually points at something filtering traffic in one direction. Option A describes FULL, the state that follows a completed exchange. Option C describes an election dispute, which does not hold a neighbour at INIT. Option D is contradicted by the Dead Time of 31 seconds still counting down.",
+  "difficulty": 2,
+  "skills": ["ospf-adjacency", "neighbor-states", "one-way-hello", "troubleshoot-adjacency"],
+},
+{
+  "id": "3.4-018", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. Which OSPF cost does R18 apply to traffic leaving Serial0/0/0?",
+  "exhibit": {"kind": "cli_output", "content": ospf_intf_brief("R18", [
+      ospf_intf("Gi0/0", 1, 0, "10.1.1.1/30", 1, "DR", "1/1"),
+      ospf_intf("Se0/0/0", 1, 0, "10.1.2.1/30", 64, "P2P", "1/1"),
+      ospf_intf("Lo0", 1, 0, "18.18.18.18/32", 1, "LOOP", "0/0"),
+  ])},
+  "options": opts("1", "110", "64", "0"),
+  "correct": ["C"],
+  "explanation": "The Cost column on the Serial0/0/0 row reads 64, which is the value OSPF adds when a path leaves by that interface. Option A takes the cost from the GigabitEthernet0/0 row, reading the right column on the wrong line. Option B quotes 110, which is OSPF's administrative distance and never appears in this output at all. Option D assumes an unlisted interface costs nothing, but every OSPF-enabled interface carries a cost of at least 1.",
+  "difficulty": 1,
+  "skills": ["verify-ospf", "ospf-cost", "show-ip-ospf-interface-brief", "read-correct-row"],
+},
+{
+  "id": "3.4-019", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. Both ends of this Ethernet link have been set to the point-to-point network type. What will show ip ospf neighbor report once the adjacency settles?",
+  "exhibit": {"kind": "config", "content": """! R19 - relevant configuration
+!
+interface GigabitEthernet0/0
+ ip address 10.1.1.1 255.255.255.252
+ ip ospf network point-to-point
+!
+""" + SEP + """
+! R20 - relevant configuration
+!
+interface GigabitEthernet0/0
+ ip address 10.1.1.2 255.255.255.252
+ ip ospf network point-to-point
+!
+
+Both routers place the interface in area 0 and use default timers."""},
+  "options": opts(
+    "A designated router and backup are still elected, but the hello timers halve.",
+    "No adjacency forms, because Ethernet interfaces cannot use that network type.",
+    "The adjacency reaches FULL, but no link-state advertisements cross the link.",
+    "No designated router is elected, and the state shows FULL with no role."),
+  "correct": ["D"],
+  "explanation": "Changing the network type to point-to-point tells OSPF to treat the segment as having exactly two routers, so the election is skipped entirely and the neighbour prints as FULL with a dash where a role would otherwise appear. Option A keeps an election that the network type removes. Option B assumes the type is tied to the physical medium, but it is a software setting commonly applied to Ethernet links carrying only two routers. Option C would leave the routers with no shared topology, which FULL rules out.",
+  "difficulty": 3,
+  "skills": ["ospf-point-to-point", "ospf-network-type", "dr-bdr-election", "neighbor-states"],
+},
+{
+  "id": "3.4-020", "objective": "3.4", "domain": 3, "type": "single", "select_count": 1,
+  "stem": "Refer to the exhibit. R20's loopback carries a /24 mask, yet its neighbour installs the prefix as a /32. What accounts for the difference?",
+  "exhibit": {"kind": "cli_output", "content": """! R20 - relevant configuration
+!
+interface Loopback0
+ ip address 10.9.9.9 255.255.255.0
+!
+router ospf 1
+ router-id 20.20.20.20
+ network 10.9.9.0 0.0.0.255 area 0
+!
+""" + SEP + "\n" + route_table("R21", "Gateway of last resort is not set", [
+      parent("10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks"),
+      kid("C", "10.1.1.0/30 is directly connected, GigabitEthernet0/0"),
+      kid("L", "10.1.1.2/32 is directly connected, GigabitEthernet0/0"),
+      kid("O", "10.9.9.9/32 [110/2] via 10.1.1.1, 00:06:18, GigabitEthernet0/0"),
+  ])},
+  "options": opts(
+    "The wildcard mask in the network statement forced the advertised length to /32.",
+    "OSPF summarised the loopback prefix to its classful boundary before advertising.",
+    "OSPF advertises a loopback as a host route unless the network type is changed.",
+    "R21 applied its own mask, because the two routers sit in different areas."),
+  "correct": ["C"],
+  "explanation": "OSPF treats a loopback as a stub host and advertises it as a /32 no matter what mask the interface carries, which is why R21 installs 10.9.9.9/32; setting the interface to the point-to-point network type is what restores the configured length. Option A confuses the wildcard, which selects which interfaces participate, with the length that gets advertised. Option B describes summarisation to a classful boundary, which would produce a shorter prefix rather than a longer one. Option D invokes an area difference that the single-area configuration rules out.",
+  "difficulty": 2,
+  "skills": ["ospf-loopback-advertisement", "host-route", "ospf-network-type", "verify-ospf"],
 },
 ]
 

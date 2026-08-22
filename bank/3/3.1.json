@@ -411,6 +411,129 @@
         "next-hop",
         "read-correct-row"
       ]
+    },
+    {
+      "id": "3.1-011",
+      "objective": "3.1",
+      "domain": 3,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Setting aside the connected and local entries, which of R11's routed entries carries the longest prefix?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R11# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 6 subnets, 6 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nS        10.40.0.0/13 [1/0] via 10.1.1.2\nO        10.20.0.0/16 [110/65] via 10.1.1.2, 00:14:03, GigabitEthernet0/0\nO        10.20.30.0/24 [110/74] via 10.1.1.2, 00:14:03, GigabitEthernet0/0\nD        10.60.5.0/26 [90/3072] via 10.1.1.2, 00:09:41, GigabitEthernet0/0"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "10.20.0.0/16"
+        },
+        {
+          "id": "B",
+          "text": "10.40.0.0/13"
+        },
+        {
+          "id": "C",
+          "text": "10.20.30.0/24"
+        },
+        {
+          "id": "D",
+          "text": "10.60.5.0/26"
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Prefix length counts the leading bits fixed by the mask, so the larger the number after the slash the more specific the entry; /26 is the longest among the routed entries. Option A at /16 leaves sixteen host bits free and is far broader. Option B at /13 is the broadest entry in the whole table, and picking it treats a smaller number as more specific, inverting the comparison. Option C at /24 is the closest rival and is the answer only if the /26 line is overlooked.",
+      "difficulty": 1,
+      "skills": [
+        "routing-table-components",
+        "network-mask",
+        "prefix-length",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "3.1-012",
+      "objective": "3.1",
+      "domain": 3,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. The three learned entries show second bracket values of 3, 2172416 and 65. What accounts for the difference in magnitude between them?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R12# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nR     192.168.20.0/24 [120/3] via 10.1.1.2, 00:00:14, GigabitEthernet0/0\nD     192.168.40.0/24 [90/2172416] via 10.1.1.2, 00:31:02, GigabitEthernet0/0\nO     192.168.60.0/24 [110/65] via 10.1.1.2, 00:44:19, GigabitEthernet0/0"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The three destinations sit at different hop counts, which the values count."
+        },
+        {
+          "id": "B",
+          "text": "Each protocol computes its metric differently, so the values share no scale."
+        },
+        {
+          "id": "C",
+          "text": "A larger value means the destination lies further from R12 in router hops."
+        },
+        {
+          "id": "D",
+          "text": "The values are administrative distances scaled by each protocol's weighting."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The second bracket field is the metric of whichever protocol installed the entry, and the three protocols measure entirely different things: RIP counts hops, EIGRP composes bandwidth and delay, OSPF sums interface cost. Comparing 3 against 2172416 is therefore meaningless. Options A and C both read every value as a hop count, which holds only for the RIP entry. Option D confuses the two bracket fields, since the administrative distances are the first values, 120, 90 and 110.",
+      "difficulty": 2,
+      "skills": [
+        "routing-table-components",
+        "metric",
+        "protocol-metric-types",
+        "metric-not-comparable"
+      ]
+    },
+    {
+      "id": "3.1-013",
+      "objective": "3.1",
+      "domain": 3,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does the code on R13's 0.0.0.0/0 entry reveal about how that gateway of last resort was obtained?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R13# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is 10.1.1.2 to network 0.0.0.0\n\nO*E2  0.0.0.0/0 [110/1] via 10.1.1.2, 00:22:15, GigabitEthernet0/0\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "It was configured statically on R13 and flagged as a candidate default."
+        },
+        {
+          "id": "B",
+          "text": "It was learned from a neighbour inside R13's own area as an intra-area route."
+        },
+        {
+          "id": "C",
+          "text": "It was learned from another OSPF area and then marked as a candidate default."
+        },
+        {
+          "id": "D",
+          "text": "It was injected into OSPF from outside the domain and flagged as a candidate default."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The code combines three facts: O means OSPF learned it, E2 means it is an external type 2 route injected from outside the OSPF domain, and the asterisk marks it as the candidate default. Option A would require the code S, since a locally configured default appears as a static route. Option B ignores the E2, which is precisely what rules out an intra-area origin. Option C describes an inter-area route, which would carry the code IA rather than E2.",
+      "difficulty": 3,
+      "skills": [
+        "routing-table-components",
+        "route-codes",
+        "gateway-of-last-resort",
+        "ospf-external-routes"
+      ]
     }
   ]
 }
