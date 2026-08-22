@@ -69,7 +69,7 @@ expressed as multi-answer items instead.
 | 2.2 Interswitch connectivity (C&V) | configure and verify | 9 | 9 |
 | 2.3 Layer 2 discovery protocols (C&V) | configure and verify | 5 | 5 |
 | 2.4 EtherChannel / LACP (C&V) | configure and verify | 8 | 8 |
-| 2.5 Rapid PVST+ | interpret | 10 | 0 |
+| 2.5 Rapid PVST+ | interpret | 10 | 10 |
 | 2.6 Cisco wireless architectures and AP modes | describe | 5 | 0 |
 | 2.7 WLAN physical infrastructure connections | describe | 4 | 0 |
 | 2.8 Network device management access | describe | 5 | 0 |

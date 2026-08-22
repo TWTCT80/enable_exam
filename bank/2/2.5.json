@@ -1,0 +1,418 @@
+{
+  "objective": "2.5",
+  "domain": 2,
+  "blueprint_version": "v1.1",
+  "scope_note": "Interpret-level. The four protection features each get an item and each appear as distractors in the others, because confusing which one fires when is the actual failure mode.",
+  "items": [
+    {
+      "id": "2.5-001",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interface is SW1's root port for VLAN 10?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0011.2233.4455\n             Cost        4\n             Port        1 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     00aa.bbcc.ddee\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Altn BLK 4         128.2    P2p\nGi0/3               Desg FWD 19        128.3    P2p"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/3"
+        },
+        {
+          "id": "B",
+          "text": "Gi0/1"
+        },
+        {
+          "id": "C",
+          "text": "Gi0/2"
+        },
+        {
+          "id": "D",
+          "text": "None; SW1 is the root bridge"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Role column names Gi0/1 as Root, and the Root ID section confirms it by naming port 1 as the path toward the root at a cost of 4. Option A is a designated port, which forwards for its own segment rather than toward the root. Option C is an alternate port, holding a second path to the root in reserve while blocking. Option D is ruled out because the Root ID and Bridge ID carry different addresses, so the root is elsewhere.",
+      "difficulty": 1,
+      "skills": [
+        "rapid-pvst",
+        "root-port",
+        "port-roles",
+        "show-spanning-tree"
+      ]
+    },
+    {
+      "id": "2.5-002",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does this output establish about SW1's place in the VLAN 10 tree?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0011.2233.4455\n             Cost        4\n             Port        1 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     00aa.bbcc.ddee\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Altn BLK 4         128.2    P2p\nGi0/3               Desg FWD 19        128.3    P2p"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "SW1 is the root, since its Bridge ID priority matches the Root ID priority."
+        },
+        {
+          "id": "B",
+          "text": "SW1 is the root, because one of its ports is designated and forwarding."
+        },
+        {
+          "id": "C",
+          "text": "SW1 is the secondary root and assumes the role if the current root fails."
+        },
+        {
+          "id": "D",
+          "text": "SW1 is not the root, because the Root ID names a different address."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "A bridge is the root only when the Root ID and Bridge ID describe the same bridge, and here the priorities match at 32778 while the addresses differ, so the root is another switch. Option A rests on the priorities alone, which is the trap: a tie in priority is normal and the address then decides. Option B misreads a designated port, which almost every switch has. Option C invents a secondary role that this output never records.",
+      "difficulty": 2,
+      "skills": [
+        "rapid-pvst",
+        "root-bridge",
+        "bridge-id",
+        "show-spanning-tree"
+      ]
+    },
+    {
+      "id": "2.5-003",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which of SW-C's ports becomes the root port, and why?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                    +-------------+\n                    |  ROOT-SW    |\n                    +--+-------+--+\n                       |       |\n              cost 4   |       |   cost 4\n                       |       |\n                 +-----+--+ +--+-----+\n                 |  SW-A  | |  SW-B  |\n                 +-----+--+ +--+-----+\n                       |       |\n                 Gi0/1 |       | Gi0/2\n                    +--+-------+--+\n                    |    SW-C     |\n                    +-------------+\n\nBoth of SW-C's paths reach the root at a total cost of 8. SW-A's bridge\nID is 32778.0022.2222.2222 and SW-B's is 32778.0033.3333.3333. The two\nlinks from SW-C use port priority 128 with port numbers 1 and 2."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/1, because the neighbour beyond it advertises the lower bridge ID."
+        },
+        {
+          "id": "B",
+          "text": "Gi0/2, because the neighbour beyond it advertises the higher bridge ID."
+        },
+        {
+          "id": "C",
+          "text": "Both, since spanning tree shares the load across equal-cost paths."
+        },
+        {
+          "id": "D",
+          "text": "Neither; a switch holds an election for a new root when the costs tie."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Cost to the root is compared first, and with both paths at 8 the tie falls to the bridge ID of the neighbour sending the BPDU; SW-A's 0022.2222.2222 is lower than SW-B's 0033.3333.3333, so Gi0/1 wins and Gi0/2 becomes an alternate port. Option B applies the comparison backwards, since lower always wins in spanning tree. Option C describes equal-cost load sharing, which routing protocols do and spanning tree deliberately does not. Option D invents a re-election, when the tie-breakers exist precisely to avoid one.",
+      "difficulty": 3,
+      "skills": [
+        "rapid-pvst",
+        "root-port",
+        "root-port-tiebreak",
+        "bridge-id"
+      ]
+    },
+    {
+      "id": "2.5-004",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does the bridge priority read 32778 when the configured value is 32768?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0011.2233.4455\n             Cost        4\n             Port        1 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     00aa.bbcc.ddee\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Altn BLK 4         128.2    P2p\nGi0/3               Desg FWD 19        128.3    P2p"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The switch adds one to the priority for each VLAN it currently carries."
+        },
+        {
+          "id": "B",
+          "text": "The extra ten counts the ports this switch holds in the forwarding state."
+        },
+        {
+          "id": "C",
+          "text": "The VLAN ID is carried in the priority field as the system ID extension."
+        },
+        {
+          "id": "D",
+          "text": "32778 is the value the root advertised, and SW1 has adopted it."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Rapid PVST+ runs one instance per VLAN, so the bridge ID reserves part of the priority field for the VLAN number, and the output spells it out as priority 32768 sys-id-ext 10. That is why every VLAN on this switch shows a slightly different priority. Option A ties the value to how many VLANs exist, which would change as VLANs are added. Option B connects it to port states, which the priority does not track. Option D has the switch adopting the root's priority, when a bridge always advertises its own.",
+      "difficulty": 2,
+      "skills": [
+        "rapid-pvst",
+        "bridge-id",
+        "sys-id-ext",
+        "per-vlan-spanning-tree"
+      ]
+    },
+    {
+      "id": "2.5-005",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What is the effect of the command the engineer has entered?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW3# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0011.2233.4455\n             Cost        4\n             Port        1 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     00cc.4444.5555\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Desg FWD 4         128.2    P2p\n\nAn engineer now enters:\n\nSW3(config)# spanning-tree vlan 10 root primary"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "SW3 and the current root alternate the role between them from now on."
+        },
+        {
+          "id": "B",
+          "text": "SW3's configured priority drops to 24576, so its bridge ID now wins."
+        },
+        {
+          "id": "C",
+          "text": "SW3's priority is set to zero, the only value that guarantees the role."
+        },
+        {
+          "id": "D",
+          "text": "Nothing changes for VLAN 10 until the present root bridge is reloaded."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The root primary macro lowers the configured priority for that VLAN to 24576, well below the current root's 32768, and since priority is compared before the address SW3 wins the election immediately. Its bridge ID then displays as 24586 once the VLAN's system ID extension is added. Option A invents a shared role that spanning tree has no concept of. Option C describes what root primary would do only if a competing bridge were already at 24576. Option D expects a reload, but the election reruns as soon as the new BPDU is sent.",
+      "difficulty": 3,
+      "skills": [
+        "rapid-pvst",
+        "root-bridge",
+        "root-primary",
+        "bridge-priority"
+      ]
+    },
+    {
+      "id": "2.5-006",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What is GigabitEthernet0/2 doing for VLAN 10?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0011.2233.4455\n             Cost        4\n             Port        1 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     00aa.bbcc.ddee\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Altn BLK 4         128.2    P2p\nGi0/3               Desg FWD 19        128.3    P2p"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Forwarding as the designated port for the segment attached to it."
+        },
+        {
+          "id": "B",
+          "text": "Learning addresses while it counts down to a forwarding state."
+        },
+        {
+          "id": "C",
+          "text": "Sitting administratively disabled after a shutdown command."
+        },
+        {
+          "id": "D",
+          "text": "Blocking, while holding an alternate path toward the root bridge."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The row reads Altn for role and BLK for state, so the port has a valid path to the root but is kept out of forwarding to avoid a loop, ready to take over if the root port fails. Option A describes the Desg role that Gi0/3 carries. Option B describes the LRN state, which appears while a port transitions rather than while it holds steady. Option C would show the port as disabled, and a shut port is not assigned an alternate role at all.",
+      "difficulty": 1,
+      "skills": [
+        "rapid-pvst",
+        "port-roles",
+        "port-states",
+        "alternate-port"
+      ]
+    },
+    {
+      "id": "2.5-007",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What risk does this configuration create, given what Gi0/5 is actually plugged into?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW5(config)# interface GigabitEthernet0/5\nSW5(config-if)# switchport mode access\nSW5(config-if)# switchport access vlan 10\nSW5(config-if)# spanning-tree portfast\n%Warning: portfast should only be enabled on ports connected to a single\nhost. Connecting hubs, concentrators, switches, bridges, etc... to this\ninterface when portfast is enabled, can cause temporary bridging loops.\nUse with CAUTION\n\nSW5(config-if)#\n\nGi0/5 has in fact been patched into an access port on another switch,\nnot to an end device."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The port forwards at once, so a loop can form before any BPDU is acted on."
+        },
+        {
+          "id": "B",
+          "text": "The port is err-disabled the moment the neighbouring switch sends a BPDU."
+        },
+        {
+          "id": "C",
+          "text": "The port refuses to negotiate a trunk for as long as PortFast is applied."
+        },
+        {
+          "id": "D",
+          "text": "None, because PortFast is ignored on any port that reaches another switch."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "PortFast moves an access port straight into forwarding without waiting through the listening and learning stages, which is safe for a single host but not for a link to another switch: traffic flows before spanning tree has had a chance to block anything, which is exactly what the warning describes. Option B describes BPDU guard, which is not configured here. Option C invents an interaction with trunk negotiation. Option D claims the switch detects what is attached, when only BPDU guard turns that detection into protection.",
+      "difficulty": 2,
+      "skills": [
+        "portfast",
+        "rapid-pvst",
+        "bridging-loop",
+        "port-states"
+      ]
+    },
+    {
+      "id": "2.5-008",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What happened on Gi0/5?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW6#\n*Aug 22 10:02:44.118: %SPANTREE-2-BLOCK_BPDUGUARD: Received BPDU on port\nGigabitEthernet0/5 with BPDU Guard enabled. Disabling port.\n*Aug 22 10:02:44.121: %PM-4-ERR_DISABLE: bpduguard error detected on\nGi0/5, putting Gi0/5 in err-disable state\nSW6#\n\nGi0/5 is an access port configured with spanning-tree portfast and\nspanning-tree bpduguard enable."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A loop was detected across the port, and it was shut to break the loop."
+        },
+        {
+          "id": "B",
+          "text": "The neighbour advertised a superior root, so the port was held blocking."
+        },
+        {
+          "id": "C",
+          "text": "Something sending BPDUs was plugged into a PortFast access port."
+        },
+        {
+          "id": "D",
+          "text": "BPDUs stopped arriving on the port, so it was disabled as unsafe."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "BPDU guard exists to enforce the assumption PortFast makes, namely that only an end device sits on the port; the moment a BPDU arrives, that assumption is broken and the port is err-disabled rather than left to form a loop. Option A describes the outcome BPDU guard prevents rather than what it detects. Option B describes root guard, which blocks rather than err-disables. Option D describes loop guard, which reacts to BPDUs stopping rather than starting.",
+      "difficulty": 3,
+      "skills": [
+        "bpdu-guard",
+        "portfast",
+        "err-disable",
+        "rapid-pvst"
+      ]
+    },
+    {
+      "id": "2.5-009",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What did SW7 receive on Gi0/2 to trigger this message?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW7#\n*Aug 22 10:41:07.552: %SPANTREE-2-ROOTGUARD_BLOCK: Root guard blocking\nport GigabitEthernet0/2 on VLAN0010.\nSW7#\n\nGigabitEthernet0/2 faces a switch administered by another team. Until a\nmoment ago it was a normal designated port carrying traffic."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Nothing; the port stopped receiving BPDUs from its neighbour altogether."
+        },
+        {
+          "id": "B",
+          "text": "A BPDU advertising a bridge better than the current root bridge."
+        },
+        {
+          "id": "C",
+          "text": "A BPDU on a port that had been configured with PortFast."
+        },
+        {
+          "id": "D",
+          "text": "Two devices claiming the designated role for the same segment."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Root guard protects the topology's shape: it allows a neighbour to participate normally until that neighbour claims a better root, at which point the port is moved to root-inconsistent and blocks, which is why a port facing another team's switch is the classic place to apply it. Option A describes loop guard's trigger. Option C describes BPDU guard, which err-disables rather than blocking. Option D describes a condition spanning tree resolves by election rather than by guarding.",
+      "difficulty": 2,
+      "skills": [
+        "root-guard",
+        "rapid-pvst",
+        "root-bridge",
+        "spanning-tree-protection"
+      ]
+    },
+    {
+      "id": "2.5-010",
+      "objective": "2.5",
+      "domain": 2,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which feature keeps Gi0/3 from forwarding in this situation?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                    +-------------+\n                    |   ROOT-SW   |\n                    +--+-------+--+\n                       |       |\n                       |       |\n                 +-----+--+ +--+-----+\n                 |  SW-D  |-|  SW-E  |\n                 +--------+ +--------+\n                    Gi0/3 blocking on SW-E\n\nSW-E's Gi0/3 has been blocking correctly for months. A fault develops in\none direction of that fibre pair, so SW-E stops receiving BPDUs on Gi0/3\nwhile its own transmissions still reach SW-D. Without protection Gi0/3\nwould age out its stored BPDU, decide no better path exists, and begin\nforwarding, closing a loop."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "BPDU guard, which err-disables a port as soon as a BPDU reaches it."
+        },
+        {
+          "id": "B",
+          "text": "PortFast, which leaves the port out of the spanning tree calculation."
+        },
+        {
+          "id": "C",
+          "text": "Root guard, which stops the neighbour from claiming the root role."
+        },
+        {
+          "id": "D",
+          "text": "Loop guard, which holds the port blocking once BPDUs stop arriving."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Loop guard covers exactly this case: a non-designated port that has been receiving BPDUs and then stops is moved to loop-inconsistent rather than being allowed to age out its stored BPDU and start forwarding, which is what would close the loop on a unidirectional fault. Option A reacts to a BPDU arriving, and the problem here is one no longer arriving. Option B describes a feature for host ports that would make the situation worse. Option C guards against a neighbour claiming the root, which is not what is happening.",
+      "difficulty": 2,
+      "skills": [
+        "loop-guard",
+        "rapid-pvst",
+        "unidirectional-link",
+        "spanning-tree-protection"
+      ]
+    }
+  ]
+}

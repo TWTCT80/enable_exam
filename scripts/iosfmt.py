@@ -422,3 +422,54 @@ def etherchannel_summary(prompt, rows, groups=1, aggregators=1):
         "Group  Port-channel  Protocol    Ports",
         ETHERCHANNEL_RULE,
     ] + list(rows))
+
+
+# --- show spanning-tree ---------------------------------------------------
+STP_HEADER = (f"{'Interface':<20}{'Role':<5}{'Sts':<4}{'Cost':<10}"
+              f"{'Prio.Nbr':<9}Type")
+STP_RULE = ("------------------- ---- --- --------- -------- "
+            "--------------------------------")
+
+
+def stp_port(intf, role, sts, cost, prio, ptype="P2p"):
+    """One `show spanning-tree` interface row.
+
+    Rapid PVST+ roles: Root, Desg, Altn, Back. States: FWD, BLK, LRN.
+    """
+    return f"{intf:<20}{role:<5}{sts:<4}{cost:<10}{prio:<9}{ptype}"
+
+
+def spanning_tree(prompt, vlan, root_pri, root_mac, bridge_pri, bridge_mac, ports,
+                  root_cost=None, root_port=None):
+    """A `show spanning-tree vlan <n>` capture.
+
+    Pass root_cost/root_port as None when this switch IS the root, which is how
+    IOS prints it: the cost and port lines are replaced by the statement that
+    the bridge is the root.
+    """
+    lines = [
+        f"{prompt}# show spanning-tree vlan {vlan}",
+        "",
+        f"VLAN{vlan:04d}",
+        "  Spanning tree enabled protocol rstp",
+        f"  Root ID    Priority    {root_pri}",
+        f"             Address     {root_mac}",
+    ]
+    if root_cost is None:
+        lines.append("             This bridge is the root")
+    else:
+        lines += [f"             Cost        {root_cost}",
+                  f"             Port        {root_port}"]
+    lines += [
+        "             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec",
+        "",
+        f"  Bridge ID  Priority    {bridge_pri}  (priority {bridge_pri - vlan}"
+        f" sys-id-ext {vlan})",
+        f"             Address     {bridge_mac}",
+        "             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec",
+        "             Aging Time  300 sec",
+        "",
+        STP_HEADER,
+        STP_RULE,
+    ]
+    return "\n".join(lines + list(ports))
