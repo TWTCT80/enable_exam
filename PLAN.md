@@ -89,3 +89,17 @@ expressed as multi-answer items instead.
 | 5.8 AAA concepts | compare | 3 | 3 |
 | 5.9 Wireless security protocols | describe | 3 | 3 |
 | 5.10 WLAN with WPA2 PSK in the GUI (C&V) | configure and verify | 3 | 3 |
+
+## Domain 4 - 30 items  **COMPLETE**
+
+| Objective | Verb | Planned | Done |
+|---|---|---|---|
+| 4.1 Inside source NAT, static and pools (C&V) | configure and verify | 6 | 6 |
+| 4.2 NTP client and server mode (C&V) | configure and verify | 4 | 4 |
+| 4.3 Role of DHCP and DNS | explain | 3 | 3 |
+| 4.4 Function of SNMP | explain | 3 | 3 |
+| 4.5 Syslog facilities and severity levels | describe | 4 | 4 |
+| 4.6 DHCP client and relay (C&V) | configure and verify | 4 | 4 |
+| 4.7 Per-hop behaviour for QoS | explain | 2 | 2 |
+| 4.8 Remote access using SSH | configure | 2 | 2 |
+| 4.9 TFTP/FTP capabilities | describe | 2 | 2 |

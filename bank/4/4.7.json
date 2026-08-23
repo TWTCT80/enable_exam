@@ -1,0 +1,90 @@
+{
+  "objective": "4.7",
+  "domain": 4,
+  "blueprint_version": "v1.1",
+  "scope_note": "Policing discards, shaping delays; marking belongs at the trust boundary.",
+  "items": [
+    {
+      "id": "4.7-001",
+      "objective": "4.7",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which QoS mechanism should be applied to the backup stream?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A branch uploads nightly backups across a circuit it shares with\ninteractive traffic.\n\n    Requirement\n    ---------------------------------------------------------------\n    The backup stream must be held to 4 Mbps on average\n    Bursts above that must be smoothed out rather than discarded\n    Retransmitting lost backup data wastes the circuit twice over\n    A little extra delay on the backup traffic is acceptable"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Shaping, which buffers the excess and releases it at the agreed rate."
+        },
+        {
+          "id": "B",
+          "text": "Policing, which enforces the rate by discarding whatever exceeds it."
+        },
+        {
+          "id": "C",
+          "text": "Classification, which identifies the backup stream so it can be counted."
+        },
+        {
+          "id": "D",
+          "text": "Congestion avoidance, which drops early to keep queues from filling."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Shaping holds traffic above the rate in a queue and releases it later, so a burst is delayed rather than lost, which suits a backup that tolerates delay but wastes the circuit if it has to retransmit. Option B meets the rate requirement but does so by discarding, which is what the third and fourth lines rule out. Option C identifies traffic without limiting it, so nothing enforces the rate. Option D deliberately drops to signal senders to slow down, again losing data.",
+      "difficulty": 3,
+      "skills": [
+        "qos",
+        "shaping",
+        "policing",
+        "per-hop-behaviour"
+      ]
+    },
+    {
+      "id": "4.7-002",
+      "objective": "4.7",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Where should classification and marking take place?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                 +--------+          +--------+          +--------+\n   IP phone ------| SW-ACC |----------| SW-DIST|----------| R-EDGE |\n                  +--------+          +--------+          +--------+\n\nThe phone marks its own voice traffic. Voice must receive priority at\nevery hop across the campus and out to the WAN, and no hop should have\nto inspect the traffic deeply to work out what it is carrying."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "At R-EDGE, so one device decides the policy for the whole campus."
+        },
+        {
+          "id": "B",
+          "text": "At every hop, each re-examining the traffic and marking it again."
+        },
+        {
+          "id": "C",
+          "text": "Nowhere; priority should be applied by queueing without any marking."
+        },
+        {
+          "id": "D",
+          "text": "As close to the source as possible, with later hops trusting the mark."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Marking once at the edge, at the trust boundary where the phone attaches, lets every subsequent hop read a field in the header and queue accordingly rather than inspecting payload, which is the whole point of a per-hop behaviour. Option A leaves the campus hops with nothing to act on until the traffic reaches the WAN. Option B repeats expensive work at each device and risks the hops disagreeing. Option C removes the signal that queueing depends on.",
+      "difficulty": 2,
+      "skills": [
+        "qos",
+        "classification",
+        "marking",
+        "trust-boundary"
+      ]
+    }
+  ]
+}

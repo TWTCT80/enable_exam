@@ -1,0 +1,254 @@
+{
+  "objective": "4.1",
+  "domain": 4,
+  "blueprint_version": "v1.1",
+  "scope_note": "Three silent faults: undeclared interface roles, a pool without overload, and an access list covering the wrong subnet. None produce an error message.",
+  "items": [
+    {
+      "id": "4.1-001",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which public address has been given to the host at 10.1.1.77?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R1# show ip nat translations\nPro  Inside global         Inside local          Outside local         Outside global\ntcp  203.0.113.5:1024      10.1.1.50:49152       198.51.100.20:80      198.51.100.20:80\ntcp  203.0.113.9:1030      10.1.1.77:51204       198.51.100.44:443     198.51.100.44:443\n---  203.0.113.5           10.1.1.50             ---                   ---"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "203.0.113.5"
+        },
+        {
+          "id": "B",
+          "text": "203.0.113.9"
+        },
+        {
+          "id": "C",
+          "text": "198.51.100.44"
+        },
+        {
+          "id": "D",
+          "text": "10.1.1.50"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Inside local column carries the private address and the Inside global column the public one it is presented as, so the row for 10.1.1.77 shows 203.0.113.9. Option A belongs to 10.1.1.50, the row above, which is the classic wrong-row read. Option C is an Outside global address, meaning the server being contacted rather than anything on the inside. Option D is an inside local address and never appears on the internet at all.",
+      "difficulty": 1,
+      "skills": [
+        "nat",
+        "show-ip-nat-translations",
+        "inside-global",
+        "read-correct-row"
+      ]
+    },
+    {
+      "id": "4.1-002",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does R2 translate nothing at all?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R2 - relevant configuration\n!\nip nat inside source list 1 pool NAT-POOL overload\nip nat pool NAT-POOL 203.0.113.9 203.0.113.14 netmask 255.255.255.248\naccess-list 1 permit 10.1.1.0 0.0.0.255\n!\ninterface GigabitEthernet0/1\n description inside LAN\n ip address 10.1.1.1 255.255.255.0\n!\ninterface GigabitEthernet0/0\n description toward the ISP\n ip address 203.0.113.2 255.255.255.252\n!\n\nHosts on 10.1.1.0/24 reach the ISP router but nothing beyond it. R2's\ntranslation table is empty."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The pool is too small for the number of hosts on the inside subnet."
+        },
+        {
+          "id": "B",
+          "text": "The access list should permit the outside subnet rather than the inside one."
+        },
+        {
+          "id": "C",
+          "text": "The overload keyword prevents a pool being used for inside source NAT."
+        },
+        {
+          "id": "D",
+          "text": "Neither interface is marked ip nat inside or ip nat outside."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "NAT only acts on traffic crossing between an interface declared inside and one declared outside, and neither declaration is present, so the pool and access list are never consulted and the table stays empty. Option A would show translations succeeding until the pool ran out rather than none at all, and overload makes six addresses ample. Option B reverses which side the list describes. Option C is wrong because overload with a pool is the ordinary way to share a small range.",
+      "difficulty": 2,
+      "skills": [
+        "nat",
+        "ip-nat-inside-outside",
+        "configure-nat",
+        "troubleshoot-nat"
+      ]
+    },
+    {
+      "id": "4.1-003",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What explains the pattern the users are reporting?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R3 - relevant configuration\n!\nip nat pool NAT-POOL 203.0.113.9 203.0.113.14 netmask 255.255.255.248\nip nat inside source list 1 pool NAT-POOL\naccess-list 1 permit 10.3.3.0 0.0.0.255\n!\ninterface GigabitEthernet0/1\n ip address 10.3.3.1 255.255.255.0\n ip nat inside\n!\ninterface GigabitEthernet0/0\n ip address 203.0.113.2 255.255.255.252\n ip nat outside\n!\n\nThe subnet holds around forty active workstations. Each morning the\nfirst few users reach the internet without trouble; the rest are\nunable to, until someone else's session ends."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Without overload, the pool gives one address per host and holds only six."
+        },
+        {
+          "id": "B",
+          "text": "The access list permits a /24, which is wider than the pool can support."
+        },
+        {
+          "id": "C",
+          "text": "The pool's netmask is wrong, so only the first few addresses are usable."
+        },
+        {
+          "id": "D",
+          "text": "The inside and outside interfaces have been declared the wrong way round."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A pool without the overload keyword hands each inside host its own public address for the life of its translation, and this pool holds six, so the seventh user onward is refused until an earlier translation expires. Adding overload lets all forty share the pool by port. Option B blames the access list, which correctly names the subnet to translate. Option C misreads the netmask, which describes the pool addresses rather than limiting how many are handed out. Option D is contradicted by the interface declarations, which are correct.",
+      "difficulty": 3,
+      "skills": [
+        "nat",
+        "nat-pool",
+        "overload",
+        "troubleshoot-nat"
+      ]
+    },
+    {
+      "id": "4.1-004",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which command creates the mapping the requirement describes?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A web server sits on the inside network at 10.9.9.20 and must be\nreachable from the internet at the fixed public address 203.0.113.20.\n\nThe mapping must hold whether or not the server has traffic in flight,\nso that inbound connections can find it at any time."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "ip nat inside source list 1 pool WEB overload"
+        },
+        {
+          "id": "B",
+          "text": "ip nat outside source static 203.0.113.20 10.9.9.20"
+        },
+        {
+          "id": "C",
+          "text": "ip nat inside source static 10.9.9.20 203.0.113.20"
+        },
+        {
+          "id": "D",
+          "text": "ip nat pool WEB 203.0.113.20 203.0.113.20 netmask 255.255.255.255"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "A static inside source entry ties one inside local address to one inside global address permanently, which is what lets an inbound connection find the server without the server having spoken first. Option A builds a dynamic mapping, so no entry exists until the server originates traffic. Option B translates in the outside source direction, which rewrites addresses on the far side rather than presenting an inside host publicly. Option D defines a pool without any command referring to it.",
+      "difficulty": 2,
+      "skills": [
+        "nat",
+        "static-nat",
+        "configure-nat",
+        "inbound-reachability"
+      ]
+    },
+    {
+      "id": "4.1-005",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why do only the hosts on one of the two inside subnets reach the internet?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! R5 - relevant configuration\n!\nip nat inside source list 7 pool NAT-POOL overload\nip nat pool NAT-POOL 203.0.113.9 203.0.113.14 netmask 255.255.255.248\naccess-list 7 permit 10.1.1.0 0.0.0.255\n!\ninterface GigabitEthernet0/1\n ip address 10.1.1.1 255.255.255.0\n ip nat inside\n!\ninterface GigabitEthernet0/2\n ip address 10.1.2.1 255.255.255.0\n ip nat inside\n!\ninterface GigabitEthernet0/0\n ip address 203.0.113.2 255.255.255.252\n ip nat outside\n!\n\nHosts on 10.1.1.0/24 reach the internet. Hosts on 10.1.2.0/24 do not,\nthough they route to R5 correctly and R5 has a default route."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "GigabitEthernet0/2 is missing the ip nat inside declaration."
+        },
+        {
+          "id": "B",
+          "text": "Access list 7 permits 10.1.1.0/24 only, so 10.1.2.0/24 is untranslated."
+        },
+        {
+          "id": "C",
+          "text": "A router supports one inside interface per NAT configuration."
+        },
+        {
+          "id": "D",
+          "text": "The pool has to be widened considerably before a second subnet can be translated."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The access list decides which traffic NAT acts on, and list 7 names 10.1.1.0/24 alone, so packets from 10.1.2.0/24 pass through untranslated and their private source address is dropped upstream. Adding a line for the second subnet resolves it. Option A is contradicted by Gi0/2 carrying the declaration already. Option C invents a one-interface limit. Option D points at the pool, which overload makes ample for both subnets.",
+      "difficulty": 2,
+      "skills": [
+        "nat",
+        "nat-acl",
+        "configure-nat",
+        "troubleshoot-nat"
+      ]
+    },
+    {
+      "id": "4.1-006",
+      "objective": "4.1",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What do the pool figures at the foot of this output indicate?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "R6# show ip nat statistics\nTotal active translations: 4 (1 static, 3 dynamic; 3 extended)\nPeak translations: 61, occurred 00:22:14 ago\nOutside interfaces:\n  GigabitEthernet0/0\nInside interfaces:\n  GigabitEthernet0/1\nHits: 91744  Misses: 0\nExpired translations: 57\nDynamic mappings:\n-- Inside Source\n[Id: 1] access-list 7 pool NAT-POOL refcount 3\n pool NAT-POOL: netmask 255.255.255.248\n    start 203.0.113.9 end 203.0.113.14\n    type generic, total addresses 6, allocated 6 (100%), misses 214"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The pool is healthy, since the hit counter is high and misses read zero."
+        },
+        {
+          "id": "B",
+          "text": "Six translations have expired, which is why the pool shows fully allocated."
+        },
+        {
+          "id": "C",
+          "text": "The static entry has consumed the pool, leaving nothing for dynamic use."
+        },
+        {
+          "id": "D",
+          "text": "The pool is fully allocated, and 214 attempts have found no address free."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The pool line reads allocated 6 of 6 at 100 per cent with 214 misses, meaning every address is in use and that many translation attempts have been turned away, so the pool needs widening or an overload keyword. Option A quotes the Hits and Misses counters higher up, which describe packets matching existing translations rather than the pool's capacity. Option B misreads the expired count, which is a lifetime total. Option C blames the static entry, which is counted separately from the dynamic pool.",
+      "difficulty": 3,
+      "skills": [
+        "nat",
+        "show-ip-nat-statistics",
+        "pool-exhaustion",
+        "verify-nat"
+      ]
+    }
+  ]
+}

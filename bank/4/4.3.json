@@ -1,0 +1,131 @@
+{
+  "objective": "4.3",
+  "domain": 4,
+  "blueprint_version": "v1.1",
+  "scope_note": "APIPA is left to 1.10-001 rather than repeated here.",
+  "items": [
+    {
+      "id": "4.3-001",
+      "objective": "4.3",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which service is at fault here?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "C:\\> ping 10.9.9.20\n\nPinging 10.9.9.20 with 32 bytes of data:\nReply from 10.9.9.20: bytes=32 time=2ms TTL=126\nReply from 10.9.9.20: bytes=32 time=1ms TTL=126\n\nC:\\> ping files.example.internal\nPing request could not find host files.example.internal. Please check\nthe name and try again.\n\nThe workstation holds a valid address, mask and default gateway, and\n10.9.9.20 is the host registered as files.example.internal."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "DHCP, since the workstation must have been issued incorrect parameters."
+        },
+        {
+          "id": "B",
+          "text": "Routing, because the reply to the name-based attempt never came back."
+        },
+        {
+          "id": "C",
+          "text": "DNS, as the address is reachable but the name cannot be resolved to it."
+        },
+        {
+          "id": "D",
+          "text": "Neither; the server is refusing requests that arrive by name only."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The numeric ping succeeds, which proves addressing, routing and the server itself are all working, and the failure message says the name could not be found rather than that the host did not answer, so resolution is the only step that broke. Option A is contradicted by the working ping, which needs a correct address, mask and gateway. Option B is ruled out by the same reply. Option D invents a server behaviour, and the request never reached the server at all.",
+      "difficulty": 2,
+      "skills": [
+        "dns",
+        "dhcp",
+        "name-resolution",
+        "troubleshoot-connectivity"
+      ]
+    },
+    {
+      "id": "4.3-002",
+      "objective": "4.3",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which service delivers all four of those items to a workstation?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A new subnet is being brought into service. The team wants every\nworkstation on it to receive, without anyone visiting a desk:\n\n    an address from the correct range\n    the subnet mask for that range\n    the address of the gateway to leave the subnet\n    the addresses of the two name servers"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "DNS, which returns the addressing a client needs along with names."
+        },
+        {
+          "id": "B",
+          "text": "DHCP, which supplies the address together with the other parameters."
+        },
+        {
+          "id": "C",
+          "text": "ARP, which discovers each of these values from the local segment."
+        },
+        {
+          "id": "D",
+          "text": "DHCP for the address, with the remaining three set by hand on each host."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "A DHCP offer carries the address and the options alongside it, so mask, gateway and name servers arrive in the same exchange, which is what makes bringing a subnet into service a matter of configuring one scope. Option A gives DNS a role it does not have, since it maps names to addresses. Option C describes ARP, which resolves an address to a MAC within one segment. Option D splits the work unnecessarily and would need the desk visits the requirement rules out.",
+      "difficulty": 2,
+      "skills": [
+        "dhcp",
+        "dhcp-options",
+        "default-gateway",
+        "dns"
+      ]
+    },
+    {
+      "id": "4.3-003",
+      "objective": "4.3",
+      "domain": 4,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which address would this host contact to turn a hostname into an address?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "C:\\> ipconfig /all\n\nEthernet adapter Ethernet:\n\n   DHCP Enabled. . . . . . . . . . . : Yes\n   IPv4 Address. . . . . . . . . . . : 10.20.30.44(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Lease Obtained. . . . . . . . . . : Sunday, 23 August 2026 08:14:02\n   Default Gateway . . . . . . . . . : 10.20.30.1\n   DHCP Server . . . . . . . . . . . : 10.20.30.10\n   DNS Servers . . . . . . . . . . . : 10.20.30.10\n                                       10.20.30.11"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "10.20.30.10"
+        },
+        {
+          "id": "B",
+          "text": "10.20.30.1"
+        },
+        {
+          "id": "C",
+          "text": "10.20.30.44"
+        },
+        {
+          "id": "D",
+          "text": "255.255.255.0"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "The DNS Servers line names 10.20.30.10 first, and that is where a name lookup goes; the same host also happens to run DHCP, which is common but incidental. Option B is the default gateway, used to leave the subnet rather than to resolve names. Option C is the workstation's own address. Option D is the subnet mask, which is not an address the host contacts at all.",
+      "difficulty": 1,
+      "skills": [
+        "dns",
+        "verify-ip-parameters",
+        "dhcp",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

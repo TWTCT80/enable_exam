@@ -188,7 +188,7 @@ ITEMS = [
 },
 {
   "id": "1.8-006", "objective": "1.8", "domain": 1, "type": "single", "select_count": 1,
-  "stem": "Refer to the exhibit. Which interface command meets the requirement?",
+  "stem": "Refer to the exhibit. Which single command should be added under GigabitEthernet0/0?",
   "exhibit": {"kind": "config", "content": EX_006},
   "options": opts(
     "ipv6 address autoconfig",

@@ -215,7 +215,7 @@
       "domain": 1,
       "type": "single",
       "select_count": 1,
-      "stem": "Refer to the exhibit. Which interface command meets the requirement?",
+      "stem": "Refer to the exhibit. Which single command should be added under GigabitEthernet0/0?",
       "exhibit": {
         "kind": "config",
         "content": "! R6 - relevant configuration\n!\ninterface GigabitEthernet0/0\n no shutdown\n!\n\nGigabitEthernet0/0 must take its prefix from the router advertisements\nalready being sent on the segment and build its own interface identifier,\nwithout any DHCPv6 server involved."

@@ -554,3 +554,18 @@ def dhcp_snooping(prompt, vlans, rows, option82=True):
         SNOOP_TRUST_HEADER,
         SNOOP_TRUST_RULE,
     ] + list(rows))
+
+
+# --- show ip nat translations ---------------------------------------------
+NAT_HEADER = (f"{'Pro':<5}{'Inside global':<22}{'Inside local':<22}"
+              f"{'Outside local':<22}Outside global")
+
+
+def nat_row(pro, ig, il, ol, og):
+    """One `show ip nat translations` row; use '---' for an unused field."""
+    return f"{pro:<5}{ig:<22}{il:<22}{ol:<22}{og}"
+
+
+def nat_translations(prompt, rows):
+    """A `show ip nat translations` capture."""
+    return "\n".join([f"{prompt}# show ip nat translations", NAT_HEADER] + list(rows))
