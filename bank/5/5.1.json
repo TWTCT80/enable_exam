@@ -1,0 +1,172 @@
+{
+  "objective": "5.1",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "Concepts are placed within an incident rather than defined, since the spec bans definition quizzes.",
+  "items": [
+    {
+      "id": "5.1-001",
+      "objective": "5.1",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which part of this account describes the vulnerability?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Incident summary - finance office workstation\n\n    The machine was running a document reader two versions behind, with\n    a published flaw in the way it parses embedded fonts.\n\n    A crafted document arrived by email. When the user opened it, code\n    inside the file used that font-parsing flaw to run commands.\n\n    The group behind the campaign has targeted finance departments\n    across the sector for the past two years."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The group that has been targeting finance departments for two years."
+        },
+        {
+          "id": "B",
+          "text": "The unpatched font-parsing flaw in the document reader."
+        },
+        {
+          "id": "C",
+          "text": "The crafted document that carried the code to the user."
+        },
+        {
+          "id": "D",
+          "text": "The commands that ran on the workstation once the file was opened."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "A vulnerability is the weakness itself, and here that is the flaw in how the outdated reader parses fonts; it existed before anyone tried to use it and would still exist if nobody had. Option A is the threat, meaning the actor with the intent and capability to act. Option C is the exploit, the crafted artefact that leverages the weakness. Option D is the impact, which is what resulted rather than what allowed it.",
+      "difficulty": 2,
+      "skills": [
+        "security-concepts",
+        "vulnerability",
+        "threat",
+        "exploit"
+      ]
+    },
+    {
+      "id": "5.1-002",
+      "objective": "5.1",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which response removes the vulnerability rather than reducing its exposure?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A public-facing server runs a version of its application with a\npublished remote code execution flaw. The vendor released a fixed\nversion three weeks ago.\n\nFour responses have been proposed while the incident is open."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Rate-limit inbound connections to the server at the perimeter firewall."
+        },
+        {
+          "id": "B",
+          "text": "Move the server to a different public address and update the records."
+        },
+        {
+          "id": "C",
+          "text": "Increase how often the server's logs are reviewed by the operations team."
+        },
+        {
+          "id": "D",
+          "text": "Apply the vendor's fixed version to the application."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Patching eliminates the flaw, so there is nothing left to exploit however the traffic arrives; every other option leaves the weakness in place and only makes reaching it harder or noticing it faster. Option A slows an attack without preventing it. Option B relies on the address not being rediscovered, which scanning defeats within hours. Option C improves detection after the fact rather than removing the cause.",
+      "difficulty": 2,
+      "skills": [
+        "security-concepts",
+        "mitigation-techniques",
+        "patching",
+        "vulnerability"
+      ]
+    },
+    {
+      "id": "5.1-003",
+      "objective": "5.1",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What is the limitation of the protection the team has put in place?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "After the third compromise of the same application server, the team\nadded a signature to the intrusion prevention system that matches the\nexact request pattern used in the attacks. Blocking took effect\nimmediately and no further compromises have occurred this week.\n\nThe application itself has not been updated. The vendor's patch is\nstill waiting for a change window."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The flaw remains, so a variant the signature does not match still works."
+        },
+        {
+          "id": "B",
+          "text": "An intrusion prevention system cannot inspect traffic bound for a server."
+        },
+        {
+          "id": "C",
+          "text": "Signatures stop matching after thirty days and have to be rewritten."
+        },
+        {
+          "id": "D",
+          "text": "The block also turns away the legitimate users of the application."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A signature matches one observed pattern, so it buys time but leaves the underlying weakness intact; anyone who alters the request enough to miss the signature reaches the same flaw. It is a compensating control, useful until the patch lands rather than instead of it. Option B is wrong because an inline sensor inspects exactly this traffic. Option C invents an expiry that signatures do not have. Option D describes a false positive, which the exhibit gives no sign of.",
+      "difficulty": 3,
+      "skills": [
+        "security-concepts",
+        "mitigation-techniques",
+        "compensating-control",
+        "vulnerability"
+      ]
+    },
+    {
+      "id": "5.1-004",
+      "objective": "5.1",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which row of this record describes the exploit?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Incident record\n\n    Element                Detail\n    -------------------    --------------------------------------------\n    Actor                  A group known to target logistics firms\n    Weakness               Default administrative credentials left in\n                           place on an internet-facing appliance\n    Method used            An automated script that tried the vendor's\n                           documented default credentials\n    Outcome                Administrative access to the appliance\n    Response taken         Credentials changed, management moved to an\n                           internal-only address"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Actor"
+        },
+        {
+          "id": "B",
+          "text": "Weakness"
+        },
+        {
+          "id": "C",
+          "text": "Method used"
+        },
+        {
+          "id": "D",
+          "text": "Response taken"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "An exploit is the means by which a weakness is turned into access, which the record files under Method used: the script that submitted the documented default credentials. Option A is the threat, the group with intent. Option B is the vulnerability, namely the credentials left unchanged. Option D is the mitigation applied afterwards, which closed the weakness rather than using it.",
+      "difficulty": 1,
+      "skills": [
+        "security-concepts",
+        "exploit",
+        "threat",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

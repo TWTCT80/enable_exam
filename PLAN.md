@@ -75,17 +75,17 @@ expressed as multi-answer items instead.
 | 2.8 Network device management access | describe | 5 | 5 |
 | 2.9 Wireless LAN GUI configuration | interpret | 4 | 4 |
 
-## Domain 5 - 45 items
+## Domain 5 - 45 items  **COMPLETE**
 
 | Objective | Verb | Planned | Done |
 |---|---|---|---|
-| 5.1 Key security concepts | define | 4 | 0 |
-| 5.2 Security program elements | describe | 3 | 0 |
+| 5.1 Key security concepts | define | 4 | 4 |
+| 5.2 Security program elements | describe | 3 | 3 |
 | 5.3 Device access control, local passwords (C&V) | configure and verify | 5 | 5 |
-| 5.4 Password policy elements | describe | 3 | 0 |
-| 5.5 IPsec remote access and site-to-site VPNs | describe | 4 | 0 |
+| 5.4 Password policy elements | describe | 3 | 3 |
+| 5.5 IPsec remote access and site-to-site VPNs | describe | 4 | 4 |
 | 5.6 Access control lists (C&V) | configure and verify | 9 | 9 |
 | 5.7 Layer 2 security features (C&V) | configure and verify | 8 | 8 |
-| 5.8 AAA concepts | compare | 3 | 0 |
-| 5.9 Wireless security protocols | describe | 3 | 0 |
-| 5.10 WLAN with WPA2 PSK in the GUI (C&V) | configure and verify | 3 | 0 |
+| 5.8 AAA concepts | compare | 3 | 3 |
+| 5.9 Wireless security protocols | describe | 3 | 3 |
+| 5.10 WLAN with WPA2 PSK in the GUI (C&V) | configure and verify | 3 | 3 |

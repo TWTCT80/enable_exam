@@ -1,0 +1,136 @@
+{
+  "objective": "5.10",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "GUI transcribed as field/value pairs, as in 2.9.",
+  "items": [
+    {
+      "id": "5.10-001",
+      "objective": "5.10",
+      "domain": 5,
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two settings on the Layer 2 security tab meet the requirement? (Choose two.)",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A new WLAN called BRANCH-STAFF is being created on the controller.\n\n    Requirement\n    ---------------------------------------------------------------\n    Clients join with a passphrase, not an individual account\n    Data must be protected with AES rather than TKIP\n    No RADIUS server is available at this site\n    The WLAN maps to the existing vlan30-staff interface"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Authentication Key Mgmt set to 802.1X"
+        },
+        {
+          "id": "B",
+          "text": "WPA2 Encryption set to AES"
+        },
+        {
+          "id": "C",
+          "text": "Layer 2 Security set to None"
+        },
+        {
+          "id": "D",
+          "text": "Authentication Key Mgmt set to PSK"
+        },
+        {
+          "id": "E",
+          "text": "WPA2 Encryption set to TKIP"
+        }
+      ],
+      "correct": [
+        "B",
+        "D"
+      ],
+      "explanation": "A passphrase rather than individual accounts means the key management is PSK, and protecting data with AES means the WPA2 encryption is AES, so those two together satisfy the requirement without any RADIUS server. Option A selects 802.1X, which needs the RADIUS server the site does not have. Option C removes security altogether. Option E selects TKIP, the older cipher the requirement rules out by name.",
+      "difficulty": 2,
+      "skills": [
+        "wlan-gui",
+        "wpa2-psk",
+        "configure-wlan",
+        "security-settings"
+      ]
+    },
+    {
+      "id": "5.10-002",
+      "objective": "5.10",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why does every association attempt fail?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > BRANCH-STAFF\n\nTab: General\n    Profile Name                  BRANCH-STAFF\n    SSID                          BRANCH-STAFF\n    Status                        Enabled\n    Interface/Interface Group     vlan30-staff\n\nTab: Security > Layer 2\n    Layer 2 Security              WPA+WPA2\n    WPA2 Policy                   Enabled\n    WPA2 Encryption               AES\n    Authentication Key Mgmt       802.1X\n    PSK Format                    not configured\n\nNo RADIUS server is configured on this controller. Clients see the SSID\nand attempt to join, but every association fails."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The WLAN Status is Enabled before the security settings were completed."
+        },
+        {
+          "id": "B",
+          "text": "AES cannot be selected while the WLAN maps to a tagged VLAN interface."
+        },
+        {
+          "id": "C",
+          "text": "Key management is 802.1X, which needs a RADIUS server that is absent."
+        },
+        {
+          "id": "D",
+          "text": "The interface vlan30-staff has to be created after the WLAN, not before."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "802.1X hands authentication to a RADIUS server, and none is configured, so the exchange never completes and every client is refused even though the SSID is advertised correctly; switching key management to PSK and setting a passphrase resolves it. Option A treats enabling the WLAN as premature, but a WLAN must be enabled to be advertised at all. Option B invents a conflict between AES and a mapped interface. Option D invents an ordering requirement for the interface.",
+      "difficulty": 2,
+      "skills": [
+        "wlan-gui",
+        "wpa2-psk",
+        "802-1x",
+        "troubleshoot-wlan"
+      ]
+    },
+    {
+      "id": "5.10-003",
+      "objective": "5.10",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What do these settings confirm about how clients join this WLAN?",
+      "exhibit": {
+        "kind": "config",
+        "content": "WLC GUI  -  WLANs > Edit > BRANCH-STAFF\n\nTab: Security > Layer 2\n    Layer 2 Security              WPA+WPA2\n    WPA Policy                    Disabled\n    WPA2 Policy                   Enabled\n    WPA2 Encryption               AES\n    Authentication Key Mgmt       PSK\n    PSK Format                    ASCII"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "They authenticate individually against a RADIUS server using AES."
+        },
+        {
+          "id": "B",
+          "text": "They supply a shared passphrase, and their data is protected with AES."
+        },
+        {
+          "id": "C",
+          "text": "They join without any credential, since only the format has been set."
+        },
+        {
+          "id": "D",
+          "text": "They supply a passphrase, but the older WPA cipher protects their data."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Authentication Key Mgmt reads PSK, so every client presents the same passphrase, and WPA2 Encryption reads AES with the WPA policy disabled, so the newer cipher protects the traffic. Option A describes 802.1X, which these settings do not select. Option C ignores the PSK setting, and the ASCII format line describes how the passphrase is entered rather than replacing it. Option D is contradicted by WPA Policy reading Disabled, which leaves only WPA2 with AES in use.",
+      "difficulty": 1,
+      "skills": [
+        "wlan-gui",
+        "wpa2-psk",
+        "verify-wlan",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

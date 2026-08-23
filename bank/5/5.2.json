@@ -1,0 +1,131 @@
+{
+  "objective": "5.2",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "Awareness reaches everyone and concerns recognising a situation; training equips a role to perform a task.",
+  "items": [
+    {
+      "id": "5.2-001",
+      "objective": "5.2",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which security programme element most directly addresses what happened here?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Incident summary\n\n    Fourteen staff across five departments received a message that\n    appeared to come from the payroll system, warning that their bank\n    details needed reconfirming before the month end.\n\n    Nine followed the link and entered their network credentials into a\n    page that closely resembled the real portal.\n\n    The page was hosted outside the organisation. No software flaw was\n    involved at any point."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A user awareness programme on recognising messages of this kind."
+        },
+        {
+          "id": "B",
+          "text": "Role-specific technical training for the network and server engineers."
+        },
+        {
+          "id": "C",
+          "text": "Tighter physical access control at the entrances to the building."
+        },
+        {
+          "id": "D",
+          "text": "A policy raising the minimum length of every user's password."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Nothing technical failed: the staff were persuaded, so the gap is whether people across the organisation can recognise a convincing imitation, which is what an awareness programme addresses. Option B trains a small technical group on tasks, which would not have reached the nine people who entered credentials. Option C guards the premises, and the page was hosted elsewhere entirely. Option D lengthens passwords that were handed over willingly, so their strength never mattered.",
+      "difficulty": 2,
+      "skills": [
+        "security-program",
+        "user-awareness",
+        "phishing",
+        "social-engineering"
+      ]
+    },
+    {
+      "id": "5.2-002",
+      "objective": "5.2",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which element of the security programme failed in this incident?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Incident summary\n\n    A visitor waited by the rear entrance and followed an employee\n    through the door as it closed behind them. They then walked to the\n    second-floor communications room, whose door was propped open with a\n    fire extinguisher, and connected a small device to a spare switch\n    port before leaving.\n\n    Every switch in the room has a strong enable secret and permits SSH\n    management only."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Password management, since the enable secret should be rotated more often."
+        },
+        {
+          "id": "B",
+          "text": "Awareness training, because staff should lock their screens when away."
+        },
+        {
+          "id": "C",
+          "text": "Physical access control, at both the rear door and the communications room."
+        },
+        {
+          "id": "D",
+          "text": "Device hardening, as management access should have been restricted further."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The intruder never needed a credential: they were let through one door by following someone and found another propped open, so the failure is physical and occurs twice over. Option A hardens a secret that was never tested. Option B names a real habit, but no unattended workstation features in the account. Option D is contradicted by the switches already being restricted to SSH with a strong secret, which did nothing to stop a cable being plugged in.",
+      "difficulty": 2,
+      "skills": [
+        "security-program",
+        "physical-access-control",
+        "tailgating",
+        "defence-in-depth"
+      ]
+    },
+    {
+      "id": "5.2-003",
+      "objective": "5.2",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which gap is the one that role-specific training addresses?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Three gaps identified in an internal review\n\n    Gap\n    -------------------------------------------------------------\n    A  Staff cannot reliably tell a genuine internal message from a\n       convincing imitation\n    B  The two engineers who will run the new firewall have never\n       configured that product and are unsure of its rule syntax\n    C  Server room doors are left on the latch during deliveries"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gap A"
+        },
+        {
+          "id": "B",
+          "text": "Gap B"
+        },
+        {
+          "id": "C",
+          "text": "Gap C"
+        },
+        {
+          "id": "D",
+          "text": "None of the three"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Training equips a particular role to perform a task correctly, and gap B is exactly that: two named engineers who need working knowledge of a product they will operate. Option A is a matter of general recognition across all staff, which awareness covers. Option C is a physical control at a door rather than anything taught. Option D is contradicted by gap B being a textbook training need.",
+      "difficulty": 1,
+      "skills": [
+        "security-program",
+        "training",
+        "user-awareness",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "objective": "5.4",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "Two credentials are two factors only when they come from different categories.",
+  "items": [
+    {
+      "id": "5.4-001",
+      "objective": "5.4",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which weakness does this policy leave open?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Extract from a draft password policy\n\n    Minimum length              twelve characters\n    Composition                 upper case, lower case, digit, symbol\n    Maximum age                 ninety days, enforced\n    Account lockout             after ten failed attempts\n    Reuse                       not addressed\n    Second factor               not required"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Composition rules become unnecessary once a maximum age is enforced."
+        },
+        {
+          "id": "B",
+          "text": "Ninety days is far too long an interval between forced changes."
+        },
+        {
+          "id": "C",
+          "text": "Enforced rotation without any composition rule leaves passwords guessable."
+        },
+        {
+          "id": "D",
+          "text": "Nothing prevents a user returning to a password they have used before."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The policy sets length, composition, age and lockout but says nothing about reuse, so a user can cycle through a handful of passwords and return to the first, which makes the ninety-day rotation largely decorative. Option A treats the two as alternatives when they address different attacks. Option B challenges an interval the policy does enforce and which is not the gap. Option C describes a policy with no composition rule, which this one plainly has.",
+      "difficulty": 3,
+      "skills": [
+        "password-policy",
+        "password-management",
+        "password-reuse",
+        "complexity"
+      ]
+    },
+    {
+      "id": "5.4-002",
+      "objective": "5.4",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which scheme is genuinely multifactor?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Four schemes proposed for administrative logins\n\n    Scheme   First credential        Second credential\n    ------   --------------------   ---------------------------\n    W        A password             An answer to a chosen question\n    X        A password             A code from a hardware token\n    Y        A password             A second, longer password\n    Z        A fingerprint          A facial scan"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Scheme W"
+        },
+        {
+          "id": "B",
+          "text": "Scheme X"
+        },
+        {
+          "id": "C",
+          "text": "Scheme Y"
+        },
+        {
+          "id": "D",
+          "text": "Scheme Z"
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Multifactor means credentials from different categories, and only scheme X combines something known with something held, so stealing the password alone leaves an attacker short of the token. Option A pairs a password with a security answer, which is a second thing known and often easier to research than the password. Option C is two passwords, one category twice. Option D pairs two biometrics, which are both something you are, and neither can be reissued if copied.",
+      "difficulty": 2,
+      "skills": [
+        "password-policy",
+        "multifactor-authentication",
+        "authentication-factors",
+        "biometrics"
+      ]
+    },
+    {
+      "id": "5.4-003",
+      "objective": "5.4",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which approach satisfies every line of the requirement?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A field deployment of two hundred devices needs to authenticate to\nthe management platform.\n\n    Requirement\n    ---------------------------------------------------------------\n    No shared value that is identical across the estate\n    A stolen device must not yield anything reusable elsewhere\n    Credentials must be revocable for one device on its own\n    No human types anything during the device's enrolment"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A certificate issued to each device by an internal authority."
+        },
+        {
+          "id": "B",
+          "text": "One pre-shared key, distributed to all two hundred devices."
+        },
+        {
+          "id": "C",
+          "text": "A long password per device, rotated on a quarterly schedule."
+        },
+        {
+          "id": "D",
+          "text": "A biometric enrolment recorded against each device's serial number."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "A per-device certificate is unique, carries no secret that works anywhere else, can be revoked individually, and is issued during enrolment without anyone typing a credential, which covers all four lines. Option B fails the first two outright, since one stolen device yields the key for the estate. Option C is unique per device but still a typed secret and a rotation burden across two hundred units. Option D applies a human characteristic to hardware, which has nobody to measure.",
+      "difficulty": 2,
+      "skills": [
+        "password-policy",
+        "certificates",
+        "password-alternatives",
+        "device-authentication"
+      ]
+    }
+  ]
+}

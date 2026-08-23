@@ -1,0 +1,131 @@
+{
+  "objective": "5.9",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "Distinct from 2.9-004: these ask why the generations differ, not which scan entry is strongest.",
+  "items": [
+    {
+      "id": "5.9-001",
+      "objective": "5.9",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What would moving to WPA3-Personal change about this attack?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A shared office passphrase has been in use for two years and is\nknown to about sixty people.\n\n    Observed\n    ---------------------------------------------------------------\n    Someone captured the association exchange of a joining client\n    They then worked offline against that capture for several days\n    They recovered the passphrase and joined the network\n    No interaction with the network was needed during those days\n\nThe site runs WPA2-Personal. A move to WPA3-Personal is proposed."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Nothing, since WPA3-Personal still derives its keys from a shared phrase."
+        },
+        {
+          "id": "B",
+          "text": "The capture would be prevented, because WPA3 encrypts the association itself."
+        },
+        {
+          "id": "C",
+          "text": "The offline stage would no longer work, as SAE gives nothing to attack offline."
+        },
+        {
+          "id": "D",
+          "text": "The attack would take longer, because WPA3 requires a passphrase of 20 characters."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The weakness is that WPA2's handshake yields material an attacker can grind against a wordlist at leisure, with no further contact. WPA3 replaces it with SAE, where each guess has to be tried against the network live, so days of offline work become impossible and slow online attempts are detectable. Option A misses that the exchange changed even though a phrase is still used. Option B protects the wrong stage. Option D invents a length rule and would only postpone the same attack.",
+      "difficulty": 3,
+      "skills": [
+        "wireless-security",
+        "wpa3",
+        "sae",
+        "offline-dictionary-attack"
+      ]
+    },
+    {
+      "id": "5.9-002",
+      "objective": "5.9",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which design is the Enterprise mode, and what does it give the site?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Two candidate designs for staff wireless at a site of 400 people\n\n    Property                     Design 1              Design 2\n    -------------------------    ------------------    ---------------\n    Credential each user holds   one shared phrase     their own login\n    Removing one leaver          change it for all     disable one\n                                 400 people            account\n    Backing store                none                  RADIUS server\n    Per-user session keys        derived from the      derived per\n                                 shared phrase         authentication"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Design 1, because one phrase for the whole site is simpler to administer."
+        },
+        {
+          "id": "B",
+          "text": "Design 2, since each user holds a credential that can be revoked alone."
+        },
+        {
+          "id": "C",
+          "text": "Design 1, as a shared phrase still produces a separate key for each session."
+        },
+        {
+          "id": "D",
+          "text": "Neither; both are Personal mode with different ways of storing the phrase."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Enterprise mode authenticates each user individually against a backing store such as RADIUS, which is why a leaver is handled by disabling one account rather than reissuing a phrase to 400 people. Option A describes Personal mode and treats its administrative simplicity as the distinguishing feature. Option C is true of both modes and so separates nothing. Option D denies the RADIUS row, which is exactly what marks Design 2 as Enterprise.",
+      "difficulty": 2,
+      "skills": [
+        "wireless-security",
+        "wpa2-enterprise",
+        "wpa2-personal",
+        "credential-revocation"
+      ]
+    },
+    {
+      "id": "5.9-003",
+      "objective": "5.9",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which generation is the earliest one that protects data with AES?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Wireless security generations as recorded in the site standard\n\n    Generation   Data protection      Personal-mode key exchange\n    ----------   ------------------   ------------------------------\n    WPA          TKIP                 Pre-shared key, 4-way handshake\n    WPA2         AES-CCMP             Pre-shared key, 4-way handshake\n    WPA3         AES with SAE         Simultaneous Authentication of\n                                      Equals"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "WPA"
+        },
+        {
+          "id": "B",
+          "text": "WPA3"
+        },
+        {
+          "id": "C",
+          "text": "WPA2"
+        },
+        {
+          "id": "D",
+          "text": "None of them use AES"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The Data protection column shows WPA2 introducing AES-CCMP, which WPA3 then carries forward alongside its new key exchange. Option A is WPA, which uses TKIP, a stopgap built to run on hardware designed for the broken WEP. Option B is later than the earliest and changes the key exchange rather than the cipher family. Option D contradicts two rows of the table.",
+      "difficulty": 1,
+      "skills": [
+        "wireless-security",
+        "wpa2",
+        "aes-ccmp",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

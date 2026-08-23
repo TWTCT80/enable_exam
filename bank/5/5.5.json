@@ -1,0 +1,172 @@
+{
+  "objective": "5.5",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "GRE encapsulates; IPsec protects. 003 shows the difference in a capture.",
+  "items": [
+    {
+      "id": "5.5-001",
+      "objective": "5.5",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which VPN arrangement fits these requirements?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A manufacturer is joining its two sites over the internet.\n\n    Requirement\n    ---------------------------------------------------------------\n    Both sites have a permanent circuit and a router at the edge\n    The link must be up continuously, not raised per session\n    Hosts must reach the far site with no software installed on them\n    Users must not authenticate individually for the site link"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A remote access VPN, with client software installed on every host."
+        },
+        {
+          "id": "B",
+          "text": "A remote access VPN reached through a browser-based portal per user."
+        },
+        {
+          "id": "C",
+          "text": "A site-to-site VPN between the two edge routers."
+        },
+        {
+          "id": "D",
+          "text": "Neither; IPsec cannot join two sites without a private circuit."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "A permanent link that hosts use without knowing it exists, raised between two gateways rather than per user, is the definition of a site-to-site VPN: the routers carry the tunnel and every host behind them benefits. Options A and B both authenticate individual users and need something on the endpoint, which the requirement rules out twice over. Option D is wrong because carrying private traffic across the public internet is exactly what IPsec was designed for.",
+      "difficulty": 2,
+      "skills": [
+        "ipsec",
+        "site-to-site-vpn",
+        "remote-access-vpn",
+        "design-to-requirements"
+      ]
+    },
+    {
+      "id": "5.5-002",
+      "objective": "5.5",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which statement describes what adding IPsec provides against these three requirements?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Traffic between two offices currently crosses the internet inside a\nGRE tunnel between the edge routers.\n\n    Requirement now added\n    ---------------------------------------------------------------\n    Anyone capturing the traffic in transit must not be able to read it\n    Any alteration made in transit must be detectable at the far end\n    Each router must be able to confirm which peer it is talking to"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Only confidentiality; detecting any alteration needs a separate mechanism."
+        },
+        {
+          "id": "B",
+          "text": "Only integrity; the payload itself stays readable while in transit."
+        },
+        {
+          "id": "C",
+          "text": "Neither of those; IPsec confirms the peer and does nothing further."
+        },
+        {
+          "id": "D",
+          "text": "All three: payload encrypted, alteration detectable, peers authenticated."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "IPsec covers all three requirements together, encrypting the payload so a capture is unreadable, carrying an integrity check so tampering is detected, and authenticating each peer before the tunnel is established. Options A and B each claim one property and deny the other, when the protocol suite provides both. Option C reduces IPsec to peer authentication alone, which is the part that happens first rather than the whole of it.",
+      "difficulty": 2,
+      "skills": [
+        "ipsec",
+        "confidentiality",
+        "integrity",
+        "peer-authentication"
+      ]
+    },
+    {
+      "id": "5.5-003",
+      "objective": "5.5",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why is this content readable to anyone capturing between the two offices?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "Capture taken at an internet exchange, between the two edge routers\nNo.  Time      Source          Destination     Protocol  Length  Info\n41   8.220114  203.0.113.7     198.51.100.9    GRE       154     Encapsulated IP\n42   8.220780  203.0.113.7     198.51.100.9    GRE       622     Encapsulated IP\n\nReassembled from the encapsulated payload of frames 41 and 42:\n\n    POST /hr/salary-review HTTP/1.1\n    Host: intranet.example.internal\n    Authorization: Basic bmV0YWRtaW46V3IzbmNo\n\nThe tunnel between the two offices was built with GRE and nothing else."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "GRE encrypts the header but leaves the encapsulated payload in clear."
+        },
+        {
+          "id": "B",
+          "text": "GRE encapsulates traffic without encrypting it, so IPsec must be added."
+        },
+        {
+          "id": "C",
+          "text": "The tunnel's MTU is too small for encryption to be applied to each packet."
+        },
+        {
+          "id": "D",
+          "text": "GRE encryption is present but switched off by default and must be enabled."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "GRE is a tunnelling protocol: it wraps one protocol inside another so the traffic can traverse a path it otherwise could not, and it offers no confidentiality whatsoever, which is why the credentials are legible in the capture. Pairing it with IPsec is the usual answer. Option A credits GRE with encrypting something, which it never does. Option C ties encryption to MTU, which affects fragmentation rather than protection. Option D invents an encryption feature GRE does not possess.",
+      "difficulty": 3,
+      "skills": [
+        "ipsec",
+        "gre",
+        "encapsulation-vs-encryption",
+        "read-packet-capture"
+      ]
+    },
+    {
+      "id": "5.5-004",
+      "objective": "5.5",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which VPN type is shown here?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "        home worker                              head office\n       +-----------+                              +-----------+\n       |  laptop   |======= internet =============|  FW-EDGE  |\n       | VPN client|                              +-----+-----+\n       +-----------+                                    |\n                                                   office LAN\n\nThe laptop raises the tunnel when the user signs in with their own\ncredentials, and drops it when they sign out. No tunnel exists while the\nlaptop is switched off."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Remote access"
+        },
+        {
+          "id": "B",
+          "text": "Site-to-site"
+        },
+        {
+          "id": "C",
+          "text": "GRE without IPsec"
+        },
+        {
+          "id": "D",
+          "text": "No VPN at all"
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "The tunnel is raised by an individual signing in, terminates on their own laptop and disappears when they sign out, which is what distinguishes remote access from a permanent gateway-to-gateway link. Option B would run between two routers and stay up regardless of who is working. Option C names an encapsulation rather than a VPN type, and nothing in the drawing indicates GRE. Option D is contradicted by the client and the tunnel both being shown.",
+      "difficulty": 1,
+      "skills": [
+        "ipsec",
+        "remote-access-vpn",
+        "site-to-site-vpn",
+        "read-topology"
+      ]
+    }
+  ]
+}
