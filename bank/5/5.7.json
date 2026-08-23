@@ -1,0 +1,336 @@
+{
+  "objective": "5.7",
+  "domain": 5,
+  "blueprint_version": "v1.1",
+  "scope_note": "All three features, plus the dependency between two of them: DAI validates against the DHCP snooping binding table, so enabling it alone drops every ARP on an untrusted port.",
+  "items": [
+    {
+      "id": "5.7-001",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What state is this port in, and what put it there?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW1# show port-security interface GigabitEthernet0/5\nPort Security              : Enabled\nPort Status                : Secure-shutdown\nViolation Mode             : Shutdown\nAging Time                 : 0 mins\nAging Type                 : Absolute\nMaximum MAC Addresses      : 1\nTotal MAC Addresses        : 1\nConfigured MAC Addresses   : 0\nSticky MAC Addresses       : 1\nLast Source Address:Vlan   : 00d0.5842.7f22:10\nSecurity Violation Count   : 1"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "It is forwarding normally, and the violation counter records an old event."
+        },
+        {
+          "id": "B",
+          "text": "It is administratively shut down and needs a no shutdown command."
+        },
+        {
+          "id": "C",
+          "text": "It has been err-disabled by a violation, since the mode is shutdown."
+        },
+        {
+          "id": "D",
+          "text": "It is protecting itself by dropping frames while staying up."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Secure-shutdown is the status a port takes after a violation while the mode is set to shutdown, and the violation count of one confirms a single event caused it. Option A misreads the status, since Secure-shutdown means the port is not passing traffic at all. Option B describes an operator-issued shutdown, which would show the port as administratively down instead. Option D describes what the protect or restrict modes do, and this port is set to shutdown.",
+      "difficulty": 1,
+      "skills": [
+        "port-security",
+        "violation-modes",
+        "err-disable",
+        "verify-port-security"
+      ]
+    },
+    {
+      "id": "5.7-002",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which violation mode satisfies every line of the requirement?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A hot-desking area is being secured with port security.\n\n    Requirement\n    ---------------------------------------------------------------\n    Traffic from an unexpected MAC address must be discarded\n    The port must stay up so the authorised device keeps working\n    Each violation must raise a log message and increment a counter\n    No engineer visit should be needed to restore service"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "restrict, which drops the traffic, logs it and counts violations."
+        },
+        {
+          "id": "B",
+          "text": "protect, which drops the offending traffic and leaves the port up."
+        },
+        {
+          "id": "C",
+          "text": "shutdown, which err-disables the port the moment a violation occurs."
+        },
+        {
+          "id": "D",
+          "text": "shutdown paired with an errdisable recovery timer for that cause."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Restrict is the only mode that does all three things at once: it discards frames from unexpected addresses, keeps the port forwarding for the authorised device, and both logs and counts each violation. Option B drops the traffic and stays up but does so silently, so the security team gets no record. Options C and D both take the port down, which stops the authorised device working, and the recovery timer in option D only shortens the outage rather than avoiding it.",
+      "difficulty": 2,
+      "skills": [
+        "port-security",
+        "violation-modes",
+        "restrict-mode",
+        "configure-port-security"
+      ]
+    },
+    {
+      "id": "5.7-003",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What is needed to bring Gi0/7 back into service for the replacement machine?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW3#\n*Aug 23 08:41:02.117: %PORT_SECURITY-2-PSECURE_VIOLATION: Security\nviolation occurred, caused by MAC address 00d0.5842.9a04 on port\nGigabitEthernet0/7.\n*Aug 23 08:41:02.120: %PM-4-ERR_DISABLE: psecure-violation error\ndetected on Gi0/7, putting Gi0/7 in err-disable state\nSW3#\n\nSW3# show port-security interface GigabitEthernet0/7\nPort Security              : Enabled\nPort Status                : Secure-shutdown\nViolation Mode             : Shutdown\nAging Time                 : 0 mins\nMaximum MAC Addresses      : 1\nSticky MAC Addresses       : 1\nLast Source Address:Vlan   : 00d0.5842.9a04:10\nSecurity Violation Count   : 1\n\nThe workstation on Gi0/7 was replaced yesterday. The sticky address\nstill recorded on the port belongs to the machine that was taken away.\nNo errdisable recovery is configured on SW3."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Clear the switch's ARP cache so that the new workstation is learned again."
+        },
+        {
+          "id": "B",
+          "text": "Raise the maximum MAC addresses to two so both machines are permitted."
+        },
+        {
+          "id": "C",
+          "text": "Wait for the aging timer to expire, after which the port recovers itself."
+        },
+        {
+          "id": "D",
+          "text": "Remove the stale sticky address, then shut and no shut the port."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The sticky entry still holds the old machine's address and the port is err-disabled, so both have to be dealt with: clear the learned address, then bounce the port, since err-disable does not clear on its own here. Option A confuses the ARP cache, which maps addresses at Layer 3 and has no bearing on port security. Option B would leave the departed machine permanently authorised and merely postpone the problem. Option C is ruled out by the aging time reading zero, which means aging is disabled.",
+      "difficulty": 3,
+      "skills": [
+        "port-security",
+        "sticky-mac",
+        "err-disable-recovery",
+        "troubleshoot-port-security"
+      ]
+    },
+    {
+      "id": "5.7-004",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which ports should be configured as trusted for DHCP snooping?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                                    +---------------+\n    clients --- [ SW-ACC ]--- Gi0/1 ---| DHCP server   |\n     Gi0/3..Gi0/20                     | 10.10.10.10   |\n                                       +---------------+\n\nDHCP snooping is about to be enabled on SW-ACC for VLAN 10. Every client\nport faces a desk; Gi0/1 is the only path toward the DHCP server."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The client-facing ports, so that requests from desks are forwarded."
+        },
+        {
+          "id": "B",
+          "text": "GigabitEthernet0/1 alone, so replies from the server are accepted."
+        },
+        {
+          "id": "C",
+          "text": "Every port in VLAN 10, since snooping needs to see the whole exchange."
+        },
+        {
+          "id": "D",
+          "text": "None of them, because trust matters only where a relay agent is used."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Snooping discards server-sourced messages such as offers and acknowledgements arriving on untrusted ports, which is precisely how it blocks a rogue server plugged into a desk; the legitimate server sits beyond Gi0/1, so that uplink alone is trusted. Option A trusts the desks, which is what the feature exists to prevent. Option C trusts everything and disables the protection entirely. Option D ties trust to relay agents, when it applies wherever snooping runs.",
+      "difficulty": 2,
+      "skills": [
+        "dhcp-snooping",
+        "trusted-ports",
+        "rogue-dhcp-server",
+        "configure-dhcp-snooping"
+      ]
+    },
+    {
+      "id": "5.7-005",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why has no client obtained an address since snooping was enabled?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW5# show ip dhcp snooping\nSwitch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10\nDHCP snooping is operational on following VLANs:\n10\nInsertion of option 82 is enabled\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                  Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet0/1         no         no              unlimited\nGigabitEthernet0/3         no         no              10\nGigabitEthernet0/4         no         no              10\n\nGigabitEthernet0/1 is the uplink toward the DHCP server. Since snooping\nwas enabled, no client on VLAN 10 has obtained an address."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The client ports need trusting so their requests reach the server."
+        },
+        {
+          "id": "B",
+          "text": "Snooping has to be removed from the VLAN before leases will be issued."
+        },
+        {
+          "id": "C",
+          "text": "The uplink is untrusted, so the server's replies are being discarded."
+        },
+        {
+          "id": "D",
+          "text": "The binding table has reached its limit and refuses to record new leases."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Every interface in the trust table reads no, including Gi0/1, and an untrusted port drops DHCP offers and acknowledgements, so the requests leave but nothing comes back. Marking Gi0/1 trusted resolves it. Option A trusts the desks, which would defeat the feature and does not address replies being dropped. Option B abandons the protection rather than configuring it. Option D blames the binding table, which stays empty precisely because no lease has ever completed.",
+      "difficulty": 3,
+      "skills": [
+        "dhcp-snooping",
+        "trusted-ports",
+        "troubleshoot-dhcp-snooping",
+        "verify-dhcp-snooping"
+      ]
+    },
+    {
+      "id": "5.7-006",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Why did enabling dynamic ARP inspection break connectivity on VLAN 10?",
+      "exhibit": {
+        "kind": "config",
+        "content": "! SW6 - relevant configuration\n!\nip arp inspection vlan 10\n!\ninterface GigabitEthernet0/1\n description uplink to distribution\n ip arp inspection trust\n!\n\nThere is no ip dhcp snooping command anywhere in the configuration.\nSince DAI was enabled, every host on VLAN 10 has lost connectivity, and\nARP requests from the desk ports are being discarded."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "DAI checks each ARP against the snooping bindings, and none exist."
+        },
+        {
+          "id": "B",
+          "text": "DAI needs an ARP access list before it will permit any traffic at all."
+        },
+        {
+          "id": "C",
+          "text": "DAI must be enabled globally before it can be applied to a VLAN."
+        },
+        {
+          "id": "D",
+          "text": "DAI operates only on extended-range VLANs, so VLAN 10 is unsupported."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "Dynamic ARP inspection validates ARP on untrusted ports against the bindings that DHCP snooping records, so without snooping running there is no binding table, nothing validates, and every ARP from a desk port is discarded. Enabling ip dhcp snooping for the VLAN is the missing piece. Option B describes ARP ACLs, which handle statically addressed hosts as a supplement rather than a prerequisite. Option C invents a global command. Option D invents a VLAN range restriction.",
+      "difficulty": 2,
+      "skills": [
+        "dynamic-arp-inspection",
+        "dhcp-snooping",
+        "binding-table-dependency",
+        "troubleshoot-dai"
+      ]
+    },
+    {
+      "id": "5.7-007",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What did SW7 detect on GigabitEthernet0/5?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW7#\n*Aug 23 09:14:22.418: %SW_DAI-4-DHCP_SNOOPING_DENY: 1 Invalid ARPs\n(Req) on Gi0/5, vlan 10.([00d0.5842.7f22/10.10.10.99/0000.0000.0000/\n10.10.10.1/09:14:22 UTC Mon Aug 23 2026])\nSW7#\n\nDHCP snooping and dynamic ARP inspection are both operational on\nVLAN 10. The binding table records 00d0.5842.7f22 holding the lease\nfor 10.10.10.55."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A host requesting an address from an unauthorised DHCP server."
+        },
+        {
+          "id": "B",
+          "text": "A port carrying more MAC addresses than port security permits."
+        },
+        {
+          "id": "C",
+          "text": "An ARP reply arriving on a port trusted for DHCP snooping."
+        },
+        {
+          "id": "D",
+          "text": "An ARP claiming an address the binding table gives elsewhere."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The message names an invalid ARP request from 00d0.5842.7f22 claiming 10.10.10.99, while the binding table records that MAC holding 10.10.10.55, so the pairing contradicts the recorded lease and DAI discards it. This is the shape of an ARP spoofing attempt. Option A describes what DHCP snooping catches rather than DAI. Option B describes a port security violation, which logs under a different facility. Option C would be permitted, since trusted ports are exempt from inspection.",
+      "difficulty": 2,
+      "skills": [
+        "dynamic-arp-inspection",
+        "arp-spoofing",
+        "binding-table",
+        "interpret-log-message"
+      ]
+    },
+    {
+      "id": "5.7-008",
+      "objective": "5.7",
+      "domain": 5,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which interfaces would discard a DHCP offer arriving on them?",
+      "exhibit": {
+        "kind": "cli_output",
+        "content": "SW8# show ip dhcp snooping\nSwitch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10,20\nDHCP snooping is operational on following VLANs:\n10,20\nInsertion of option 82 is enabled\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                  Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet0/1         yes        yes             unlimited\nGigabitEthernet0/2         yes        yes             unlimited\nGigabitEthernet0/9         no         no              15\nGigabitEthernet0/10        no         no              15"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Gi0/1 and Gi0/2, because their rate limit is unlimited."
+        },
+        {
+          "id": "B",
+          "text": "Gi0/9 and Gi0/10, because both are listed as untrusted."
+        },
+        {
+          "id": "C",
+          "text": "All four, since offers are only accepted from a relay agent."
+        },
+        {
+          "id": "D",
+          "text": "None, because snooping records offers rather than discarding them."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "The Trusted column decides: an untrusted port drops server-sourced messages, and Gi0/9 and Gi0/10 both read no. Option A names the two trusted uplinks, which accept offers, and reads the rate limit as though it governed trust. Option C introduces a relay agent the exhibit never mentions. Option D describes what happens on a trusted port, where the offer is recorded into the binding table rather than dropped.",
+      "difficulty": 1,
+      "skills": [
+        "dhcp-snooping",
+        "trusted-ports",
+        "verify-dhcp-snooping",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

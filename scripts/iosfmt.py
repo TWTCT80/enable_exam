@@ -511,3 +511,46 @@ def access_lists(prompt, lists):
         out.append(header)
         out.extend(entries)
     return "\n".join(out)
+
+
+# --- show port-security interface -----------------------------------------
+# Line-oriented: the field name is left-justified in 27 characters, then ": ".
+def psec_field(name, value):
+    return f"{name:<27}: {value}"
+
+
+def port_security_interface(prompt, intf, fields):
+    """A `show port-security interface <name>` capture."""
+    return "\n".join([f"{prompt}# show port-security interface {intf}"]
+                     + [psec_field(n, v) for n, v in fields])
+
+
+# --- show ip dhcp snooping ------------------------------------------------
+SNOOP_TRUST_HEADER = (f"{'Interface':<27}{'Trusted':<11}{'Allow option':<16}"
+                      f"Rate limit (pps)")
+SNOOP_TRUST_RULE = ("-----------------------    -------    ------------    "
+                    "----------------")
+
+
+def snoop_trust(intf, trusted, allow, rate):
+    """One row of the trust table at the foot of `show ip dhcp snooping`."""
+    return f"{intf:<27}{trusted:<11}{allow:<16}{rate}"
+
+
+def dhcp_snooping(prompt, vlans, rows, option82=True):
+    """A `show ip dhcp snooping` capture."""
+    return "\n".join([
+        f"{prompt}# show ip dhcp snooping",
+        "Switch DHCP snooping is enabled",
+        "DHCP snooping is configured on following VLANs:",
+        vlans,
+        "DHCP snooping is operational on following VLANs:",
+        vlans,
+        f"Insertion of option 82 is {'enabled' if option82 else 'disabled'}",
+        "Verification of hwaddr field is enabled",
+        "Verification of giaddr field is enabled",
+        "DHCP snooping trust/rate is configured on the following Interfaces:",
+        "",
+        SNOOP_TRUST_HEADER,
+        SNOOP_TRUST_RULE,
+    ] + list(rows))
