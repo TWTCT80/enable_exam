@@ -493,3 +493,21 @@ def wlc_page(title, tabs):
         out += [wlc_field(n, v) for n, v in fields]
         out.append("")
     return "\n".join(out).rstrip()
+
+
+# --- show access-lists ----------------------------------------------------
+# IOS left-justifies the action in seven characters, which is why "deny" lines
+# up with "permit" by carrying three trailing spaces.
+def acl_line(seq, action, rest, matches=None):
+    """One access-list entry, optionally with its match counter."""
+    tail = f" ({matches} match{'es' if matches != 1 else ''})" if matches is not None else ""
+    return f"    {seq} {action:<7}{rest}{tail}"
+
+
+def access_lists(prompt, lists):
+    """A `show access-lists` capture: [(header, [entry, ...]), ...]."""
+    out = [f"{prompt}# show access-lists"]
+    for header, entries in lists:
+        out.append(header)
+        out.extend(entries)
+    return "\n".join(out)
