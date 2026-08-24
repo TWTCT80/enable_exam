@@ -34,6 +34,12 @@ than just restating the right answer.
 **Nothing is copied.** Every item is written from scratch against Cisco's
 published exam topics. None reproduces or paraphrases real exam content.
 
+**A right answer you guessed is worth reviewing too.** Any item can be marked
+unsure while you answer it (<kbd>U</kbd>). It changes nothing about scoring and
+you still cannot go back — it only means the review afterwards explains that
+item as fully as one you got wrong. Everything else stays one click away under
+*Every item in this attempt*.
+
 ### Coverage
 
 | Domain | Weight | Items |

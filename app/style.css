@@ -332,6 +332,22 @@ fieldset { border: 0; margin: 0; padding: 0; }
 
 .confirm-hint { font-size: 0.83rem; color: var(--ink-3); }
 
+/* The unsure marker sits outside #q-options on purpose: the answer inputs are
+   enumerated by selector, and a stray checkbox among them would count as one. */
+.unsure {
+  display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  margin-top: 1rem; font-size: 0.85rem; color: var(--ink-2);
+  padding: 0.4rem 0.7rem; border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+.unsure:hover { border-color: var(--ink-3); }
+.unsure:has(input:checked) {
+  border-style: solid; border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  color: var(--ink);
+}
+.unsure input { accent-color: var(--warn); margin: 0; }
+
 /* ── results ───────────────────────────────────────────────────────── */
 
 .score-card {
@@ -349,6 +365,11 @@ fieldset { border: 0; margin: 0; padding: 0; }
 }
 
 .score-frac { font-size: 1rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+.score-note {
+  font-size: 0.85rem; color: var(--warn); font-variant-numeric: tabular-nums;
+}
+.score-note::before { content: "· "; color: var(--ink-3); }
 
 .score-meta { display: flex; gap: 2rem; margin: 0; }
 .score-meta div { margin: 0; }
@@ -405,6 +426,22 @@ fieldset { border: 0; margin: 0; padding: 0; }
 }
 
 .all-correct { color: var(--ok); font-size: 0.95rem; }
+
+
+/* Review cards for items answered correctly: same layout, calmer edge. */
+#r-unsure .missed { border-left-color: var(--warn); }
+.missed.was-right { border-left-color: var(--ok); }
+
+.tag-unsure { color: var(--warn); }
+.missed-head .seq { color: var(--ink-2); font-weight: 600; }
+
+.all-items { margin-top: 2.5rem; }
+.all-items > summary {
+  cursor: pointer; padding: 0.7rem 0; font-size: 1.05rem; font-weight: 600;
+  border-top: 1px solid var(--line);
+}
+.all-items > summary:hover { color: var(--accent); }
+.all-items > #r-all { margin-top: 1rem; }
 
 @media (max-width: 640px) {
   .wrap { padding: 0 1rem; }

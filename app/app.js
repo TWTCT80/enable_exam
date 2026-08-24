@@ -1,9 +1,12 @@
 /* CCNA 200-301 v1.1 practice runner.
  *
  * Deliberate constraints, mirroring the real delivery:
- *   - a confirmed answer is final; there is no back, skip, or flag
+ *   - a confirmed answer is final; there is no back and no skip
  *   - the clock never pauses and submits the attempt when it hits zero
  *   - no score, no correctness feedback, nothing but a counter during the run
+ *   - one departure: an item can be marked "unsure". It is an annotation, not
+ *     navigation; it changes no scoring and only decides what the review after
+ *     the attempt explains.
  *   - no localStorage anywhere, so the core flow works with storage disabled
  */
 'use strict';
@@ -253,6 +256,7 @@ function render() {
     box.appendChild(label);
   });
 
+  $('unsure').checked = false;          // static control; render() must clear it
   $('confirm').disabled = true;
   $('confirm-hint').textContent = multi
     ? `Select ${it.select_count}. This cannot be undone.`
@@ -284,6 +288,7 @@ function confirmAnswer(e) {
   if (got.length !== q.item.select_count) return;
 
   q.chosen = got.slice().sort();
+  q.unsure = $('unsure').checked;
   const key = q.item.correct.slice().sort();
   q.right = q.chosen.length === key.length && q.chosen.every((v, n) => v === key[n]);
 
@@ -301,6 +306,7 @@ function finish(expired) {
   const answered = run.questions.filter((q) => q.chosen !== null);
   const correct = answered.filter((q) => q.right).length;
   const total = run.questions.length;
+  const unsureRight = run.questions.filter((q) => q.right && q.unsure);
 
   const byDomain = {};
   const byObjective = {};
@@ -315,7 +321,12 @@ function finish(expired) {
   run.report = {
     timestamp: new Date().toISOString(),
     duration: Math.round(elapsed),
-    score: { correct, total, percent: pct(correct, total) },
+    score: {
+      correct,
+      total,
+      percent: pct(correct, total),
+      marked_unsure: run.questions.filter((q) => q.unsure).length,
+    },
     per_domain: Object.fromEntries(Object.entries(byDomain).map(([k, v]) =>
       [k, { ...v, percent: pct(v.correct, v.total) }])),
     per_objective: Object.fromEntries(Object.entries(byObjective).map(([k, v]) =>
@@ -325,6 +336,13 @@ function finish(expired) {
       objective: q.item.objective,
       chosen: q.chosen,                 // null when the clock ran out first
       correct: q.item.correct.slice().sort(),
+      unsure: Boolean(q.unsure),
+    })),
+    // right, but the answer was not held with confidence: the ones worth reading
+    unsure_correct: unsureRight.map((q) => ({
+      item_id: q.item.id,
+      objective: q.item.objective,
+      chosen: q.chosen,
     })),
   };
 
@@ -344,6 +362,9 @@ function paintResults(expired) {
   $('r-pct').textContent = `${r.score.percent}%`;
   $('r-frac').textContent = `${r.score.correct} of ${r.score.total} correct` +
     (expired ? ' — time expired' : '');
+  const note = $('r-note');
+  note.hidden = r.score.marked_unsure === 0;
+  note.textContent = `${r.score.marked_unsure} marked unsure`;
   $('r-elapsed').textContent = clock(r.duration);
   $('r-finished').textContent = new Date(r.timestamp).toLocaleString();
 
@@ -380,9 +401,36 @@ function paintResults(expired) {
   $('r-missed-head').textContent = `Missed items (${missedQs.length})`;
   if (!missedQs.length) {
     missedBox.appendChild(el('p', 'all-correct', 'Nothing missed. Every item correct.'));
-    return;
   }
-  for (const q of missedQs) missedBox.appendChild(missedCard(q));
+  for (const q of missedQs) missedBox.appendChild(itemCard(q));
+
+  // Right, but you said you were not sure: the same review treatment, because a
+  // lucky guess teaches nothing until it is explained.
+  const unsureBox = $('r-unsure');
+  unsureBox.textContent = '';
+  const unsureQs = run.questions.filter((q) => q.right && q.unsure);
+  $('r-unsure-head').hidden = unsureQs.length === 0;
+  $('r-unsure-head').textContent = `Correct, but marked unsure (${unsureQs.length})`;
+  for (const q of unsureQs) unsureBox.appendChild(itemCard(q));
+
+  // Everything else, collapsed: the escape hatch for an item you meant to mark.
+  const all = run.questions;
+  $('r-all-head').textContent = `Every item in this attempt (${all.length})`;
+}
+
+/** The full list is built on first open; 100 cards are not worth painting up
+ *  front, and this runs after finish() has cleared `run`. */
+function paintAllItems() {
+  const box = $('r-all');
+  if (box.childNodes.length) return;
+  const attempt = window.__attempt;
+  if (!attempt) return;
+  attempt.questions.forEach((q, n) => {
+    const card = itemCard(q);
+    card.classList.add(q.right ? 'was-right' : 'was-wrong');
+    card.querySelector('.missed-head').prepend(el('span', 'seq', `#${n + 1}`));
+    box.appendChild(card);
+  });
 }
 
 function byObjectiveId(a, b) {
@@ -402,7 +450,9 @@ function rateCell(p) {
   return td;
 }
 
-function missedCard(q) {
+/** Review card for one answered item. Correct or missed, the layout is the
+ *  same; only the marks on the option list differ. */
+function itemCard(q) {
   const it = q.item;
   const card = el('div', 'missed');
 
@@ -410,6 +460,7 @@ function missedCard(q) {
   head.appendChild(el('span', null, it.id));
   head.appendChild(el('span', null, `objective ${it.objective}`));
   head.appendChild(el('span', null, `difficulty ${it.difficulty}`));
+  if (q.unsure) head.appendChild(el('span', 'tag-unsure', 'marked unsure'));
   if (it.skills && it.skills.length) head.appendChild(el('span', null, it.skills.join(' · ')));
   card.appendChild(head);
 
@@ -467,6 +518,7 @@ function markdown() {
   L.push(`# CCNA 200-301 ${bank.blueprint_version} practice attempt`);
   L.push('');
   L.push(`- **Score:** ${r.score.correct}/${r.score.total} (${r.score.percent}%)`);
+  if (r.score.marked_unsure) L.push(`- **Marked unsure:** ${r.score.marked_unsure}`);
   L.push(`- **Elapsed:** ${clock(r.duration)}`);
   L.push(`- **Finished:** ${r.timestamp}`);
   L.push('');
@@ -494,7 +546,16 @@ function markdown() {
     L.push('');
     for (const m of r.missed) {
       L.push(`- \`${m.item_id}\` (${m.objective}) — chose ` +
-        `${m.chosen ? m.chosen.join('+') : 'nothing'}, correct ${m.correct.join('+')}`);
+        `${m.chosen ? m.chosen.join('+') : 'nothing'}, correct ${m.correct.join('+')}` +
+        `${m.unsure ? ' _(marked unsure)_' : ''}`);
+    }
+  }
+  if (r.unsure_correct.length) {
+    L.push('');
+    L.push(`## Correct, but marked unsure (${r.unsure_correct.length})`);
+    L.push('');
+    for (const u of r.unsure_correct) {
+      L.push(`- \`${u.item_id}\` (${u.objective}) — answered ${u.chosen.join('+')}`);
     }
   }
   return L.join('\n');
@@ -531,7 +592,11 @@ document.addEventListener('keydown', (e) => {
   if (/^[1-9]$/.test(e.key)) idx = Number(e.key) - 1;
   else if (/^[A-E]$/.test(k)) idx = k.charCodeAt(0) - 65;
 
-  if (idx >= 0 && idx < inputs.length) {
+  if (k === 'U') {
+    e.preventDefault();
+    const u = $('unsure');
+    u.checked = !u.checked;
+  } else if (idx >= 0 && idx < inputs.length) {
     e.preventDefault();
     const input = inputs[idx];
     if (input.type === 'checkbox') input.checked = !input.checked;
@@ -550,5 +615,6 @@ $('q-form').addEventListener('submit', confirmAnswer);
 $('dl-json').addEventListener('click', downloadJSON);
 $('cp-md').addEventListener('click', copyMarkdown);
 $('restart').addEventListener('click', () => { location.reload(); });
+document.querySelector('.all-items').addEventListener('toggle', paintAllItems);
 
 init();

@@ -126,6 +126,30 @@ runner offers the full 100-question, 120-minute exam.
 
 Still outstanding: `scripts/stats.py` and `app/lab-tasks.md`.
 
+## The unsure marker
+
+A correct answer got no explanation, so a lucky guess taught nothing. The
+runner now takes a per-item **unsure** flag (checkbox next to Confirm,
+<kbd>U</kbd> on the keyboard), and the results screen has three tiers:
+missed items, correct-but-marked-unsure, and a collapsed section holding
+every item in the attempt for anything you meant to mark and did not.
+
+Decisions behind it:
+
+- **Binary, not a confidence scale.** A second judgement per item under a
+  running clock costs more than the granularity is worth.
+- **It is an annotation, not navigation.** "No back, no skip" still holds.
+  The header comment in `app.js` records it as the one departure from
+  mirroring the real delivery.
+- **Scoring is untouched.** Flagged-and-correct is correct; the headline
+  percent does not move. The score card carries a subline, `n marked unsure`.
+- **It lives in the report.** With no localStorage, `run.report` is the only
+  thing that outlives the tab, so the flag is in the JSON (`score.marked_unsure`,
+  `unsure_correct[]`, and `unsure` on each missed item) and in the Markdown.
+- The checkbox sits outside `#q-options` deliberately: `picked()` and the
+  keyboard handler enumerate the inputs in that container, and a stray
+  checkbox among them would count as an answer.
+
 ## Deliberate non-goal: mobile
 
 The runner targets a laptop screen, which is what the spec asked for

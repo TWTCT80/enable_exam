@@ -63,8 +63,12 @@
           <li><strong>The clock does not pause.</strong> When it reaches zero the
               attempt is submitted as it stands.</li>
           <li>You will not see your score until the attempt ends.</li>
+          <li><strong>Mark an item unsure</strong> if you guessed or hesitated.
+              It changes nothing about scoring and does not let you return to the
+              item — it only means the review afterwards explains that item
+              too, instead of assuming a correct answer needs no explanation.</li>
           <li>Keyboard: <kbd>1</kbd>–<kbd>5</kbd> or <kbd>A</kbd>–<kbd>E</kbd> to
-              select, <kbd>Enter</kbd> to confirm.</li>
+              select, <kbd>U</kbd> to mark unsure, <kbd>Enter</kbd> to confirm.</li>
         </ul>
       </div>
 
@@ -95,6 +99,11 @@
         </button>
         <span class="confirm-hint" id="confirm-hint">This cannot be undone.</span>
       </div>
+      <label class="unsure" for="unsure">
+        <input type="checkbox" id="unsure">
+        <span>Not sure &mdash; explain this one afterwards even if I get it
+              right <kbd>U</kbd></span>
+      </label>
     </form>
   </div>
 </section>
@@ -108,6 +117,7 @@
       <div class="score-main">
         <span class="score-pct" id="r-pct">—</span>
         <span class="score-frac" id="r-frac"></span>
+        <span class="score-note" id="r-note" hidden></span>
       </div>
       <dl class="score-meta">
         <div><dt>Elapsed</dt><dd id="r-elapsed">—</dd></div>
@@ -143,6 +153,14 @@
 
     <h2 id="r-missed-head">Missed items</h2>
     <div id="r-missed"></div>
+
+    <h2 id="r-unsure-head" hidden>Correct, but marked unsure</h2>
+    <div id="r-unsure"></div>
+
+    <details class="all-items">
+      <summary id="r-all-head">Every item in this attempt</summary>
+      <div id="r-all"></div>
+    </details>
   </div>
 </section>
 
