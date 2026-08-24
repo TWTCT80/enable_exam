@@ -1,0 +1,131 @@
+{
+  "objective": "6.4",
+  "domain": 6,
+  "blueprint_version": "v1.1",
+  "scope_note": "A genuine v1.1 objective, confirmed against Cisco's published PDF. Distinct from v2.0's separate AI/network-operations domain, which this bank excludes.",
+  "items": [
+    {
+      "id": "6.4-001",
+      "objective": "6.4",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which capability produced this alert?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A monitoring platform has been collecting interface counters,\ncontrol-plane telemetry and flow records from the campus for nine months.\n\n    Reported this morning\n    ---------------------------------------------------------------\n    \"Utilisation on the DIST-1 to CORE-1 uplink is 4.2 standard\n     deviations above the pattern observed for a Monday at 09:00 over\n     the preceding thirty-six weeks. No configuration change is\n     recorded. Investigate.\"\n\nNo threshold for this interface was ever configured by an engineer."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A generative model, which composed the wording of the alert from telemetry."
+        },
+        {
+          "id": "B",
+          "text": "A static threshold, crossed once utilisation passed a configured percentage."
+        },
+        {
+          "id": "C",
+          "text": "A predictive model, which learned the pattern and flagged a departure."
+        },
+        {
+          "id": "D",
+          "text": "A scheduled report, comparing this morning's figures against yesterday's."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "The alert is expressed as a deviation from a baseline built over thirty-six weeks of history rather than a fixed percentage, which is what a model trained on past behaviour produces; nobody set a threshold, and that is precisely the point of learning one. Option A confuses how the message was phrased with what detected the condition. Option B is ruled out by no threshold having been configured. Option D compares two days, which could not yield a figure in standard deviations.",
+      "difficulty": 2,
+      "skills": [
+        "ai-in-network-operations",
+        "predictive-ai",
+        "machine-learning",
+        "anomaly-detection"
+      ]
+    },
+    {
+      "id": "6.4-002",
+      "objective": "6.4",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which kind of capability is the assistant demonstrating here?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "An engineer types the following into an assistant built into the\nmanagement platform:\n\n    \"Give me the configuration for a new branch router: two LAN\n     subnets on 10.44.0.0/22, OSPF area 0 to the WAN link, and a\n     floating static as backup.\"\n\nThe assistant returns a complete, syntactically valid configuration in\nabout two seconds."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Predictive, since it anticipates the settings the branch will need."
+        },
+        {
+          "id": "B",
+          "text": "Generative, since it produces new configuration text from a description."
+        },
+        {
+          "id": "C",
+          "text": "Anomaly detection, comparing the request against known branch designs."
+        },
+        {
+          "id": "D",
+          "text": "Automation scheduling, queueing the configuration for a later window."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Producing configuration text that did not previously exist, from a description given in ordinary language, is a generative capability; nothing here forecasts a future state or scores an observation against a baseline. Option A borrows the word predictive for ordinary anticipation, where in this context it means forecasting from learned patterns. Option C describes comparing something observed against normal behaviour, and no observation has been made. Option D describes when a change runs rather than where the text came from.",
+      "difficulty": 2,
+      "skills": [
+        "ai-in-network-operations",
+        "generative-ai",
+        "configuration-generation",
+        "machine-learning"
+      ]
+    },
+    {
+      "id": "6.4-003",
+      "objective": "6.4",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does this part of the draft illustrate about generated configuration?",
+      "exhibit": {
+        "kind": "config",
+        "content": "The assistant's draft for the branch router included:\n\n    interface GigabitEthernet0/3\n     description backup circuit\n     ip address 203.0.113.6 255.255.255.252\n    !\n    ip route 0.0.0.0 0.0.0.0 203.0.113.5 130\n\nThe branch router model in question has two Gigabit Ethernet interfaces,\nnumbered 0/0 and 0/1. There is no GigabitEthernet0/3 on the platform,\nand the backup circuit terminates on a serial interface."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The model was given the wrong prompt, which is the sole cause of the error."
+        },
+        {
+          "id": "B",
+          "text": "Generated configuration is unusable in practice and should not be attempted."
+        },
+        {
+          "id": "C",
+          "text": "The syntax error would have been caught by the device on paste."
+        },
+        {
+          "id": "D",
+          "text": "Output can be plausible and still wrong, so it needs checking before use."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Every line is valid IOS and reads exactly like a real backup circuit, yet it names an interface the platform does not have and puts the circuit on the wrong media, so the fault is invisible to anything that only checks syntax. That is the reason generated configuration is reviewed against the actual inventory before it is applied. Option A blames the prompt, which never claimed a third interface. Option B overcorrects into dismissing a useful drafting aid. Option C expects a syntax check to catch a semantically wrong but well-formed command.",
+      "difficulty": 3,
+      "skills": [
+        "ai-in-network-operations",
+        "generative-ai",
+        "verification",
+        "operational-risk"
+      ]
+    }
+  ]
+}

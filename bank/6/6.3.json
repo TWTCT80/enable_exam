@@ -1,0 +1,213 @@
+{
+  "objective": "6.3",
+  "domain": 6,
+  "blueprint_version": "v1.1",
+  "scope_note": "API direction is asked from a drawn stack, not from a definition.",
+  "items": [
+    {
+      "id": "6.3-001",
+      "objective": "6.3",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which API does each of the two actions use?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "        +--------------------------------------+\n        |   provisioning portal, ticketing,    |\n        |   monitoring and analytics tools     |\n        +--------------------------------------+\n                          |  API  A\n        +--------------------------------------+\n        |             CONTROLLER               |\n        +--------------------------------------+\n                          |  API  B\n        +--------------------------------------+\n        |   switches, routers, access points   |\n        +--------------------------------------+\n\nA ticketing system asks the controller to create a segment. The\ncontroller then instructs forty switches to implement it."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Both use API A, since the controller mediates every request that arrives."
+        },
+        {
+          "id": "B",
+          "text": "The ticketing request uses A, northbound; the switches are reached over B."
+        },
+        {
+          "id": "C",
+          "text": "The ticketing request uses B, and the controller reaches the switches over A."
+        },
+        {
+          "id": "D",
+          "text": "Both use API B, because every action ends at a device in the end."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "Northbound faces the applications above the controller, so a ticketing system calls in over API A, and southbound faces the infrastructure below it, so the controller programs the switches over API B. The names describe direction relative to the controller rather than importance. Option C reverses the two, which is the usual slip. Option A ignores that the controller must also speak downward. Option D looks at where the effect lands rather than which interface each call crosses.",
+      "difficulty": 2,
+      "skills": [
+        "sdn-architecture",
+        "northbound-api",
+        "southbound-api",
+        "controller-based-networking"
+      ]
+    },
+    {
+      "id": "6.3-002",
+      "objective": "6.3",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which description matches what this switch is doing?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A fabric switch receives a frame and forwards it in hardware within\nmicroseconds, using tables it did not compute for itself. A central\ncomponent worked out what those tables should contain and programmed\nthem, and it recomputes them whenever the topology changes."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "It runs both planes locally, with the central component only monitoring it."
+        },
+        {
+          "id": "B",
+          "text": "It runs the control plane locally while the data plane is centralised."
+        },
+        {
+          "id": "C",
+          "text": "It runs neither plane; the central component forwards the traffic itself."
+        },
+        {
+          "id": "D",
+          "text": "It runs the data plane locally while the control plane sits centrally."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "Forwarding a frame in hardware in microseconds is the data plane and stays on the switch, while deciding what the tables should hold is the control plane and has moved to the central component; that division is what separation of the planes means. Option A denies the separation the exhibit describes. Option B reverses the two, which would put per-frame forwarding across the network. Option C leaves the switch doing nothing, contradicted by it forwarding the frame.",
+      "difficulty": 2,
+      "skills": [
+        "sdn-architecture",
+        "control-plane",
+        "data-plane",
+        "plane-separation"
+      ]
+    },
+    {
+      "id": "6.3-003",
+      "objective": "6.3",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which layer is the underlay, and what does it carry?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A campus fabric carries traffic between two hosts.\n\n    Layer          What it consists of\n    -----------    --------------------------------------------\n    Layer one      The physical switches, their links, and the\n                   routing that lets each device reach every\n                   other device's loopback\n    Layer two      Tunnels built between those loopbacks, in\n                   which the hosts' own traffic is carried"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Layer one is the underlay, carrying the tunnels that hold host traffic."
+        },
+        {
+          "id": "B",
+          "text": "Layer two is the underlay, since host traffic is what the fabric exists for."
+        },
+        {
+          "id": "C",
+          "text": "Layer one is the overlay, because it is the physical network beneath."
+        },
+        {
+          "id": "D",
+          "text": "Neither; underlay and overlay describe the same links seen from two angles."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "The underlay is the real network of switches, links and routing whose only job is to let every device reach every other, and the overlay is the set of tunnels built across it in which host traffic actually travels. Option B swaps them by reasoning from purpose rather than position. Option C names the right layer but calls it the overlay, inverting the terms. Option D collapses a distinction that exists precisely so host addressing can change without the physical network being touched.",
+      "difficulty": 3,
+      "skills": [
+        "sdn-architecture",
+        "underlay",
+        "overlay",
+        "fabric"
+      ]
+    },
+    {
+      "id": "6.3-004",
+      "objective": "6.3",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which term best describes the arrangement shown here as a whole?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "                     +---------+   +---------+\n                     | SPINE-1 |   | SPINE-2 |\n                     +----+----+   +----+----+\n                          | \\_______/ |\n                          |  ________/|\n                     +----+-/---+  +--+------+\n                     |  LEAF-1  |  |  LEAF-2 |\n                     +----------+  +---------+\n\nEvery leaf connects to every spine. A controller holds the policy for\nthe whole arrangement and programs each device. Host traffic between\nleaves is carried in tunnels between the leaf loopbacks, over the\nrouted links shown."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "An underlay, since the drawing shows the physical links between devices."
+        },
+        {
+          "id": "B",
+          "text": "An overlay, since the host traffic travels inside tunnels between leaves."
+        },
+        {
+          "id": "C",
+          "text": "A fabric: an underlay, an overlay across it, and a controller programming both."
+        },
+        {
+          "id": "D",
+          "text": "A collapsed core, since two spines aggregate the two leaf switches."
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Fabric is the word for the whole arrangement: the routed spine-and-leaf network underneath, the tunnels carrying host traffic across it, and a controller holding the policy and programming the devices. Options A and B each name one component of it and stop there, which is why the question asks about the arrangement as a whole. Option D borrows a campus term for a data centre topology whose spines aggregate nothing in that sense.",
+      "difficulty": 2,
+      "skills": [
+        "sdn-architecture",
+        "fabric",
+        "overlay",
+        "underlay"
+      ]
+    },
+    {
+      "id": "6.3-005",
+      "objective": "6.3",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which API does the engineer's script use?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "        +--------------------------------------+\n        |   provisioning portal, ticketing,    |\n        |   monitoring and analytics tools     |\n        +--------------------------------------+\n                          |  API  A\n        +--------------------------------------+\n        |             CONTROLLER               |\n        +--------------------------------------+\n                          |  API  B\n        +--------------------------------------+\n        |   switches, routers, access points   |\n        +--------------------------------------+\n\nAn engineer writes a script that runs on the monitoring server and asks\nthe controller for a list of every device it manages."
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "API A, the northbound interface the controller offers to applications."
+        },
+        {
+          "id": "B",
+          "text": "API B, the southbound interface toward the managed devices."
+        },
+        {
+          "id": "C",
+          "text": "Neither, since a read-only request bypasses both interfaces."
+        },
+        {
+          "id": "D",
+          "text": "Both in turn, as the request is relayed down to each device."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "The script runs above the controller and asks it for information, so it calls in over the northbound API, which is what the controller publishes for applications and tools. Option B is the interface the controller uses to reach the switches, which the script never touches. Option C invents an exemption for reads, when a query is an ordinary API call. Option D assumes the controller must poll every device, but it answers from what it already holds.",
+      "difficulty": 1,
+      "skills": [
+        "sdn-architecture",
+        "northbound-api",
+        "southbound-api",
+        "controller-based-networking"
+      ]
+    }
+  ]
+}

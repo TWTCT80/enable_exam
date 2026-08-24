@@ -103,3 +103,25 @@ expressed as multi-answer items instead.
 | 4.7 Per-hop behaviour for QoS | explain | 2 | 2 |
 | 4.8 Remote access using SSH | configure | 2 | 2 |
 | 4.9 TFTP/FTP capabilities | describe | 2 | 2 |
+
+## Domain 6 - 30 items  **COMPLETE**
+
+| Objective | Verb | Planned | Done |
+|---|---|---|---|
+| 6.1 How automation impacts network management | explain | 4 | 4 |
+| 6.2 Traditional vs controller-based networking | compare | 4 | 4 |
+| 6.3 Controller-based, software defined architecture | describe | 5 | 5 |
+| 6.4 AI and machine learning in network operations | explain | 3 | 3 |
+| 6.5 REST-based API characteristics | describe | 6 | 6 |
+| 6.6 Ansible and Terraform | recognize | 4 | 4 |
+| 6.7 JSON-encoded data | recognize | 4 | 4 |
+
+---
+
+## Bank complete: 300 items
+
+All six domains at quota, all 53 objectives covered, `validate.py` green
+in full mode. `build_bank.py` no longer needs `--allow-partial`, and the
+runner offers the full 100-question, 120-minute exam.
+
+Still outstanding: `scripts/stats.py` and `app/lab-tasks.md`.

@@ -1,0 +1,172 @@
+{
+  "objective": "6.1",
+  "domain": 6,
+  "blueprint_version": "v1.1",
+  "scope_note": "Both directions of the impact, including what automation makes worse.",
+  "items": [
+    {
+      "id": "6.1-001",
+      "objective": "6.1",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which problem do these findings describe?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "An audit of 180 access switches, all built from the same design\ndocument over four years by six engineers.\n\n    Finding\n    ---------------------------------------------------------------\n    41 switches carry an NTP server the standard no longer lists\n    17 have a logging host that was decommissioned in 2024\n    9 permit Telnet on their vty lines\n    Every one of them was configured by hand, by someone following\n    the same document"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "A hardware fault common to a batch of switches from one supplier."
+        },
+        {
+          "id": "B",
+          "text": "Configuration drift, where devices diverge from the standard over time."
+        },
+        {
+          "id": "C",
+          "text": "A routing problem, since the affected switches cannot reach the servers."
+        },
+        {
+          "id": "D",
+          "text": "A licensing lapse that has reverted features to their defaults."
+        }
+      ],
+      "correct": [
+        "B"
+      ],
+      "explanation": "One design document, six engineers and four years produced 180 switches that no longer agree with the standard or with each other, which is configuration drift; it accumulates precisely because each change is applied by a person, once, from memory or from a document that has since moved on. Option A blames hardware for settings that were typed in. Option C describes reachability, and the finding is about which values are configured. Option D invents a licensing mechanism that does not rewrite an NTP server address.",
+      "difficulty": 2,
+      "skills": [
+        "automation-impact",
+        "configuration-drift",
+        "consistency",
+        "network-management"
+      ]
+    },
+    {
+      "id": "6.1-002",
+      "objective": "6.1",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What does this outcome illustrate about automation?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "A team introduces automation and pushes a corrected NTP and logging\nbaseline to all 180 access switches in one run.\n\n    Outcome\n    ---------------------------------------------------------------\n    The run completes in eleven minutes\n    All 180 switches now match the standard exactly\n    The template also carried a typo in the management ACL, which is\n    now present on all 180 switches\n    The previous manual process would have reached perhaps four\n    switches in that time"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "That automation is unsuitable for changes affecting management access."
+        },
+        {
+          "id": "B",
+          "text": "That the eleven-minute run was too fast and should have been throttled."
+        },
+        {
+          "id": "C",
+          "text": "That the typo would have been avoided had the run been done by hand."
+        },
+        {
+          "id": "D",
+          "text": "That it applies a mistake as widely and as quickly as a correction."
+        }
+      ],
+      "correct": [
+        "D"
+      ],
+      "explanation": "The same property that fixed 180 switches in eleven minutes carried the ACL typo to all 180 in the same run, because automation removes the delay that used to confine an error to whichever device someone was working on. That is an argument for reviewing and testing the template, not for going back to typing. Option A rules out a use it handles well. Option B treats speed as the fault rather than the absence of a check. Option C assumes a manual process would have caught it, when the same person wrote both.",
+      "difficulty": 3,
+      "skills": [
+        "automation-impact",
+        "blast-radius",
+        "change-testing",
+        "network-management"
+      ]
+    },
+    {
+      "id": "6.1-003",
+      "objective": "6.1",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. What becomes of the overnight change?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "The intended configuration for every access switch is held in a\nversion-controlled repository. Any change is proposed, reviewed and\nmerged there, and the automation applies whatever the repository holds.\n\n    Question put to the team\n    ---------------------------------------------------------------\n    \"Someone made an emergency change directly on SW-ACC-14 at 02:00\n     last night. What happens to it?\" "
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "The next run overwrites it, since the repository is the source of truth."
+        },
+        {
+          "id": "B",
+          "text": "It is merged into the repository automatically at the next run."
+        },
+        {
+          "id": "C",
+          "text": "It persists, because automation only adds configuration and never removes it."
+        },
+        {
+          "id": "D",
+          "text": "The automation halts on that switch and reports a conflict for review."
+        }
+      ],
+      "correct": [
+        "A"
+      ],
+      "explanation": "When the repository holds the intended state and the automation applies whatever it holds, anything changed on the device outside that flow is undone the next time the job runs; keeping the fix means putting it through the repository. Option B has the device teaching the repository, which reverses the direction of authority. Option C describes an additive tool, and applying a declared state removes what is not declared. Option D describes a behaviour some tools can be configured for but not the default this arrangement implies.",
+      "difficulty": 2,
+      "skills": [
+        "automation-impact",
+        "source-of-truth",
+        "version-control",
+        "configuration-drift"
+      ]
+    },
+    {
+      "id": "6.1-004",
+      "objective": "6.1",
+      "domain": 6,
+      "type": "single",
+      "select_count": 1,
+      "stem": "Refer to the exhibit. Which row records a cost of automating rather than a benefit?",
+      "exhibit": {
+        "kind": "topology",
+        "content": "Two ways of applying the same change to 180 switches\n\n    Aspect                  By hand                Automated\n    --------------------    -------------------    -----------------\n    Time to complete        several days           minutes\n    Variation between       likely, and grows      none; one source\n    devices                 with each engineer     produces all\n    Record of what changed  whatever was noted     the run itself\n    Effect of an error      one device at a time   every device at once"
+      },
+      "options": [
+        {
+          "id": "A",
+          "text": "Time to complete"
+        },
+        {
+          "id": "B",
+          "text": "Variation between devices"
+        },
+        {
+          "id": "C",
+          "text": "Effect of an error"
+        },
+        {
+          "id": "D",
+          "text": "Record of what changed"
+        }
+      ],
+      "correct": [
+        "C"
+      ],
+      "explanation": "Three rows favour automation plainly, but the last one does not: an error reaching every device at once is worse than an error reaching one, and it is the row that justifies review, testing and staged rollout. Option A shows days becoming minutes. Option B shows variation disappearing. Option D shows an ad hoc note replaced by the run itself as the record, which is a gain in traceability.",
+      "difficulty": 1,
+      "skills": [
+        "automation-impact",
+        "blast-radius",
+        "network-management",
+        "read-correct-row"
+      ]
+    }
+  ]
+}

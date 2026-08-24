@@ -569,3 +569,17 @@ def nat_row(pro, ig, il, ol, og):
 def nat_translations(prompt, rows):
     """A `show ip nat translations` capture."""
     return "\n".join([f"{prompt}# show ip nat translations", NAT_HEADER] + list(rows))
+
+
+# --- HTTP exchange (REST API) ---------------------------------------------
+def http_exchange(request_line, headers, body=None, response=None,
+                  response_headers=(), response_body=None):
+    """A REST request and its response, as a client tool would show them."""
+    out = [request_line] + [f"{k}: {v}" for k, v in headers]
+    if body is not None:
+        out += ["", body]
+    if response is not None:
+        out += ["", response] + [f"{k}: {v}" for k, v in response_headers]
+        if response_body is not None:
+            out += ["", response_body]
+    return "\n".join(out)
