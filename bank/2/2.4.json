@@ -172,9 +172,9 @@
       "id": "2.4-005",
       "objective": "2.4",
       "domain": 2,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Why is Gi0/2 flagged s rather than bundling with Gi0/1?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two facts does the flag against Gi0/2 establish? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "SW5# show etherchannel summary\nFlags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\n        M - not in use, minimum links not met\n        u - unsuitable for bundling\n        w - waiting to be aggregated\n        d - default port\n\n        A - formed by Auto LAG\n\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi0/1(P)    Gi0/2(s)\n\nGi0/1 carries switchport trunk allowed vlan 1,10,20 while Gi0/2 carries\nswitchport trunk allowed vlan 1,10,20,30. Both interfaces are up and\nboth run LACP."
@@ -182,25 +182,30 @@
       "options": [
         {
           "id": "A",
-          "text": "The port is in hot-standby and will bundle only if Gi0/1 fails."
+          "text": "Gi0/2 is suspended from the bundle rather than carrying traffic in it."
         },
         {
           "id": "B",
-          "text": "LACP allows a maximum of one active member per port-channel group."
+          "text": "The port-channel is down, since one of its two members is not participating."
         },
         {
           "id": "C",
-          "text": "The port negotiated a different speed setting, so it cannot join the bundle."
+          "text": "Every member of a bundle has to carry identical switchport settings."
         },
         {
           "id": "D",
-          "text": "Its allowed VLAN list differs from Gi0/1's, so the bundle suspends it."
+          "text": "LACP permits only one active member per port-channel group."
+        },
+        {
+          "id": "E",
+          "text": "Gi0/2 is in hot-standby and will bundle as soon as Gi0/1 fails."
         }
       ],
       "correct": [
-        "D"
+        "A",
+        "C"
       ],
-      "explanation": "Every member of an EtherChannel must carry identical switchport settings, and Gi0/2 allows VLAN 30 where Gi0/1 does not, so the switch suspends it rather than bundling a mismatched link. Option A describes the H flag for hot-standby, not s. Option B invents a one-member limit that would make the feature pointless. Option C blames speed, which the exhibit does not show differing, and the stated VLAN difference is sufficient on its own.",
+      "explanation": "The s flag against Gi0/2 marks it suspended, which is what happens when a member's configuration does not match its partner's, and here the allowed VLAN lists differ by one VLAN. Option B is contradicted by Po1 showing SU, so the bundle is up and running on Gi0/1 alone at half the intended bandwidth, which is what makes this fault easy to miss. Option D invents a one-member limit that would defeat the feature. Option E describes the H flag, which is absent here.",
       "difficulty": 3,
       "skills": [
         "etherchannel",

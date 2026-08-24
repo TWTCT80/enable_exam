@@ -212,9 +212,9 @@
       "id": "3.1-006",
       "objective": "3.1",
       "domain": 3,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which prefix in R6's routing table originated outside the OSPF routing domain and was redistributed into it?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two prefixes did OSPF learn from inside its own routing domain? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "R6# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL        10.1.1.1/32 is directly connected, GigabitEthernet0/0\nO     209.165.201.0/24 [110/2] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO IA  192.168.5.0/24 [110/66] via 10.1.1.2, 00:15:41, GigabitEthernet0/0\nO E2  198.51.100.0/24 [110/20] via 10.1.1.2, 00:12:19, GigabitEthernet0/0"
@@ -235,12 +235,17 @@
         {
           "id": "D",
           "text": "10.1.1.0/30"
+        },
+        {
+          "id": "E",
+          "text": "10.1.1.1/32"
         }
       ],
       "correct": [
-        "C"
+        "A",
+        "B"
       ],
-      "explanation": "The code O E2 means OSPF external type 2, which is how a prefix redistributed into OSPF from an outside source appears, so 198.51.100.0/24 is the answer. Option A is coded plain O, an intra-area route learned inside the router's own area. Option B is coded O IA, an inter-area route that crossed from another OSPF area but is still inside the OSPF domain, which is the distinction this item targets. Option D is coded C, a directly connected subnet that OSPF never learned at all.",
+      "explanation": "Plain O marks an intra-area route and O IA marks one that crossed from another area, and both originated inside the OSPF domain, so 209.165.201.0/24 and 192.168.5.0/24 qualify. Option C carries O E2, meaning it was redistributed into OSPF from outside the domain, which is the distinction this item turns on. Option D is coded C, a directly connected subnet OSPF never learned. Option E is the L entry IOS creates for the router's own interface address.",
       "difficulty": 2,
       "skills": [
         "routing-table-components",

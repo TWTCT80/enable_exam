@@ -90,9 +90,9 @@
       "id": "1.11-003",
       "objective": "1.11",
       "domain": 1,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Three entries share the name CORP-WIFI while showing different BSSID values. What does that indicate?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two conclusions about CORP-WIFI and GUEST-WIFI does this scan support? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "Wireless scan taken by a laptop in the lobby\n\n    SSID          BSSID                Channel    Security\n    ----------    -----------------    -------    ------------\n    CORP-WIFI     00:1a:2b:3c:4d:50          1    WPA2-Enterprise\n    CORP-WIFI     00:1a:2b:3c:4d:70          6    WPA2-Enterprise\n    CORP-WIFI     00:1a:2b:3c:4d:90         11    WPA2-Enterprise\n    GUEST-WIFI    00:1a:2b:3c:4d:51          1    Open"
@@ -100,31 +100,36 @@
       "options": [
         {
           "id": "A",
-          "text": "Three separate wireless networks have each been given the same name by mistake."
+          "text": "The three CORP-WIFI rows are one access point reported once per channel scanned."
         },
         {
           "id": "B",
-          "text": "One wireless network served by three access points, each with its own radio ID."
+          "text": "CORP-WIFI is served by three access points, each with its own radio identifier."
         },
         {
           "id": "C",
-          "text": "One access point is advertising the same network three times to spread its load."
+          "text": "GUEST-WIFI offers the clients that join it no encryption at the link layer."
         },
         {
           "id": "D",
-          "text": "The laptop has recorded the same access point once for each channel it scanned."
+          "text": "CORP-WIFI has been given the same name three times by mistake."
+        },
+        {
+          "id": "E",
+          "text": "GUEST-WIFI must be served by a different access point from CORP-WIFI."
         }
       ],
       "correct": [
-        "B"
+        "B",
+        "C"
       ],
-      "explanation": "The SSID names the wireless network a user selects, while the BSSID identifies the individual radio serving it, so three BSSIDs under one SSID means three access points cooperating to cover an area, which their placement on channels 1, 6 and 11 confirms. Option A treats a shared SSID as a naming error, when sharing it is exactly what lets a client roam. Option C would require one radio to hold three BSSIDs on three channels at once. Option D assumes the scan duplicated a single AP, but a single radio reports one BSSID per network.",
+      "explanation": "The SSID names the network and the BSSID names the radio serving it, so three BSSIDs under one SSID means three access points cooperating, which their placement on channels 1, 6 and 11 confirms; GUEST-WIFI meanwhile reads Open, so nothing protects its traffic over the air. Option A assumes a single radio was recorded repeatedly, but one radio reports one BSSID per network. Option D treats a shared SSID as an error, when sharing it is what lets a client roam. Option E is contradicted by GUEST-WIFI's BSSID sitting one digit from a CORP-WIFI radio, which is how one access point advertises two networks.",
       "difficulty": 2,
       "skills": [
         "ssid",
         "bssid",
-        "wireless-principles",
-        "roaming"
+        "wireless-encryption",
+        "wireless-principles"
       ]
     },
     {

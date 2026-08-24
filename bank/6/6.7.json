@@ -49,9 +49,9 @@
       "id": "6.7-002",
       "objective": "6.7",
       "domain": 6,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. What kind of JSON value does addresses hold on the first interface?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two of these readings of the JSON document are accurate? (Choose two.)",
       "exhibit": {
         "kind": "config",
         "content": "GET /api/v1/device HTTP/1.1 returned the following body:\n\n{\n  \"device\": {\n    \"hostname\": \"R1\",\n    \"management\": {\n      \"address\": \"10.9.9.1\",\n      \"protocol\": \"https\",\n      \"port\": 443\n    },\n    \"interfaces\": [\n      {\n        \"name\": \"GigabitEthernet0/0\",\n        \"enabled\": true,\n        \"addresses\": [\n          \"10.1.1.1/30\"\n        ]\n      },\n      {\n        \"name\": \"GigabitEthernet0/1\",\n        \"enabled\": false,\n        \"addresses\": []\n      }\n    ],\n    \"location\": null\n  }\n}"
@@ -59,31 +59,36 @@
       "options": [
         {
           "id": "A",
-          "text": "An object, because it groups related settings together."
+          "text": "addresses on the first interface is an array holding one string."
         },
         {
           "id": "B",
-          "text": "An array holding one string."
+          "text": "location holds the JSON null value rather than an empty string."
         },
         {
           "id": "C",
-          "text": "A string that happens to contain a prefix length."
+          "text": "management is an array of three settings rather than an object."
         },
         {
           "id": "D",
-          "text": "A number, written in the dotted form addresses use."
+          "text": "port holds the string \"443\" rather than a number."
+        },
+        {
+          "id": "E",
+          "text": "interfaces holds a single object rather than a list of them."
         }
       ],
       "correct": [
+        "A",
         "B"
       ],
-      "explanation": "Square brackets mark an array and the single element inside them is quoted, so this is an array containing one string, which is why an interface with no addresses shows empty brackets rather than being absent. Option A describes braces, which JSON uses for objects such as management. Option C ignores the brackets and would leave no way to hold a second address. Option D calls a quoted value a number, and JSON numbers are never quoted.",
+      "explanation": "Square brackets mark an array and the one element inside them is quoted, so addresses is an array of one string, and location reads null, which is JSON's own keyword for an absent value and is distinct from an empty pair of quotes. Option C misreads braces as brackets, since management groups named settings and is an object. Option D calls an unquoted 443 a string, when JSON numbers are never quoted. Option E ignores the brackets around the two interface objects.",
       "difficulty": 2,
       "skills": [
         "json",
         "json-arrays",
-        "json-data-types",
-        "json-strings"
+        "json-objects",
+        "json-data-types"
       ]
     },
     {

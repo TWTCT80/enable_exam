@@ -49,9 +49,9 @@
       "id": "2.9-002",
       "objective": "2.9",
       "domain": 2,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. What will a guest experience when joining this WLAN, and how is their traffic protected over the air?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two statements describe what a guest experiences on this WLAN? (Choose two.)",
       "exhibit": {
         "kind": "config",
         "content": "WLC GUI  -  WLANs > Edit > GUEST-WIFI\n\nTab: General\n    Profile Name                  GUEST-WIFI\n    SSID                          GUEST-WIFI\n    Status                        Enabled\n    Interface/Interface Group     vlan90-guest\n\nTab: Security > Layer 2\n    Layer 2 Security              None\n\nTab: Security > Layer 3\n    Layer 3 Security              Web Policy\n    Web Policy                    Authentication"
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "They join without a key and are redirected to a login page; the air link is unencrypted."
+          "text": "They are prompted for a pre-shared key when they associate."
         },
         {
           "id": "B",
-          "text": "They are prompted for a pre-shared key, after which their traffic is encrypted with AES."
+          "text": "They cannot associate at all until a Layer 2 security method is set."
         },
         {
           "id": "C",
-          "text": "They join without a key and their traffic is encrypted once web authentication succeeds."
+          "text": "They associate with no key, and their traffic crosses the air unencrypted."
         },
         {
           "id": "D",
-          "text": "They cannot join at all, because a WLAN requires some Layer 2 security to be set."
+          "text": "A browser is intercepted and credentials are demanded before access is granted."
+        },
+        {
+          "id": "E",
+          "text": "Their traffic becomes encrypted once web authentication succeeds."
         }
       ],
       "correct": [
-        "A"
+        "C",
+        "D"
       ],
-      "explanation": "Layer 2 Security reads None, so association needs no key and nothing encrypts the radio link; the Layer 3 Web Policy then intercepts the browser and demands credentials before granting access. Option B describes a pre-shared key the configuration does not set. Option C is the most tempting error: web authentication controls who passes traffic but never turns on link-layer encryption, so guest traffic stays readable over the air. Option D is contradicted by this being a working and common guest arrangement.",
+      "explanation": "Layer 2 Security reads None, so association needs no key and nothing protects the radio link, while the Layer 3 Web Policy intercepts the browser and demands credentials before granting access. Option A describes a pre-shared key the configuration does not set. Option B is contradicted by this being an ordinary working guest arrangement. Option E is the tempting error: web authentication decides who may pass traffic and never turns on link-layer encryption, so guest traffic stays readable throughout.",
       "difficulty": 3,
       "skills": [
         "wlan-gui",

@@ -131,9 +131,9 @@
       "id": "1.6-004",
       "objective": "1.6",
       "domain": 1,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which address in this subnet cannot be assigned to a host?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two addresses in this subnet cannot be given to a host? (Choose two.)",
       "exhibit": {
         "kind": "config",
         "content": "! R4 - relevant configuration\n!\ninterface GigabitEthernet0/0\n ip address 10.10.10.65 255.255.255.192\n no shutdown\n!"
@@ -141,25 +141,30 @@
       "options": [
         {
           "id": "A",
-          "text": "10.10.10.126"
+          "text": "10.10.10.65"
         },
         {
           "id": "B",
-          "text": "10.10.10.127"
+          "text": "10.10.10.64"
         },
         {
           "id": "C",
-          "text": "10.10.10.100"
+          "text": "10.10.10.126"
         },
         {
           "id": "D",
-          "text": "10.10.10.65"
+          "text": "10.10.10.127"
+        },
+        {
+          "id": "E",
+          "text": "10.10.10.100"
         }
       ],
       "correct": [
-        "B"
+        "B",
+        "D"
       ],
-      "explanation": "The 255.255.255.192 mask is a /26, so the interface sits in the block from 10.10.10.64 to 10.10.10.127; the last address is the broadcast and is unusable, leaving .65 through .126 for hosts. Option A is the highest usable host address, one below the broadcast. Option C sits comfortably inside the usable range. Option D is the router's own configured address, which is a perfectly ordinary host address and is shown in the exhibit already in use.",
+      "explanation": "A 255.255.255.192 mask is a /26, so the interface sits in the block from 10.10.10.64 to 10.10.10.127; the first of those is the network address and the last is the broadcast, and neither may be assigned. Option A is the router's own address, already in use as an ordinary host address. Option C is the highest usable host address, one below the broadcast. Option E sits comfortably inside the usable range.",
       "difficulty": 2,
       "skills": [
         "ipv4-subnetting",

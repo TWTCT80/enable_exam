@@ -49,9 +49,9 @@
       "id": "4.6-002",
       "objective": "4.6",
       "domain": 4,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Where does the helper address belong, and what value does it take?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two facts describe the helper address this design needs? (Choose two.)",
       "exhibit": {
         "kind": "config",
         "content": "! SW-L3 - relevant configuration\n!\ninterface Vlan30\n description client VLAN\n ip address 10.30.0.1 255.255.255.0\n!\ninterface Vlan99\n description server VLAN\n ip address 10.99.0.1 255.255.255.0\n!\n\nThe DHCP server at 10.99.0.10 must serve clients in VLAN 30."
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "On Vlan99, pointing at 10.30.0.1, so replies find their way back."
+          "text": "It belongs on interface Vlan99, where the server sits."
         },
         {
           "id": "B",
-          "text": "On Vlan30, pointing at 10.30.0.1, the gateway the clients already use."
+          "text": "It belongs on interface Vlan30, where the clients broadcast."
         },
         {
           "id": "C",
-          "text": "On Vlan30, pointing at 10.99.0.10, the address of the DHCP server."
+          "text": "Its value is 10.30.0.1, the gateway the clients already use."
         },
         {
           "id": "D",
-          "text": "On both interfaces, pointing at 10.99.0.10, so either direction works."
+          "text": "Its value is 10.99.0.10, the address of the DHCP server."
+        },
+        {
+          "id": "E",
+          "text": "It must be applied on both interfaces so each direction works."
         }
       ],
       "correct": [
-        "C"
+        "B",
+        "D"
       ],
-      "explanation": "The helper address goes on the interface that receives the clients' broadcasts, which is Vlan30, and names where those requests should be forwarded, which is the server at 10.99.0.10. Option A places it on the server side, where no client broadcast ever arrives. Option B points the relay at the router's own address, creating a loop back to itself. Option D adds a second statement on an interface that has nothing to relay, and would relay the server's own broadcasts back toward the clients.",
+      "explanation": "The helper address goes on the interface that receives the clients' broadcasts, which is Vlan30, and names where those requests should be forwarded, which is the server at 10.99.0.10. Option A places it on the server side, where no client broadcast ever arrives. Option C points the relay back at the router's own address. Option E adds a statement on an interface with nothing to relay, which would forward the server's own broadcasts toward the clients.",
       "difficulty": 2,
       "skills": [
         "dhcp-relay",

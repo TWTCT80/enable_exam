@@ -131,9 +131,9 @@
       "id": "6.5-004",
       "objective": "6.5",
       "domain": 6,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. How should the automation host present its credentials?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two approaches fail the stated requirements? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "An automation host will call a controller's API several thousand\ntimes an hour.\n\n    Requirement\n    ---------------------------------------------------------------\n    The long-lived credential must not travel on every single request\n    Access must lapse on its own after a period without renewal\n    A leaked value must be revocable without changing the account\n    Nothing may be placed in the request URL, which is logged upstream"
@@ -141,25 +141,30 @@
       "options": [
         {
           "id": "A",
-          "text": "Basic authentication, sending the account credential on each request."
+          "text": "A bearer token presented in a header until it expires"
         },
         {
           "id": "B",
-          "text": "A bearer token obtained once, presented in a header until it expires."
+          "text": "Basic authentication, sending the account credential on every request"
         },
         {
           "id": "C",
-          "text": "An API key appended to the request URL as a query parameter."
+          "text": "An API key appended to the request URL as a query parameter"
         },
         {
           "id": "D",
-          "text": "No authentication at all, relying on the management network for control."
+          "text": "A token that can be revoked without changing the underlying account"
+        },
+        {
+          "id": "E",
+          "text": "A credential exchanged once at the start and then held by the client"
         }
       ],
       "correct": [
-        "B"
+        "B",
+        "C"
       ],
-      "explanation": "A token is issued once from the long-lived credential, carried in a header rather than the URL, lapses on its own and can be revoked without touching the underlying account, which covers all four lines. Option A puts the account credential itself on every request, failing the first and third. Option C places the secret in the URL, which the fourth line forbids because it is logged upstream. Option D abandons authentication entirely.",
+      "explanation": "Basic authentication puts the long-lived account credential on every one of several thousand requests an hour, which the first line forbids, and an API key in the URL lands in the logs upstream, which the fourth line forbids by name. Option A meets all four. Option D describes the revocation the third line asks for. Option E describes obtaining a token once, which is the behaviour the first line is written around.",
       "difficulty": 2,
       "skills": [
         "rest-api",

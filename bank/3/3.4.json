@@ -89,9 +89,9 @@
       "id": "3.4-003",
       "objective": "3.4",
       "domain": 3,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. R1 and R2 are cabled together on the 10.1.1.0/30 link, both interfaces are up, but neither lists the other as a neighbour. Which difference in the output prevents the adjacency?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Both interfaces are up on the same link, yet no adjacency forms. Which two differences in the output explain it? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "R1# show ip ospf interface GigabitEthernet0/0\nGigabitEthernet0/0 is up, line protocol is up\n  Internet Address 10.1.1.1/30, Area 0, Attached via Network Statement\n  Process ID 1, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 1.1.1.1, Interface address 10.1.1.1\n  No backup designated router on this network\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Neighbor Count is 0, Adjacent neighbor count is 0\n----------------------------------------------------------\nR2# show ip ospf interface GigabitEthernet0/0\nGigabitEthernet0/0 is up, line protocol is up\n  Internet Address 10.1.1.2/30, Area 0, Attached via Network Statement\n  Process ID 1, Router ID 2.2.2.2, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 2.2.2.2, Interface address 10.1.1.2\n  No backup designated router on this network\n  Timer intervals configured, Hello 5, Dead 20, Wait 20, Retransmit 5\n  Neighbor Count is 0, Adjacent neighbor count is 0"
@@ -99,25 +99,30 @@
       "options": [
         {
           "id": "A",
-          "text": "Both routers report State DR, so neither will accept the other as a peer."
+          "text": "The hello intervals differ between the two interfaces."
         },
         {
           "id": "B",
-          "text": "The hello and dead intervals differ between the two interfaces."
+          "text": "The two routers advertise different router IDs on the segment."
         },
         {
           "id": "C",
-          "text": "The two routers have different router IDs on the same segment."
+          "text": "The dead intervals differ between the two interfaces."
         },
         {
           "id": "D",
+          "text": "Both interfaces report State DR, so neither will accept the other."
+        },
+        {
+          "id": "E",
           "text": "The interface cost of 1 is too low for a broadcast network type."
         }
       ],
       "correct": [
-        "B"
+        "A",
+        "C"
       ],
-      "explanation": "Hello and dead intervals must match for two OSPF routers to become neighbours; R1 uses 10 and 40 while R2 uses 5 and 20, so the hellos are discarded and no adjacency forms. Option A misreads the symptom for the cause: both claim DR precisely because neither has seen the other, so it is a consequence. Option C inverts a requirement, since router IDs must be different rather than equal. Option D invents a minimum cost, and cost never affects whether an adjacency forms.",
+      "explanation": "OSPF requires both the hello and the dead interval to match before neighbours will form, and R1 uses 10 and 40 where R2 uses 5 and 20, so each discards the other's hellos. Option B inverts a requirement, since router IDs must differ rather than match. Option D mistakes a symptom for a cause: each claims DR precisely because neither has seen the other. Option E invents a minimum cost, and cost never governs whether an adjacency forms.",
       "difficulty": 2,
       "skills": [
         "ospf-adjacency",

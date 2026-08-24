@@ -131,9 +131,9 @@
       "id": "6.3-004",
       "objective": "6.3",
       "domain": 6,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which term best describes the arrangement shown here as a whole?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two components does this arrangement contain? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "                     +---------+   +---------+\n                     | SPINE-1 |   | SPINE-2 |\n                     +----+----+   +----+----+\n                          | \\_______/ |\n                          |  ________/|\n                     +----+-/---+  +--+------+\n                     |  LEAF-1  |  |  LEAF-2 |\n                     +----------+  +---------+\n\nEvery leaf connects to every spine. A controller holds the policy for\nthe whole arrangement and programs each device. Host traffic between\nleaves is carried in tunnels between the leaf loopbacks, over the\nrouted links shown."
@@ -141,25 +141,30 @@
       "options": [
         {
           "id": "A",
-          "text": "An underlay, since the drawing shows the physical links between devices."
+          "text": "An underlay: the routed spine-and-leaf links carrying loopback reachability"
         },
         {
           "id": "B",
-          "text": "An overlay, since the host traffic travels inside tunnels between leaves."
+          "text": "A three-tier campus hierarchy of core, distribution and access layers"
         },
         {
           "id": "C",
-          "text": "A fabric: an underlay, an overlay across it, and a controller programming both."
+          "text": "A WAN circuit supplied and billed by a service provider"
         },
         {
           "id": "D",
-          "text": "A collapsed core, since two spines aggregate the two leaf switches."
+          "text": "An overlay: tunnels between the leaf loopbacks carrying host traffic"
+        },
+        {
+          "id": "E",
+          "text": "A collapsed core, since the two spines aggregate the leaf switches"
         }
       ],
       "correct": [
-        "C"
+        "A",
+        "D"
       ],
-      "explanation": "Fabric is the word for the whole arrangement: the routed spine-and-leaf network underneath, the tunnels carrying host traffic across it, and a controller holding the policy and programming the devices. Options A and B each name one component of it and stop there, which is why the question asks about the arrangement as a whole. Option D borrows a campus term for a data centre topology whose spines aggregate nothing in that sense.",
+      "explanation": "The drawing holds both halves of a fabric: the routed links between spines and leaves form the underlay whose job is to let every device reach every other, and the tunnels built between leaf loopbacks form the overlay in which host traffic actually travels. Option B names a campus hierarchy this is not. Option C introduces a provider circuit the drawing never shows. Option E borrows a campus term for spines that aggregate nothing in that sense.",
       "difficulty": 2,
       "skills": [
         "sdn-architecture",

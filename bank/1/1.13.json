@@ -49,9 +49,9 @@
       "id": "1.13-002",
       "objective": "1.13",
       "domain": 1,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Out which port does SW2 forward this frame?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two statements describe how SW2 handles this frame? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "SW2# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0011.2233.4455    DYNAMIC     Gi0/1\n   1    00cc.7788.1122    DYNAMIC     Gi0/2\n  20    00cc.7788.1122    DYNAMIC     Gi0/4\n  20    00ff.9900.3344    DYNAMIC     Gi0/5\nTotal Mac Addresses for this criterion: 4\n\nA frame arrives on Gi0/5, an access port in VLAN 20, addressed to\ndestination MAC 00cc.7788.1122."
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "Gi0/2"
+          "text": "It floods the frame, since the destination appears twice in the table."
         },
         {
           "id": "B",
-          "text": "Gi0/4"
+          "text": "It forwards the frame out GigabitEthernet0/2."
         },
         {
           "id": "C",
-          "text": "Gi0/2 and Gi0/4"
+          "text": "The VLAN 1 entry for that address is not a candidate for this lookup."
         },
         {
           "id": "D",
-          "text": "every VLAN 20 port except Gi0/5"
+          "text": "It forwards the frame out GigabitEthernet0/4."
+        },
+        {
+          "id": "E",
+          "text": "It discards the frame because the destination address is ambiguous."
         }
       ],
       "correct": [
-        "B"
+        "C",
+        "D"
       ],
-      "explanation": "The table is looked up by VLAN as well as by address, and the frame arrived in VLAN 20, so the matching entry is the one pairing 00cc.7788.1122 with Gi0/4; the identical address in VLAN 1 belongs to a separate forwarding domain and is not a candidate. Option A picks that VLAN 1 entry and ignores the VLAN column entirely. Option C forwards to both and would leak the frame between VLANs. Option D floods, which applies only when no entry matches, and here one does.",
+      "explanation": "A switch looks its table up by VLAN as well as by address, so the frame arriving in VLAN 20 matches only the entry pairing 00cc.7788.1122 with Gi0/4, and the identical address in VLAN 1 belongs to a separate forwarding domain that this lookup never consults. Option A floods, which applies only when no entry matches. Option B picks that VLAN 1 entry and would leak the frame between VLANs. Option E treats two entries as a conflict, when keeping them apart is exactly what VLANs are for.",
       "difficulty": 2,
       "skills": [
         "frame-switching",

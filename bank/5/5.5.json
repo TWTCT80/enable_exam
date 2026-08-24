@@ -49,9 +49,9 @@
       "id": "5.5-002",
       "objective": "5.5",
       "domain": 5,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which statement describes what adding IPsec provides against these three requirements?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two properties does adding IPsec give this tunnel that GRE alone does not? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "Traffic between two offices currently crosses the internet inside a\nGRE tunnel between the edge routers.\n\n    Requirement now added\n    ---------------------------------------------------------------\n    Anyone capturing the traffic in transit must not be able to read it\n    Any alteration made in transit must be detectable at the far end\n    Each router must be able to confirm which peer it is talking to"
@@ -59,31 +59,36 @@
       "options": [
         {
           "id": "A",
-          "text": "Only confidentiality; detecting any alteration needs a separate mechanism."
+          "text": "Encapsulation, so one protocol can be carried inside another across the internet"
         },
         {
           "id": "B",
-          "text": "Only integrity; the payload itself stays readable while in transit."
+          "text": "A routable path between the two office networks"
         },
         {
           "id": "C",
-          "text": "Neither of those; IPsec confirms the peer and does nothing further."
+          "text": "Confidentiality, so a capture taken in transit cannot be read"
         },
         {
           "id": "D",
-          "text": "All three: payload encrypted, alteration detectable, peers authenticated."
+          "text": "Integrity checking, so any alteration made in transit is detected"
+        },
+        {
+          "id": "E",
+          "text": "Compression of the payload before it is placed on the wire"
         }
       ],
       "correct": [
+        "C",
         "D"
       ],
-      "explanation": "IPsec covers all three requirements together, encrypting the payload so a capture is unreadable, carrying an integrity check so tampering is detected, and authenticating each peer before the tunnel is established. Options A and B each claim one property and deny the other, when the protocol suite provides both. Option C reduces IPsec to peer authentication alone, which is the part that happens first rather than the whole of it.",
+      "explanation": "IPsec adds protection rather than reachability: the payload is encrypted so a capture yields nothing readable, and an integrity check accompanies it so tampering is detected, with peer authentication establishing the tunnel in the first place. Option A names what GRE already does, which is precisely why the tunnel exists but is unprotected. Option B is also GRE's contribution. Option E describes a feature IPsec does not provide.",
       "difficulty": 2,
       "skills": [
         "ipsec",
+        "gre",
         "confidentiality",
-        "integrity",
-        "peer-authentication"
+        "integrity"
       ]
     },
     {

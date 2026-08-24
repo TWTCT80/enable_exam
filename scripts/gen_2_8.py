@@ -139,18 +139,19 @@ ITEMS = [
   "skills": ["management-access", "ssh", "transport-input", "troubleshoot-access"],
 },
 {
-  "id": "2.8-005", "objective": "2.8", "domain": 2, "type": "single", "select_count": 1,
-  "stem": "Refer to the exhibit. Which weakness in SW5's management configuration remains?",
+  "id": "2.8-005", "objective": "2.8", "domain": 2, "type": "multi", "select_count": 2,
+  "stem": "Refer to the exhibit. Which two weaknesses remain in SW5's management configuration? (Choose two.)",
   "exhibit": {"kind": "config", "content": EX_005},
   "options": opts(
-    "The vty lines still permit Telnet alongside SSH, exposing credentials.",
-    "The console line has no password set, so anyone in the room gains access.",
-    "Local login is configured on vty, which bypasses any central authentication.",
-    "The web interface is served over plain HTTP rather than being secured."),
-  "correct": ["D"],
-  "explanation": "The vty lines are already restricted to SSH and the console does carry a password, but ip http server is on while ip http secure-server is off, so the web interface answers over unencrypted HTTP and anything sent to it, credentials included, crosses in clear. Option A is contradicted by transport input ssh. Option B is contradicted by the password line under line con 0, even though it is stored with the weak type 7 reversible encoding. Option C describes a design choice rather than the exposure the HTTP line creates.",
+    "The web interface answers over plain HTTP rather than being secured.",
+    "The vty lines still permit Telnet alongside SSH.",
+    "The console password is held with a reversible encoding rather than a hash.",
+    "No password has been set on the console line at all.",
+    "Local authentication has been left off the vty lines."),
+  "correct": ["A", "C"],
+  "explanation": "ip http server is on while ip http secure-server is off, so anything sent to the web interface crosses in clear, and the console password carries the type 7 marker, which is an obfuscation that is trivially reversed rather than a hash. Option B is contradicted by transport input ssh, which excludes Telnet. Option D is contradicted by the password line under line con 0, weak though its storage is. Option E is contradicted by login local on the vty lines.",
   "difficulty": 2,
-  "skills": ["management-access", "http-vs-https", "verify-management-config", "device-hardening"],
+  "skills": ["management-access", "http-vs-https", "type-7-reversible", "device-hardening"],
 },
 ]
 

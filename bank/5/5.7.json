@@ -172,9 +172,9 @@
       "id": "5.7-005",
       "objective": "5.7",
       "domain": 5,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Why has no client obtained an address since snooping was enabled?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two statements describe why no client has obtained an address? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "SW5# show ip dhcp snooping\nSwitch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10\nDHCP snooping is operational on following VLANs:\n10\nInsertion of option 82 is enabled\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                  Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet0/1         no         no              unlimited\nGigabitEthernet0/3         no         no              10\nGigabitEthernet0/4         no         no              10\n\nGigabitEthernet0/1 is the uplink toward the DHCP server. Since snooping\nwas enabled, no client on VLAN 10 has obtained an address."
@@ -186,21 +186,26 @@
         },
         {
           "id": "B",
-          "text": "Snooping has to be removed from the VLAN before leases will be issued."
+          "text": "The uplink toward the server is untrusted, so its replies are discarded."
         },
         {
           "id": "C",
-          "text": "The uplink is untrusted, so the server's replies are being discarded."
+          "text": "Marking GigabitEthernet0/1 trusted resolves the fault."
         },
         {
           "id": "D",
-          "text": "The binding table has reached its limit and refuses to record new leases."
+          "text": "Snooping has to be removed from the VLAN before leases will be issued."
+        },
+        {
+          "id": "E",
+          "text": "The binding table has reached its limit and refuses new entries."
         }
       ],
       "correct": [
+        "B",
         "C"
       ],
-      "explanation": "Every interface in the trust table reads no, including Gi0/1, and an untrusted port drops DHCP offers and acknowledgements, so the requests leave but nothing comes back. Marking Gi0/1 trusted resolves it. Option A trusts the desks, which would defeat the feature and does not address replies being dropped. Option B abandons the protection rather than configuring it. Option D blames the binding table, which stays empty precisely because no lease has ever completed.",
+      "explanation": "Every interface in the trust table reads no, including the uplink, and an untrusted port drops server-sourced messages, so requests leave the switch and nothing comes back; trusting Gi0/1 alone restores service while keeping the protection on the desk ports. Option A trusts the desks, which is what the feature exists to prevent. Option D abandons the protection rather than configuring it. Option E blames the binding table, which stays empty precisely because no lease has ever completed.",
       "difficulty": 3,
       "skills": [
         "dhcp-snooping",

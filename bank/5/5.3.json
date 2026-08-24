@@ -49,9 +49,9 @@
       "id": "5.3-002",
       "objective": "5.3",
       "domain": 5,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. What should the reviewer conclude about the two credentials now that the configuration has left the building?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two conclusions should the reviewer draw now that the configuration has left the building? (Choose two.)",
       "exhibit": {
         "kind": "config",
         "content": "! R2 - relevant configuration\n!\nservice password-encryption\n!\nusername backup password 7 08701E1D5D4C53\nusername netadmin secret 9 $9$Xk2mQvR8LpT4c0$hV1nZ7yW3sK\n!\n\nThe configuration was reviewed after a contractor was given a copy of it\nfor a documentation exercise."
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "Both are safe, because service password-encryption has obscured each of them."
+          "text": "The backup account's password can be recovered from the file as it stands."
         },
         {
           "id": "B",
-          "text": "Both must be changed, since neither command stores anything more than plain text."
+          "text": "service password-encryption has made both credentials safe to share."
         },
         {
           "id": "C",
-          "text": "The netadmin secret must be changed; the backup password is beyond recovery."
+          "text": "The netadmin credential is stored as a hash and is not recoverable that way."
         },
         {
           "id": "D",
-          "text": "The backup password must be changed, as type 7 is reversible to plain text."
+          "text": "Both credentials are held as plain text and both must be changed."
+        },
+        {
+          "id": "E",
+          "text": "The netadmin credential is the one at immediate risk of exposure."
         }
       ],
       "correct": [
-        "D"
+        "A",
+        "C"
       ],
-      "explanation": "Type 7 is an obfuscation rather than a hash and is trivially reversed with freely available tools, so the backup account's password is effectively public the moment the configuration leaves the organisation. The netadmin credential is stored as type 9, a genuine hash, and is not recoverable in the same way. Option A treats service password-encryption as real protection, which is the misconception the item targets. Option B ignores the difference between the two types. Option C reverses which of the two is at risk.",
+      "explanation": "Type 7 is an obfuscation rather than a hash and is reversed in seconds with freely available tools, so the backup password is effectively public, while the netadmin secret is stored as type 9, a genuine hash that does not give its input back. Option B treats service password-encryption as real protection, which is the misconception this item targets. Option D ignores the difference the two type numbers record. Option E reverses which of the two is exposed.",
       "difficulty": 3,
       "skills": [
         "local-passwords",

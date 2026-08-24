@@ -49,9 +49,9 @@
       "id": "1.4-002",
       "objective": "1.4",
       "domain": 1,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Both ends agree on speed and duplex, yet the link is dropping traffic. What do these counters indicate?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two conclusions do these counters support? (Choose two.)",
       "exhibit": {
         "kind": "cli_output",
         "content": "SW3# show interfaces GigabitEthernet0/5\nGigabitEthernet0/5 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.9a04 (bia 00d0.5842.9a04)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     418271 packets input, 52194883 bytes, 0 no buffer\n     214 runts, 0 giants, 0 throttles\n     3391 input errors, 3391 CRC, 0 frame, 0 overrun, 0 ignored\n     512394 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred\n----------------------------------------------------------\nSW4# show interfaces GigabitEthernet0/5\nGigabitEthernet0/5 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 00d0.5842.b117 (bia 00d0.5842.b117)\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  ARP type: ARPA, ARP Timeout 04:00:00\n     290155 packets input, 52194883 bytes, 0 no buffer\n     198 runts, 0 giants, 0 throttles\n     2904 input errors, 2904 CRC, 0 frame, 0 overrun, 0 ignored\n     377401 packets output, 71029338 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets\n     0 babbles, 0 late collision, 0 deferred"
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "A duplex mismatch that autonegotiation has failed to resolve."
+          "text": "Autonegotiation completed, since both ends report full duplex at 1000Mb/s."
         },
         {
           "id": "B",
-          "text": "One of the two switches is running an incompatible software version."
+          "text": "A duplex mismatch is present, because both ends are logging input errors."
         },
         {
           "id": "C",
-          "text": "The VLAN configuration differs between the two switch ports."
+          "text": "The fault lies on the medium, as errors appear both ways with no collisions."
         },
         {
           "id": "D",
-          "text": "A physical fault on the cable run, such as damage or interference."
+          "text": "One of the two switches is running an incompatible software release."
+        },
+        {
+          "id": "E",
+          "text": "The two ports sit in different VLANs, which is corrupting the frames."
         }
       ],
       "correct": [
-        "D"
+        "A",
+        "C"
       ],
-      "explanation": "Both ends report Full-duplex at 1000Mb/s, so negotiation succeeded, yet each is receiving runts and CRC errors while logging no collisions whatsoever. Frames arriving damaged in both directions with no collisions point at the medium itself rather than at any configuration. Option A is contradicted by both ends reading full-duplex and by the complete absence of late collisions. Option B invents a software fault that would not corrupt frames on the wire. Option C would place the ports in different VLANs, which stops traffic passing rather than corrupting it.",
+      "explanation": "Both ends agree at Full-duplex and 1000Mb/s, which only happens when negotiation succeeded, and each is receiving runts and CRC errors while logging no collisions at all, which points at the cable rather than at any setting. Option B reads input errors as proof of a duplex mismatch, but that fault leaves late collisions on the half-duplex end and neither end here is half duplex. Option D invents a software fault that would not corrupt frames on the wire. Option E describes a VLAN mismatch, which stops traffic passing rather than damaging it.",
       "difficulty": 2,
       "skills": [
         "interface-counters",

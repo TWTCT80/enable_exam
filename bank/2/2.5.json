@@ -90,9 +90,9 @@
       "id": "2.5-003",
       "objective": "2.5",
       "domain": 2,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which of SW-C's ports becomes the root port, and why?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two statements describe how SW-C settles on a root port? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "                    +-------------+\n                    |  ROOT-SW    |\n                    +--+-------+--+\n                       |       |\n              cost 4   |       |   cost 4\n                       |       |\n                 +-----+--+ +--+-----+\n                 |  SW-A  | |  SW-B  |\n                 +-----+--+ +--+-----+\n                       |       |\n                 Gi0/1 |       | Gi0/2\n                    +--+-------+--+\n                    |    SW-C     |\n                    +-------------+\n\nBoth of SW-C's paths reach the root at a total cost of 8. SW-A's bridge\nID is 32778.0022.2222.2222 and SW-B's is 32778.0033.3333.3333. The two\nlinks from SW-C use port priority 128 with port numbers 1 and 2."
@@ -100,25 +100,30 @@
       "options": [
         {
           "id": "A",
-          "text": "Gi0/1, because the neighbour beyond it advertises the lower bridge ID."
+          "text": "Both ports become root ports, and SW-C shares the load across them."
         },
         {
           "id": "B",
-          "text": "Gi0/2, because the neighbour beyond it advertises the higher bridge ID."
+          "text": "Cost to the root is compared first, and here the two paths tie at 8."
         },
         {
           "id": "C",
-          "text": "Both, since spanning tree shares the load across equal-cost paths."
+          "text": "The tie falls to the neighbour advertising the lower bridge ID, so Gi0/1 wins."
         },
         {
           "id": "D",
-          "text": "Neither; a switch holds an election for a new root when the costs tie."
+          "text": "The tie falls to the neighbour advertising the higher bridge ID, so Gi0/2 wins."
+        },
+        {
+          "id": "E",
+          "text": "SW-C holds a fresh root election whenever two paths tie on cost."
         }
       ],
       "correct": [
-        "A"
+        "B",
+        "C"
       ],
-      "explanation": "Cost to the root is compared first, and with both paths at 8 the tie falls to the bridge ID of the neighbour sending the BPDU; SW-A's 0022.2222.2222 is lower than SW-B's 0033.3333.3333, so Gi0/1 wins and Gi0/2 becomes an alternate port. Option B applies the comparison backwards, since lower always wins in spanning tree. Option C describes equal-cost load sharing, which routing protocols do and spanning tree deliberately does not. Option D invents a re-election, when the tie-breakers exist precisely to avoid one.",
+      "explanation": "Spanning tree compares cost to the root first, and with both paths at 8 that decides nothing, so the next comparison applies: the bridge ID of the neighbour sending the BPDU, where SW-A's 0022.2222.2222 beats SW-B's 0033.3333.3333 and Gi0/2 becomes an alternate port. Option A describes equal-cost load sharing, which routing protocols do and spanning tree deliberately does not. Option D applies the comparison backwards, since lower always wins. Option E invents a re-election that the tie-breakers exist to avoid.",
       "difficulty": 3,
       "skills": [
         "rapid-pvst",

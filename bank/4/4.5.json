@@ -49,9 +49,9 @@
       "id": "4.5-002",
       "objective": "4.5",
       "domain": 4,
-      "type": "single",
-      "select_count": 1,
-      "stem": "Refer to the exhibit. Which of the four messages reach the syslog server?",
+      "type": "multi",
+      "select_count": 2,
+      "stem": "Refer to the exhibit. Which two of the four messages reach the syslog server? (Choose two.)",
       "exhibit": {
         "kind": "topology",
         "content": "! R2 - relevant configuration\n!\nlogging host 10.9.9.40\nlogging trap 4\n!\n\nFour messages are generated on R2 in the next minute:\n\n    %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down\n    %SYS-5-CONFIG_I: Configured from console by netadmin on vty0\n    %OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 on Gi0/1 from FULL to DOWN\n    %SYS-2-MALLOCFAIL: Memory allocation of 4096 bytes failed\n\n    Level  Keyword          Meaning\n    -----  --------------   ------------------------------\n      0    emergencies      system unusable\n      1    alerts           immediate action needed\n      2    critical         critical condition\n      3    errors           error condition\n      4    warnings         warning condition\n      5    notifications    normal but significant\n      6    informational    informational message\n      7    debugging        debugging output"
@@ -59,25 +59,30 @@
       "options": [
         {
           "id": "A",
-          "text": "The LINK message at level 3 and the MALLOCFAIL message at level 2."
+          "text": "%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down"
         },
         {
           "id": "B",
-          "text": "The two at level 5, since logging trap 4 excludes levels below it."
+          "text": "%SYS-5-CONFIG_I: Configured from console by netadmin on vty0"
         },
         {
           "id": "C",
-          "text": "All four, because logging trap sets the format rather than a threshold."
+          "text": "%OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 on Gi0/1 from FULL to DOWN"
         },
         {
           "id": "D",
-          "text": "The MALLOCFAIL message alone, as only level 2 falls under the threshold."
+          "text": "%SYS-2-MALLOCFAIL: Memory allocation of 4096 bytes failed"
+        },
+        {
+          "id": "E",
+          "text": "None of them, since logging trap 4 excludes every level shown"
         }
       ],
       "correct": [
-        "A"
+        "A",
+        "D"
       ],
-      "explanation": "logging trap 4 sends every message at level 4 or more severe, and severity counts downward, so levels 0 to 4 are forwarded while 5 to 7 are discarded; that captures the level 3 and level 2 messages and drops both level 5 ones. Option B inverts the scale, treating a higher number as more severe. Option C denies that the command sets a threshold at all. Option D applies the threshold as an exact match rather than a floor.",
+      "explanation": "logging trap 4 forwards everything at level 4 or more severe, and severity counts downward, so levels 0 through 4 are sent while 5 through 7 are discarded; that captures the level 3 link message and the level 2 memory failure. Options B and C both sit at level 5, notifications, and are dropped, which is how a trap level set too low silently loses configuration and adjacency changes. Option E inverts the scale, treating a higher number as more severe.",
       "difficulty": 3,
       "skills": [
         "syslog",
