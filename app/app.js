@@ -474,14 +474,19 @@ function itemCard(q) {
     card.appendChild(fig);
   }
 
+  // Review lists options in the bank's own order, with the letter shown, because
+  // the explanations name letters ("Option C is ruled out because…"). The attempt
+  // itself shuffles them, so the letter a review card shows is not the one that
+  // was on screen during the run — the marks below carry that instead.
   const list = el('ul', 'answer-list');
   const chosen = q.chosen || [];
-  for (const opt of q.options) {
+  for (const opt of it.options) {
     const isRight = it.correct.includes(opt.id);
     const wasChosen = chosen.includes(opt.id);
     const li = el('li');
     if (isRight) li.classList.add('is-correct');
     else if (wasChosen) li.classList.add('is-chosen-wrong');
+    li.appendChild(el('span', 'ans-key', opt.id));
     const mark = isRight ? (wasChosen ? 'correct ✓' : 'correct') : (wasChosen ? 'you ✗' : '');
     li.appendChild(el('span', 'mark', mark));
     const t = el('span', null, opt.text);

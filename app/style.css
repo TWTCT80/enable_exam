@@ -414,6 +414,13 @@ fieldset { border: 0; margin: 0; padding: 0; }
 .answer-list li.is-correct { background: var(--accent-bg); }
 .answer-list li.is-chosen-wrong { background: color-mix(in srgb, var(--bad) 12%, transparent); }
 
+.answer-list .ans-key {
+  font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+  color: var(--ink-3); flex: 0 0 auto; min-width: 1.1rem;
+}
+.answer-list li.is-correct .ans-key { color: var(--ok); }
+.answer-list li.is-chosen-wrong .ans-key { color: var(--bad); }
+
 .answer-list .mark {
   font-family: var(--mono); font-size: 0.78rem; flex: 0 0 auto; min-width: 4.5rem;
 }
@@ -427,6 +434,11 @@ fieldset { border: 0; margin: 0; padding: 0; }
 
 .all-correct { color: var(--ok); font-size: 0.95rem; }
 
+.review-note {
+  font-size: 0.85rem; color: var(--ink-3); line-height: 1.6;
+  margin: -0.4rem 0 1.1rem; max-width: 46rem;
+}
+.review-note em { font-style: normal; font-family: var(--mono); font-size: 0.8rem; }
 
 /* Review cards for items answered correctly: same layout, calmer edge. */
 #r-unsure .missed { border-left-color: var(--warn); }

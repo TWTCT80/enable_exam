@@ -150,6 +150,22 @@ Decisions behind it:
   keyboard handler enumerate the inputs in that container, and a stray
   checkbox among them would count as an answer.
 
+## Option lettering in review
+
+The explanations name letters — 296 of 300 say things like "Option C is ruled
+out because…" — and those letters are the bank's own `option.id`. The attempt
+shuffles display order per item and letters the options A–E by *position*, so
+on a review card the explanation was pointing at the wrong rows. Every card
+was affected: in a 25-item sample, 24 had an exam order differing from the
+bank's.
+
+Review cards now list options in bank order with the `id` shown as the key,
+so "Option C" is the third row, always. The exam screen still shuffles —
+fixed positions would be learnable across attempts, and the review card's
+`correct` / `you` marks carry what actually happened during the run. A note
+above the missed items says so, since the letters there deliberately do not
+match the ones that were on screen.
+
 ## Deliberate non-goal: mobile
 
 The runner targets a laptop screen, which is what the spec asked for
