@@ -24,8 +24,22 @@ python3 -m http.server -d app 8000              # then open http://localhost:800
 ```
 
 It must be served over HTTP; opening `index.html` from disk will not work,
-because the page fetches `bank.json`. The app itself is plain HTML/CSS/JS and
-deploys to GitHub Pages by publishing the `app/` directory.
+because the page fetches `bank.json`. Once loaded the app needs no network at
+all, so an attempt survives losing connectivity.
+
+## Deploying to GitHub Pages
+
+`.github/workflows/pages.yml` publishes the `app/` directory on every push to
+`main` or `master`. It validates the bank and rebuilds `bank.json` from source
+first, so the deployed site can never drift from the item bank, and a bank that
+fails its own checks cannot reach the site.
+
+In the repository, set **Settings > Pages > Source** to **GitHub Actions**.
+
+Note that a Pages site is publicly readable, and `bank.json` is served to the
+browser in full - so anyone with the URL can read all 300 answers. That is
+inherent to a static app rather than a flaw, but it is worth knowing before
+sharing the link.
 
 ## Working on the bank
 
