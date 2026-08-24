@@ -125,3 +125,27 @@ in full mode. `build_bank.py` no longer needs `--allow-partial`, and the
 runner offers the full 100-question, 120-minute exam.
 
 Still outstanding: `scripts/stats.py` and `app/lab-tasks.md`.
+
+## Deliberate non-goal: mobile
+
+The runner targets a laptop screen, which is what the spec asked for
+("readable on a laptop screen at 100% zoom"). It was never designed or
+tested for a phone, and the user decided against adapting it.
+
+The measurement behind that decision, should it be revisited:
+
+| Exhibit width | Items |
+|---|---|
+| median | 70 characters |
+| over 60 characters | 263 of 300 (88%) |
+| widest | 128 characters (1.5-002) |
+
+A phone in portrait fits roughly 48 monospace characters at the current
+size, so 88% of exhibits would need sideways scrolling - and the CLI
+output is the whole point of the bank. Making it work would mean
+auto-fitting the exhibit font to the viewport with a readable floor, and
+adding opportunistic resume so an evicted background tab does not cost a
+90-minute attempt. Neither is built.
+
+The app is fully offline once loaded: bank.json is fetched at start and
+nothing else needs the network.
