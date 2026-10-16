@@ -26,10 +26,40 @@
   const KINDS = { cli_output: 'CLI output', config: 'Configuration', topology: 'Topology' };
 
   /* ── storage ──────────────────────────────────────────────────────── */
-  // In-memory only for now; localStorage arrives with the persistence commit.
+  // One versioned key. Every access is wrapped: with storage blocked (private
+  // window, disabled site data) the app runs exactly the same and simply
+  // forgets everything when the tab closes.
 
-  const store = { current: null, history: [], seen: {}, prefs: {} };
-  function persist() {}
+  const KEY = 'ccna-runner-v2';
+  let storageOk = true;
+
+  function loadStore() {
+    const fresh = { v: 2, current: null, history: [], seen: {}, prefs: {} };
+    let raw = null;
+    try {
+      raw = JSON.parse(localStorage.getItem(KEY));
+      localStorage.setItem(KEY + '-probe', '1');
+      localStorage.removeItem(KEY + '-probe');
+    } catch {
+      storageOk = false;
+    }
+    if (!raw || raw.v !== 2) return fresh;
+    return {
+      v: 2,
+      // restore() re-checks the attempt against the current bank and re-grades it;
+      // a save that no longer fits is dropped rather than half-restored
+      current: raw.current && bank ? E.restore(bank, JSON.stringify(raw.current)) : null,
+      history: Array.isArray(raw.history) ? raw.history.filter((h) => h && typeof h.percent === 'number') : [],
+      seen: raw.seen && typeof raw.seen === 'object' ? raw.seen : {},
+      prefs: raw.prefs && typeof raw.prefs === 'object' ? raw.prefs : {},
+    };
+  }
+
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(store)); } catch { storageOk = false; }
+  }
+
+  const store = loadStore();
 
   /* ── state ────────────────────────────────────────────────────────── */
 
@@ -183,10 +213,68 @@
     return !store.current || window.confirm('Discard the unfinished attempt and start a new one?');
   }
 
-  // filled in by the persistence commit
-  function resumeHtml() { return ''; }
-  function historyHtml() { return ''; }
-  function wireHome() {}
+  function resumeHtml(saved) {
+    const n = E.answeredCount(saved);
+    const total = saved.questions.length;
+    let extra = '';
+    if (saved.mode === 'exam') {
+      const left = E.remainingMs(saved, Date.now()) / 1000;
+      extra = left > 0 ? ` The clock kept running: ${E.clock(left)} left.` : ' Its time has run out.';
+    }
+    const label = saved.mode === 'exam' && E.remainingMs(saved, Date.now()) <= 0
+      ? 'See its results' : `Resume (${n} of ${total} answered)`;
+    return `<div class="notice resume" role="region" aria-label="Unfinished attempt">
+      <p>An unfinished ${saved.mode} attempt from ${new Date(saved.startedAt).toLocaleString()}.${extra}</p>
+      <div class="row"><button class="btn" id="resume">${label}</button>
+        <button class="btn ghost" id="discard">Discard it</button></div></div>`;
+  }
+
+  function historyHtml() {
+    const notice = storageOk ? '' : '<div class="notice warn">This browser is not letting the page store anything, so attempts cannot be resumed and no history is kept.</div>';
+    const h = store.history;
+    if (!h.length) return notice;
+    const last = h.slice(-30);
+    const bars = last.map((e) =>
+      `<i class="${e.mode === 'exam' ? 'exam' : ''}${e.percent < E.WEAK_BELOW ? ' weak' : ''}" style="height:${Math.max(4, e.percent)}%"
+        title="${esc(new Date(e.timestamp).toLocaleDateString())} · ${e.mode} · ${e.percent} %"></i>`).join('');
+    const exams = h.filter((e) => e.mode === 'exam');
+    const trendNote = exams.length >= 2
+      ? `Last exam ${exams[exams.length - 1].percent} %, the one before ${exams[exams.length - 2].percent} %.`
+      : 'Exams in blue, practice in grey; red is below 70 %.';
+    const rows = h.slice(-10).reverse().map((e) => `<tr><td>${esc(new Date(e.timestamp).toLocaleDateString())}</td>
+      <td>${e.mode}</td><td class="n">${e.correct}/${e.total}</td><td class="n">${e.percent} %</td>
+      ${bank.domains.map((d) => `<td class="n">${e.per_domain[d.id] !== undefined ? Math.round(e.per_domain[d.id]) : '–'}</td>`).join('')}</tr>`).join('');
+    return `${notice}<h2>History</h2>
+      <div class="trend" role="img" aria-label="Score trend over the last ${last.length} attempts">${bars}</div>
+      <p class="hint">${trendNote}</p>
+      <div class="hist-wrap"><table class="hist"><thead><tr><th>Date</th><th>Mode</th><th class="n">Score</th><th class="n">%</th>
+        ${bank.domains.map((d) => `<th class="n" title="${esc(d.name)}">D${d.id}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+      <p><button class="btn ghost small" id="clear-hist">Clear history</button></p>`;
+  }
+
+  function wireHome() {
+    if ($('resume')) $('resume').onclick = () => {
+      const s = store.current;
+      if (s.mode === 'exam' && E.remainingMs(s, Date.now()) <= 0) {
+        st = s;
+        end_(true);
+      } else {
+        run(s);
+      }
+    };
+    if ($('discard')) $('discard').onclick = () => {
+      if (!window.confirm('Discard the unfinished attempt? It will not be added to your history.')) return;
+      store.current = null;
+      persist();
+      home();
+    };
+    if ($('clear-hist')) $('clear-hist').onclick = () => {
+      if (!window.confirm('Clear the attempt history? Which items you have already seen in exams is kept.')) return;
+      store.history = [];
+      persist();
+      home();
+    };
+  }
 
   /* ── running ──────────────────────────────────────────────────────── */
 
