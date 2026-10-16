@@ -2,175 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CCNA 200-301 v1.1 — Practice Exam</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="styles.css">
+<script>
+  /* Apply a stored theme before first paint, so a dark-mode user is not flashed. */
+  try {
+    const t = (JSON.parse(localStorage.getItem('ccna-runner-v2')) || {}).prefs.theme;
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  } catch (e) { /* no storage: follow the system theme */ }
+</script>
 </head>
 <body>
 
-<header class="bar" id="bar">
+<header class="bar">
   <div class="bar-in">
-    <div class="ident">
-      <span class="ident-exam">CCNA 200-301</span>
-      <span class="ident-ver" id="bar-ver">v1.1</span>
-    </div>
+    <span class="ident">CCNA 200-301 <small id="bar-ver">v1.1</small></span>
     <div class="bar-right">
-      <span class="progress" id="progress" hidden></span>
-      <span class="timer" id="timer" hidden>
-        <span class="timer-label">remaining</span>
-        <span class="timer-val" id="timer-val">--:--</span>
-      </span>
+      <span class="timer" id="timer" role="timer" aria-live="off" hidden><span class="lbl">remaining</span><span id="timer-val">--:--</span></span>
+      <button type="button" class="theme-btn" id="theme" aria-label="Colour theme">Theme: auto</button>
     </div>
   </div>
 </header>
 
-<main>
-
-<!-- ───────────────────────── start ───────────────────────── -->
-<section id="screen-start" class="screen">
-  <div class="wrap">
-    <h1>Practice exam</h1>
-    <p class="lede">
-      Written against Cisco's published 200-301 v1.1 exam topics. Every item is
-      original and requires reading an exhibit or performing a calculation.
-    </p>
-
-    <div id="load-status" class="notice">Loading item bank…</div>
-
-    <div id="start-body" hidden>
-      <table class="bank-table">
-        <caption>Bank coverage</caption>
-        <thead>
-          <tr><th scope="col">Domain</th><th scope="col">Weight</th>
-              <th scope="col" class="num">Items</th><th scope="col" class="num">Per 100</th></tr>
-        </thead>
-        <tbody id="bank-rows"></tbody>
-      </table>
-
-      <div id="partial-note" class="notice notice-warn" hidden></div>
-
-      <div class="setup">
-        <label for="length">Attempt length</label>
-        <select id="length"></select>
-        <p class="setup-hint" id="setup-hint"></p>
-      </div>
-
-      <div class="rules">
-        <h2>How this runs</h2>
-        <ul>
-          <li><strong>Answers are final.</strong> Once you confirm, the item is
-              scored and you move on. There is no back, no skip, no flagging.</li>
-          <li><strong>The clock does not pause.</strong> When it reaches zero the
-              attempt is submitted as it stands.</li>
-          <li>You will not see your score until the attempt ends.</li>
-          <li><strong>Mark an item unsure</strong> if you guessed or hesitated.
-              It changes nothing about scoring and does not let you return to the
-              item — it only means the review afterwards explains that item
-              too, instead of assuming a correct answer needs no explanation.</li>
-          <li>Keyboard: <kbd>1</kbd>–<kbd>5</kbd> or <kbd>A</kbd>–<kbd>E</kbd> to
-              select, <kbd>U</kbd> to mark unsure, <kbd>Enter</kbd> to confirm.</li>
-        </ul>
-      </div>
-
-      <button id="begin" class="btn btn-primary btn-lg">Begin attempt</button>
-    </div>
-  </div>
-</section>
-
-<!-- ───────────────────────── exam ───────────────────────── -->
-<section id="screen-exam" class="screen" hidden>
-  <div class="wrap">
-    <p class="objective-tag" id="q-objective"></p>
-    <h2 class="stem" id="q-stem"></h2>
-
-    <figure class="exhibit" id="q-exhibit" hidden>
-      <figcaption id="q-exhibit-kind"></figcaption>
-      <pre id="q-exhibit-body"></pre>
-    </figure>
-
-    <form id="q-form">
-      <fieldset>
-        <legend id="q-legend" class="sr-only">Answer</legend>
-        <div id="q-options" class="options"></div>
-      </fieldset>
-      <div class="confirm-row">
-        <button type="submit" id="confirm" class="btn btn-primary" disabled>
-          Confirm answer
-        </button>
-        <span class="confirm-hint" id="confirm-hint">This cannot be undone.</span>
-      </div>
-      <label class="unsure" for="unsure">
-        <input type="checkbox" id="unsure">
-        <span>Not sure &mdash; explain this one afterwards even if I get it
-              right <kbd>U</kbd></span>
-      </label>
-    </form>
-  </div>
-</section>
-
-<!-- ───────────────────────── results ───────────────────────── -->
-<section id="screen-results" class="screen" hidden>
-  <div class="wrap">
-    <h1>Attempt complete</h1>
-
-    <div class="score-card">
-      <div class="score-main">
-        <span class="score-pct" id="r-pct">—</span>
-        <span class="score-frac" id="r-frac"></span>
-        <span class="score-note" id="r-note" hidden></span>
-      </div>
-      <dl class="score-meta">
-        <div><dt>Elapsed</dt><dd id="r-elapsed">—</dd></div>
-        <div><dt>Finished</dt><dd id="r-finished">—</dd></div>
-      </dl>
-    </div>
-
-    <div class="actions">
-      <button id="dl-json" class="btn">Download JSON</button>
-      <button id="cp-md" class="btn">Copy Markdown summary</button>
-      <button id="restart" class="btn">New attempt</button>
-      <span class="copied" id="copied" hidden>Copied</span>
-    </div>
-
-    <h2>By domain</h2>
-    <table class="result-table">
-      <thead>
-        <tr><th scope="col">Domain</th><th scope="col" class="num">Asked</th>
-            <th scope="col" class="num">Quota</th><th scope="col" class="num">Correct</th>
-            <th scope="col">Rate</th></tr>
-      </thead>
-      <tbody id="r-domains"></tbody>
-    </table>
-
-    <h2>By objective</h2>
-    <table class="result-table">
-      <thead>
-        <tr><th scope="col">Objective</th><th scope="col" class="num">Asked</th>
-            <th scope="col" class="num">Correct</th><th scope="col">Rate</th></tr>
-      </thead>
-      <tbody id="r-objectives"></tbody>
-    </table>
-
-    <h2 id="r-missed-head">Missed items</h2>
-    <p class="review-note">
-      Below, options keep the lettering the explanations use (A first, then B, C,
-      D&hellip;). The attempt showed them in a random order, so the letters here
-      will not match the positions you saw &mdash; <em>correct</em> and
-      <em>you</em> mark what happened.
-    </p>
-    <div id="r-missed"></div>
-
-    <h2 id="r-unsure-head" hidden>Correct, but marked unsure</h2>
-    <div id="r-unsure"></div>
-
-    <details class="all-items">
-      <summary id="r-all-head">Every item in this attempt</summary>
-      <div id="r-all"></div>
-    </details>
-  </div>
-</section>
-
+<main id="app" tabindex="-1">
+  <noscript><div class="notice warn">This practice exam needs JavaScript.</div></noscript>
 </main>
-<script src="app.js"></script>
+
+<!-- bank.js, not a fetch of bank.json: fetch() is blocked when this page is
+     opened from disk over file://, a plain script tag is not. -->
+<script src="bank.js"></script>
+<script src="engine.js"></script>
+<script src="ui.js"></script>
 </body>
 </html>

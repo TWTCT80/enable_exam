@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Assemble bank/<domain>/<objective>.json into the runner's app/bank.json.
 
+Also writes app/bank.js, the same document as `window.BANK = {...};`. The page
+loads that with a plain <script> tag, because fetch() does not work when
+index.html is opened straight from disk over file://.
+
 Refuses to build if validate.py is red, so a broken bank can never reach the
 app. Pass --allow-partial while the bank is still being written; the runner
 then offers practice attempts over whatever domains exist instead of a full
@@ -20,6 +24,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 BANK = ROOT / "bank"
 BLUEPRINT = ROOT / "blueprint" / "objectives.json"
 DEST = ROOT / "app" / "bank.json"
+DEST_JS = ROOT / "app" / "bank.js"
 
 
 def main() -> int:
@@ -68,9 +73,11 @@ def main() -> int:
     }
 
     DEST.parent.mkdir(parents=True, exist_ok=True)
-    DEST.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")))
+    payload = json.dumps(doc, ensure_ascii=False, separators=(",", ":"))
+    DEST.write_text(payload)
+    DEST_JS.write_text("window.BANK = " + payload + ";\n")
     kb = DEST.stat().st_size / 1024
-    print(f"build_bank.py: wrote {DEST} - {len(items)} items, {kb:.0f} KB")
+    print(f"build_bank.py: wrote {DEST} and {DEST_JS.name} - {len(items)} items, {kb:.0f} KB")
     print(f"  per domain: {doc['counts']['per_domain']}")
     print(f"  full-exam capable: {doc['complete']}")
     return 0
