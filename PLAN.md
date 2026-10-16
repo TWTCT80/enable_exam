@@ -139,7 +139,7 @@ Decisions behind it:
 - **Binary, not a confidence scale.** A second judgement per item under a
   running clock costs more than the granularity is worth.
 - **It is an annotation, not navigation.** "No back, no skip" still holds.
-  The header comment in `app.js` records it as the one departure from
+  The header comment in v1's `app.js` (v2: `ui.js`) records it as the one departure from
   mirroring the real delivery.
 - **Scoring is untouched.** Flagged-and-correct is correct; the headline
   percent does not move. The score card carries a subline, `n marked unsure`.
@@ -166,7 +166,13 @@ fixed positions would be learnable across attempts, and the review card's
 above the missed items says so, since the letters there deliberately do not
 match the ones that were on screen.
 
-## Deliberate non-goal: mobile
+## Deliberate non-goal: mobile (reversed in v2, 2026-10-16)
+
+**Superseded.** The v2 runner (see `docs/merge-plan.md`, K10) is required to
+work down to 360 px and does: exhibits keep their layout and scroll sideways
+inside their own box, the page itself never does. The measurements below are
+why that sideways scroll is needed, and are kept for that reason. The original
+reasoning follows unchanged.
 
 The runner targets a laptop screen, which is what the spec asked for
 ("readable on a laptop screen at 100% zoom"). It was never designed or
@@ -188,4 +194,5 @@ adding opportunistic resume so an evicted background tab does not cost a
 90-minute attempt. Neither is built.
 
 The app is fully offline once loaded: bank.json is fetched at start and
-nothing else needs the network.
+nothing else needs the network. (v2: bank.js is loaded by a script tag and
+the fonts are bundled, so this still holds, also over file://.)

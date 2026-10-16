@@ -29,13 +29,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Engine tests
+        run: node --test
+
       - name: Validate the item bank
         run: python3 scripts/validate.py
 
       - name: Report coverage
         run: python3 scripts/stats.py
 
-      - name: Rebuild app/bank.json from the bank
+      - name: Rebuild app/bank.json and app/bank.js from the bank
         run: python3 scripts/build_bank.py
 
       - uses: actions/configure-pages@v5

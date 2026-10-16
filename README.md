@@ -1,13 +1,22 @@
 # CCNA 200-301 practice exam
 
-**[Take the exam →](https://twtct80.github.io/ccna_tester/)**
-
 300 original practice questions for the Cisco CCNA 200-301 **v1.1** blueprint,
-plus a static exam runner that works the way the real exam does: a 120-minute
-clock that does not pause, and a confirmed answer that is final.
+and a static runner with two modes:
 
-No account, no tracking, nothing to install. Once the page has loaded it needs
-no network, so an attempt survives a tunnel.
+- **Exam** works the way the real exam does: blueprint domain weights, a
+  120-minute clock that does not pause, a confirmed answer that is final, and
+  nothing about your score until the end. Items you have not met in an earlier
+  exam are drawn first, so the 300 make three exams with no repeats.
+- **Practice** shows right and wrong straight away, with the explanation under
+  the question. Filter by domain, objective or difficulty, move back and
+  forth freely, and practise just the ones you missed afterwards.
+
+No account, no tracking, nothing to install. Progress, an unfinished attempt and
+your history stay in your own browser (localStorage) and never leave it. Once
+the page has loaded it needs no network, so an attempt survives a tunnel.
+
+This is v2 of the runner. v1 is still live at
+<https://twtct80.github.io/ccna_tester/>.
 
 ---
 
@@ -34,11 +43,11 @@ than just restating the right answer.
 **Nothing is copied.** Every item is written from scratch against Cisco's
 published exam topics. None reproduces or paraphrases real exam content.
 
-**A right answer you guessed is worth reviewing too.** Any item can be marked
-unsure while you answer it (<kbd>U</kbd>). It changes nothing about scoring and
-you still cannot go back — it only means the review afterwards explains that
-item as fully as one you got wrong. Everything else stays one click away under
-*Every item in this attempt*.
+**A right answer you guessed is worth reviewing too.** In an exam, any item can
+be flagged while you answer it (<kbd>F</kbd>, or <kbd>U</kbd> as in v1). It
+changes nothing about scoring and you still cannot go back — it only means the
+review afterwards can show you the flagged items on their own, explained as
+fully as the ones you got wrong.
 
 ### Coverage
 
@@ -74,16 +83,27 @@ you could set for someone else.
 
 ## Running it locally
 
+Open `app/index.html` straight from disk, or serve it:
+
 ```sh
 python3 -m http.server -d app 8000     # then open http://localhost:8000
 ```
 
-It has to be served over HTTP; opening `index.html` from disk will not work,
-because the page fetches `bank.json`.
+Both work: the bank is loaded as `bank.js` with a plain script tag, not
+fetched, so `file://` is fine.
 
-The app is plain HTML, CSS and JavaScript. No build step, no framework, no
-dependencies. It targets a laptop screen and is deliberately not adapted for
-phones — see `PLAN.md` for that decision and the measurements behind it.
+The app is plain HTML, CSS and JavaScript. No build step for the UI, no
+framework, no dependencies; the fonts are bundled. It works down to a 360 px
+phone screen; exhibits scroll sideways rather than wrap, because wrapped CLI
+output is no longer the output you would see on a device.
+
+```sh
+node --test                            # engine tests (selection, grading, state)
+```
+
+`app/engine.js` holds everything that can be tested without a browser;
+`app/ui.js` renders it. `docs/merge-plan.md` records how v2 was merged from the
+v1 runner and a reference GUI, and every v1 behaviour that changed.
 
 ---
 
@@ -99,7 +119,7 @@ scripts/gen_<obj>.py        one generator per objective - the source of truth
 scripts/iosfmt.py           shared IOS output renderers, columns verified
 scripts/validate.py         the quality gate
 scripts/stats.py            coverage and difficulty report
-scripts/build_bank.py       bank/ -> app/bank.json
+scripts/build_bank.py       bank/ -> app/bank.json and app/bank.js
 ```
 
 Items are never hand-edited under `bank/`. Edit the generator for the objective,

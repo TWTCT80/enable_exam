@@ -246,3 +246,31 @@ Referensfilen innehåller kommersiellt frågematerial och repot är publikt.
    "Choose N", "missed", "Corrected question", "Resume (X of Y answered)",
    "Areas to improve", "Practise the N missed".
 5. Övriga förslag (K3–K13, K15–K20) är godkända som de står.
+
+## 9. Avstämning mot v1 (före sista commit)
+
+Alla punkter i avsnitt 1 är kontrollerade mot v2. ✓ betyder att funktionen finns
+kvar som den var. Övriga rader beskriver vad som har ändrats.
+
+| # | Status i v2 |
+|---|---|
+| E1 | Ersatt: `bank.js` laddas via `<script>`, och om den saknas visas en instruktion |
+| E2 | ✓ Under "Bank coverage" (hopfälld) |
+| E3 | **Borttagen notis.** Urvalet hanterar fortfarande en partiell bank (`availableDomains`/`maxAttempt`), men den förklarande texten visas inte längre. Banken är komplett och bygget kräver det |
+| E4–E11 | ✓ (E9: det äldsta valet släpps fortfarande vid multi) |
+| E12 | ✓ Ihopslagen med flaggan (K1). `F` och `U` gör samma sak |
+| E13 | ✓ Exhibits har dessutom tangentbordsfokus för att kunna scrollas |
+| E14 | ✓ Utökad med de prefix banken använder |
+| E15 | ✓ Plus `F` och ←/→ i övningsläget |
+| E16 | ✓ |
+| E17 | ✓ Antal flaggade står i metaraden |
+| E18 | Ändrad: staplar med svagast först. **Kolumnen "Quota" (per 100) har tagits bort** från resultatet. Den står fortfarande under Bank coverage |
+| E19 | ✓ Under varje domän, svagast först |
+| E20 | Ändrad: tre nivåer har blivit en lista med filtren "only wrong" och "only flagged" (allt visas som standard). Förklaringarna byggs först när de fälls ut, som i v1 |
+| E21 | ✓ Inklusive notisen om bokstäver i provläget |
+| E22 | ✓ Samma fält. `mode`, `expired`, `score.unanswered`, `per_difficulty` och `per_skill` har lagts till |
+| E23 | ✓ Samma brödtext, med frontmatter. Knappen *Download Markdown* har lagts till |
+| E24 | ✓ "New attempt" går till startsidan i stället för att ladda om sidan |
+| E25 | ✓ Plus en temaknapp (auto/light/dark) |
+| E26 | Vänd (K9) |
+| E27 | ✓ Länkad från startsidan |
