@@ -211,7 +211,7 @@ app/
   ui.js             rendering, event, tangentbord, lagring och export
   bank.json         byggd (som idag)
   bank.js           byggd: window.BANK = {...}
-  fonts/            Barlow, Barlow Semi Condensed, JetBrains Mono (woff2) och OFL.txt
+  fonts/            Barlow, Barlow Semi Condensed, JetBrains Mono (woff2) och LICENSE-*.txt (OFL)
   lab-tasks.md      oförändrad
 tests/
   engine.test.js    node --test
@@ -274,3 +274,11 @@ kvar som den var. Övriga rader beskriver vad som har ändrats.
 | E25 | ✓ Plus en temaknapp (auto/light/dark) |
 | E26 | Vänd (K9) |
 | E27 | ✓ Länkad från startsidan |
+
+### Kända begränsningar
+
+- **Portarna är en genväg för mus och pekskärm** (`tabindex="-1"`). Med tangentbord
+  går man mellan frågor med ←/→ eller Previous/Next, men det går inte att hoppa
+  direkt till fråga N. Valet är medvetet: 100 tabbstopp före frågan vore värre.
+- **DnD är bara testat med ett injicerat fixture-item** och syntetiska drag-events.
+  Banken har inga DnD-items. En verklig musdragning har inte provats.

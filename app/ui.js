@@ -791,6 +791,11 @@
   document.addEventListener('keydown', (e) => {
     if (!st || !app.querySelector('.card') || e.metaKey || e.ctrlKey || e.altKey) return;
     const tag = e.target.tagName;
+    if (tag === 'SELECT' && e.key === 'Enter' && $('submit') && !$('submit').disabled) {
+      e.preventDefault();
+      submit();
+      return;
+    }
     if (tag === 'SELECT' || tag === 'TEXTAREA') return;
     const q = st.questions[st.pos];
     const it = itemAt(st.pos);
@@ -836,7 +841,8 @@
   function applyTheme(t) {
     if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
     else delete document.documentElement.dataset.theme;
-    $('theme').textContent = `Theme: ${t}`;
+    $('theme').innerHTML = `<span class="lbl">Theme: </span>${t}`;
+    $('theme').setAttribute('aria-label', `Colour theme: ${t}`);
   }
   $('theme').onclick = () => {
     const cur = store.prefs.theme || 'auto';

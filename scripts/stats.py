@@ -35,6 +35,8 @@ def load():
 
 def length_weight(item):
     """The longest-answer advantage, as validate.py and lencheck.py measure it."""
+    if item["type"] == "draganddrop":
+        return 0.0              # a target mapping has nothing to pick by length
     lens = {o["id"]: len(o["text"]) for o in item["options"]}
     longest = max(lens.values())
     n = len(lens)
@@ -112,7 +114,7 @@ def report(bp, items, only_domain=None):
 
     # ---- answer key ------------------------------------------------------
     print("\nANSWER KEY")
-    letters = Counter(c for i in items for c in i["correct"])
+    letters = Counter(c for i in items if i["type"] != "draganddrop" for c in i["correct"])
     total_keys = sum(letters.values())
     for letter, count in sorted(letters.items()):
         share = count / total_keys
@@ -158,7 +160,7 @@ def as_json(bp, items):
         "uncovered_objectives": [o for o in objectives if per_obj.get(o, 0) == 0],
         "difficulty": {str(d): sum(1 for i in items if i["difficulty"] == d)
                        for d in (1, 2, 3)},
-        "answer_key": dict(Counter(c for i in items for c in i["correct"])),
+        "answer_key": dict(Counter(c for i in items if i["type"] != "draganddrop" for c in i["correct"])),
         "exhibit_kinds": dict(Counter(i["exhibit"]["kind"] for i in items)),
         "multi_items": sum(1 for i in items if i["type"] == "multi"),
         "longest_answer_score": round(
