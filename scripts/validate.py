@@ -29,10 +29,12 @@ MAX_LONGEST_CORRECT = 0.30
 MAX_NO_EXHIBIT = 0.15
 MIN_EXPLANATION_WORDS = 40
 NEAR_DUP_RATIO = 0.85
-# draganddrop is deliberately NOT supported: the runner has no keyboard-
-# navigable implementation, and a drag interaction that fails on a keyboard is
-# worse than none. Matching content is expressed as multi-answer instead.
-VALID_TYPES = {"single", "multi"}
+# draganddrop was left out of v1 because that runner had no keyboard-navigable
+# implementation of it. The v2 runner offers a dropdown per target alongside the
+# drag, so the type is allowed again: `targets` lists the drop targets and
+# `correct` maps each target id to the option id that belongs there. The bank
+# itself still holds none; matching content there is multi-answer.
+VALID_TYPES = {"single", "multi", "draganddrop"}
 VALID_EXHIBIT_KINDS = {"cli_output", "config", "topology", "none"}
 
 # stems that betray a bare-recall or definition-quiz item
@@ -162,6 +164,32 @@ def check_route_exhibit(tag: str, content: str) -> None:
                 f"{actual_masks} masks")
 
 
+def check_dnd(tag: str, it: dict, opt_ids: list[str]) -> None:
+    """draganddrop: every target gets exactly one option, by id."""
+    targets = it.get("targets")
+    if not isinstance(targets, list) or len(targets) < 2:
+        err(f"{tag}: draganddrop needs a 'targets' list of at least 2")
+        return
+    tids = [t.get("id") for t in targets]
+    if len(set(tids)) != len(tids) or not all(isinstance(t, str) and t for t in tids):
+        err(f"{tag}: target ids must be unique non-empty strings, got {tids}")
+    if set(tids) & set(opt_ids):
+        err(f"{tag}: target ids {sorted(set(tids) & set(opt_ids))} collide with option ids")
+    if not all(str(t.get("text", "")).strip() for t in targets):
+        err(f"{tag}: every target needs text")
+    correct = it["correct"]
+    if not isinstance(correct, dict):
+        err(f"{tag}: draganddrop 'correct' must map target id -> option id")
+        return
+    if set(correct) != set(tids):
+        err(f"{tag}: 'correct' keys {sorted(correct)} do not match targets {sorted(tids)}")
+    bad = sorted(v for v in correct.values() if v not in opt_ids)
+    if bad:
+        err(f"{tag}: 'correct' points at unknown option ids {bad}")
+    if it["select_count"] != len(tids):
+        err(f"{tag}: select_count {it['select_count']} != number of targets {len(tids)}")
+
+
 def check_item(path: pathlib.Path, it: dict, objectives: dict) -> None:
     iid = it.get("id", "<no id>")
     tag = f"{path.name}:{iid}"
@@ -192,12 +220,21 @@ def check_item(path: pathlib.Path, it: dict, objectives: dict) -> None:
     if len(set(opt_ids)) != len(opt_ids):
         err(f"{tag}: duplicate option ids {opt_ids}")
 
+    if "note" in it and (not isinstance(it["note"], str) or not it["note"].strip()):
+        err(f"{tag}: 'note' is optional, but when present it must be non-empty text")
+
     correct = it["correct"]
+    if it["type"] == "draganddrop":
+        check_dnd(tag, it, opt_ids)
+        correct = sorted(set(correct.values())) if isinstance(correct, dict) else []
+    elif not isinstance(correct, list):
+        err(f"{tag}: 'correct' must be a list of option ids")
+        return
     if not correct:
         err(f"{tag}: empty 'correct'")
-    if not set(correct).issubset(set(opt_ids)):
+    if it["type"] != "draganddrop" and not set(correct).issubset(set(opt_ids)):
         err(f"{tag}: correct {correct} is not a subset of option ids {opt_ids}")
-    if it["select_count"] != len(correct):
+    if it["type"] != "draganddrop" and it["select_count"] != len(correct):
         err(f"{tag}: select_count {it['select_count']} != len(correct) {len(correct)}")
     if it["type"] == "single" and len(correct) != 1:
         err(f"{tag}: type 'single' with {len(correct)} correct answers")
@@ -255,6 +292,8 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
     # --- answer-key balance -------------------------------------------------
     letters = Counter()
     for _, it in items:
+        if it.get("type") == "draganddrop":
+            continue                    # a target mapping has no answer letter
         for c in it.get("correct", []):
             letters[c] += 1
     total_keys = sum(letters.values())
@@ -275,6 +314,8 @@ def check_bank_wide(items: list[tuple[pathlib.Path, dict]], objectives: dict,
     for _, it in items:
         opts = it.get("options", [])
         correct = it.get("correct", [])
+        if it.get("type") == "draganddrop":
+            continue                    # nothing to pick by length
         if len(opts) < 2 or not correct:
             continue
         considered += 1
